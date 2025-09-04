@@ -28,6 +28,13 @@
                     <div data-i18n="Notifications">Data User</div>
                 </a>
             </li>
+            <li class="menu-item">
+                <a href="{{ route('kategori.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-user"></i>
+                    <div data-i18n="Notifications">Data Kategori</div>
+                </a>
+            </li>
+
 
         </ul>
     </li>
@@ -50,6 +57,34 @@
         </a>
 
     </li>
+
+    <li class="menu-item">
+        <a href="{{ route('materi.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-data"></i>
+            <div data-i18n="Account Settings">Data Materi</div>
+        </a>
+
+    </li>
+
+    <li class="menu-header small text-uppercase">
+        <span class="menu-header-text">Manajemen Quiz</span>
+    </li>
+    <li class="menu-item">
+        <a href="{{ route('latihan.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-data"></i>
+            <div data-i18n="Account Settings">Data Latihan</div>
+        </a>
+
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('tryout.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-data"></i>
+            <div data-i18n="Account Settings">Data Tryout</div>
+        </a>
+
+    </li>
+
 
 
 </ul>

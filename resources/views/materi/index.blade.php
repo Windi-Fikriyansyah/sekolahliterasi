@@ -1,16 +1,16 @@
 @extends('template.app')
-@section('title', 'Kursus')
+@section('title', 'Materi')
 @section('content')
     <div class="page-heading">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Kursus</h3>
+                <h3>Materi</h3>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Kursus</li>
+                        <li class="breadcrumb-item active" aria-current="page">Materi</li>
                     </ol>
                 </nav>
             </div>
@@ -29,8 +29,8 @@
         <div class="card radius-10">
             <div class="card-header">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">Daftar Kursus</h5>
-                    <a href="{{ route('kursus.create') }}" class="btn btn-primary" id="add-product-btn">
+                    <h5 class="card-title mb-0">Daftar Materi</h5>
+                    <a href="{{ route('materi.create') }}" class="btn btn-primary" id="add-product-btn">
                         <i class="bi bi-plus-circle"></i> Tambah
                     </a>
                 </div>
@@ -41,12 +41,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Thumbnail</th>
-                                <th>Judul</th>
-                                <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Tipe Akses</th>
-                                <th>Status</th>
+                                <th>Judul Materi</th>
+                                <th>Judul Module</th>
+                                <th>Type Materi</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
@@ -110,7 +107,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('kursus.load') }}",
+                    url: "{{ route('materi.load') }}",
                     type: "POST"
                 },
                 columns: [{
@@ -120,61 +117,17 @@
                         searchable: false
                     },
                     {
-                        data: 'thumbnail',
-                        name: 'thumbnail',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            if (data) {
-                                return '<img src="{{ asset('storage') }}/' + data +
-                                    '" class="thumbnail-img" alt="Thumbnail">';
-                            } else {
-                                return '<img src="{{ asset('assets/images/default-thumbnail.jpg') }}" class="thumbnail-img" alt="Default Thumbnail">';
-                            }
-                        }
-                    },
-                    {
                         data: 'title',
                         name: 'title'
                     },
                     {
-                        data: 'nama_kategori',
-                        name: 'kategori.nama_kategori'
+                        data: 'title_module',
+                        name: 'title_module'
                     },
+
                     {
-                        data: 'price',
-                        name: 'price',
-                        render: function(data, type, row) {
-                            if (row.is_free) {
-                                return 'Gratis';
-                            } else {
-                                return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
-                            }
-                        }
-                    },
-                    {
-                        data: 'access_type',
-                        name: 'access_type',
-                        render: function(data, type, row) {
-                            if (data === 'lifetime') {
-                                return 'Selamanya';
-                            } else if (data === 'subscription') {
-                                return 'Langganan';
-                            } else {
-                                return '-';
-                            }
-                        }
-                    },
-                    {
-                        data: 'status',
-                        name: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'active') {
-                                return '<span class="status-badge status-active">Aktif</span>';
-                            } else {
-                                return '<span class="status-badge status-inactive">Tidak Aktif</span>';
-                            }
-                        }
+                        data: 'type',
+                        name: 'type'
                     },
                     {
                         data: 'action',
@@ -188,7 +141,7 @@
             // Hapus kursus
             $(document).on('click', '.delete-btn', function() {
                 const id = $(this).data('id');
-                const url = "{{ route('kursus.destroy', ':id') }}".replace(':id', id);
+                const url = "{{ route('materi.destroy', ':id') }}".replace(':id', id);
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',

@@ -1,16 +1,17 @@
 @extends('template.app')
-@section('title', 'Kursus')
+@section('title', 'Soal Tryout - ' . $course->title)
 @section('content')
     <div class="page-heading">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Kursus</h3>
+                <h3>Soal Tryout: {{ $course->title }}</h3>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Kursus</li>
+                        <li class="breadcrumb-item"><a href="{{ route('tryout.index') }}">Tryout</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Soal</li>
                     </ol>
                 </nav>
             </div>
@@ -26,27 +27,34 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <i class="bx bx-error me-2"></i>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="card radius-10">
             <div class="card-header">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">Daftar Kursus</h5>
-                    <a href="{{ route('kursus.create') }}" class="btn btn-primary" id="add-product-btn">
-                        <i class="bi bi-plus-circle"></i> Tambah
+                    <h5 class="card-title mb-0">Daftar Soal untuk "{{ $course->title }}"</h5>
+                    <a href="{{ route('tryout.createSoal', Crypt::encrypt($course->id)) }}" class="btn btn-primary"
+                        id="add-soal-btn">
+                        <i class="bi bi-plus-circle"></i> Tambah Soal
                     </a>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0" id="kursus-table" style="width: 100%">
+                    <table class="table align-middle mb-0" id="soal-table" style="width: 100%">
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Thumbnail</th>
-                                <th>Judul</th>
-                                <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Tipe Akses</th>
-                                <th>Status</th>
+                                <th>Judul Soal</th>
+                                <th>Tipe Soal</th>
+                                <th>Dibuat Pada</th>
+                                <th>Durasi Pengerjaan</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
@@ -63,27 +71,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <style>
-        .status-badge {
-            padding: 0.35em 0.65em;
-            font-size: 0.75em;
-            font-weight: 700;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-
-        .status-active {
-            color: #fff;
-            background-color: #198754;
-        }
-
-        .status-inactive {
-            color: #fff;
-            background-color: #dc3545;
-        }
-
         .thumbnail-img {
             width: 60px;
             height: 40px;
@@ -106,11 +93,13 @@
                 }
             });
 
-            const table = $('#kursus-table').DataTable({
+            const courseId = "{{ Crypt::encrypt($course->id) }}";
+
+            const table = $('#soal-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('kursus.load') }}",
+                    url: "{{ route('tryout.load_quiz', ':courseId') }}".replace(':courseId', courseId),
                     type: "POST"
                 },
                 columns: [{
@@ -120,62 +109,28 @@
                         searchable: false
                     },
                     {
-                        data: 'thumbnail',
-                        name: 'thumbnail',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            if (data) {
-                                return '<img src="{{ asset('storage') }}/' + data +
-                                    '" class="thumbnail-img" alt="Thumbnail">';
-                            } else {
-                                return '<img src="{{ asset('assets/images/default-thumbnail.jpg') }}" class="thumbnail-img" alt="Default Thumbnail">';
-                            }
-                        }
-                    },
-                    {
                         data: 'title',
                         name: 'title'
                     },
                     {
-                        data: 'nama_kategori',
-                        name: 'kategori.nama_kategori'
+                        data: 'quiz_type',
+                        name: 'quiz_type'
                     },
                     {
-                        data: 'price',
-                        name: 'price',
-                        render: function(data, type, row) {
-                            if (row.is_free) {
-                                return 'Gratis';
-                            } else {
-                                return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
-                            }
+                        data: 'created_at',
+                        name: 'created_at',
+                        render: function(data) {
+                            return new Date(data).toLocaleDateString('id-ID');
                         }
                     },
                     {
-                        data: 'access_type',
-                        name: 'access_type',
-                        render: function(data, type, row) {
-                            if (data === 'lifetime') {
-                                return 'Selamanya';
-                            } else if (data === 'subscription') {
-                                return 'Langganan';
-                            } else {
-                                return '-';
-                            }
+                        data: 'durasi',
+                        name: 'durasi',
+                        render: function(data) {
+                            return data ? data + ' menit' : '-';
                         }
                     },
-                    {
-                        data: 'status',
-                        name: 'status',
-                        render: function(data, type, row) {
-                            if (data === 'active') {
-                                return '<span class="status-badge status-active">Aktif</span>';
-                            } else {
-                                return '<span class="status-badge status-inactive">Tidak Aktif</span>';
-                            }
-                        }
-                    },
+
                     {
                         data: 'action',
                         name: 'action',
@@ -185,14 +140,14 @@
                 ]
             });
 
-            // Hapus kursus
+            // Hapus soal
             $(document).on('click', '.delete-btn', function() {
                 const id = $(this).data('id');
-                const url = "{{ route('kursus.destroy', ':id') }}".replace(':id', id);
+                const url = "{{ route('tryout.destroy', ':id') }}".replace(':id', id);
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: "Data kursus akan dihapus permanen!",
+                    text: "Soal akan dihapus permanen!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',

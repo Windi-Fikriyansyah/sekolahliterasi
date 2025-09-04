@@ -198,7 +198,7 @@
 
         .forgot-password {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 5px;
         }
 
         .forgot-password a {
@@ -216,7 +216,7 @@
         /* Divider */
         .divider {
             text-align: center;
-            margin: 30px 0;
+            margin: 15px 0;
             position: relative;
             color: #666;
         }

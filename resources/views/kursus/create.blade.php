@@ -31,6 +31,25 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="id_kategori">Kategori</label>
+                                <div class="col-sm-10">
+                                    <select id="id_kategori" name="id_kategori"
+                                        class="form-control select2 @error('id_kategori') is-invalid @enderror" required>
+                                        <option value="">-- Pilih Kategori --</option>
+                                        @foreach ($kategoris as $kategori)
+                                            <option value="{{ $kategori->id }}"
+                                                {{ old('id_kategori', $course->id_kategori ?? '') == $kategori->id ? 'selected' : '' }}>
+                                                {{ $kategori->nama_kategori }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('id_kategori')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Description -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="description">Deskripsi</label>
@@ -72,21 +91,21 @@
                             </div>
 
                             <!-- Price -->
+                            <!-- Price -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="price">Harga</label>
                                 <div class="col-sm-10">
-                                    <input type="text" id="price" name="price_display"
+                                    <input type="text" id="price_display" name="price_display"
                                         class="form-control @error('price') is-invalid @enderror"
-                                        value="{{ old('price', isset($course->price) ? 'Rp ' . number_format($course->price, 0, ',', '.') : '') }}"
+                                        value="{{ old('price_display', isset($course->price) ? 'Rp ' . number_format($course->price, 0, ',', '.') : '') }}"
                                         required />
-                                    <input type="hidden" id="price_numeric" name="price"
+                                    <input type="hidden" id="price" name="price"
                                         value="{{ old('price', $course->price ?? 0) }}">
                                     @error('price')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-
                             <!-- Is Free -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="is_free">Gratis?</label>
@@ -126,6 +145,79 @@
                                 </div>
                             </div>
 
+                            <!-- Access Type -->
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="access_type">Tipe Akses</label>
+                                <div class="col-sm-10">
+                                    <select id="access_type" name="access_type"
+                                        class="form-control @error('access_type') is-invalid @enderror" required>
+                                        <option value="">-- Pilih Akses --</option>
+                                        <option value="lifetime"
+                                            {{ old('access_type', $course->access_type ?? '') == 'lifetime' ? 'selected' : '' }}>
+                                            Selamanya
+                                        </option>
+                                        <option value="subscription"
+                                            {{ old('access_type', $course->access_type ?? '') == 'subscription' ? 'selected' : '' }}>
+                                            Langganan
+                                        </option>
+                                    </select>
+                                    @error('access_type')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Subscription Duration -->
+                            <div class="row mb-3 subscription-duration d-none">
+                                <label class="col-sm-2 col-form-label" for="subscription_duration">Durasi Langganan
+                                    (hari)</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="subscription_duration" name="subscription_duration"
+                                        class="form-control @error('subscription_duration') is-invalid @enderror"
+                                        value="{{ old('subscription_duration', $course->subscription_duration ?? '') }}"
+                                        min="1" placeholder="Contoh: 30">
+                                    @error('subscription_duration')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Features -->
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label">Fitur-Fitur</label>
+                                <div class="col-sm-10">
+                                    <div id="features-wrapper">
+                                        @if (isset($course) && $course->features)
+                                            @foreach (json_decode($course->features, true) as $index => $feature)
+                                                <div class="input-group mb-2">
+                                                    <input type="text" name="features[]" class="form-control"
+                                                        value="{{ $feature }}" placeholder="Masukkan fitur">
+                                                    @if ($loop->last)
+                                                        <button type="button" class="btn btn-success add-feature">
+                                                            <i class="bx bx-plus"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="btn btn-danger remove-feature">
+                                                            <i class="bx bx-trash"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="input-group mb-2">
+                                                <input type="text" name="features[]" class="form-control"
+                                                    placeholder="Masukkan fitur">
+                                                <button type="button" class="btn btn-success add-feature"><i
+                                                        class="bx bx-plus"></i></button>
+                                            </div>
+                                        @endif
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <!-- Submit -->
                             <div class="row justify-content-end">
                                 <div class="col-sm-10">
@@ -144,17 +236,109 @@
 @endsection
 
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        // Inisialisasi Select2
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: '-- Pilih Course --',
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrapper = document.getElementById('features-wrapper');
+
+            wrapper.addEventListener('click', function(e) {
+                if (e.target.closest('.add-feature')) {
+                    e.preventDefault();
+
+                    // ganti tombol + di baris sebelumnya menjadi tombol hapus
+                    const lastGroup = wrapper.querySelector('.input-group:last-child .add-feature');
+                    if (lastGroup) {
+                        lastGroup.outerHTML = `
+                    <button type="button" class="btn btn-danger remove-feature">
+                        <i class="bx bx-trash"></i>
+                    </button>
+                `;
+                    }
+
+                    // buat input baru dengan tombol +
+                    let newInput = document.createElement('div');
+                    newInput.classList.add('input-group', 'mb-2');
+                    newInput.innerHTML = `
+                <input type="text" name="features[]" class="form-control" placeholder="Masukkan fitur">
+                <button type="button" class="btn btn-success add-feature"><i class="bx bx-plus"></i></button>
+            `;
+                    wrapper.appendChild(newInput);
+                }
+
+                if (e.target.closest('.remove-feature')) {
+                    e.preventDefault();
+                    e.target.closest('.input-group').remove();
+
+                    // pastikan selalu ada tombol + di baris terakhir
+                    const groups = wrapper.querySelectorAll('.input-group');
+                    if (groups.length > 0) {
+                        groups.forEach((group, index) => {
+                            const btnAdd = group.querySelector('.add-feature');
+                            const btnRemove = group.querySelector('.remove-feature');
+
+                            if (index === groups.length - 1) {
+                                if (!btnAdd) {
+                                    if (btnRemove) btnRemove.outerHTML = `
+                                <button type="button" class="btn btn-success add-feature">
+                                    <i class="bx bx-plus"></i>
+                                </button>
+                            `;
+                                }
+                            } else {
+                                if (!btnRemove) {
+                                    if (btnAdd) btnAdd.outerHTML = `
+                                <button type="button" class="btn btn-danger remove-feature">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            `;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const accessType = document.getElementById('access_type');
+            const subscriptionField = document.querySelector('.subscription-duration');
+
+            function toggleDuration() {
+                if (accessType.value === 'subscription') {
+                    subscriptionField.classList.remove('d-none');
+                } else {
+                    subscriptionField.classList.add('d-none');
+                    document.getElementById('subscription_duration').value = '';
+                }
+            }
+
+            accessType.addEventListener('change', toggleDuration);
+            toggleDuration(); // jalankan saat pertama kali
+        });
+    </script>
+
     <script>
         // Format currency input
+        const priceDisplay = document.getElementById('price_display');
         const priceInput = document.getElementById('price');
-        const priceNumeric = document.getElementById('price_numeric');
 
-        priceInput.addEventListener('input', function(e) {
+        priceDisplay.addEventListener('input', function(e) {
             // Hapus semua karakter non-digit
             let numericValue = e.target.value.replace(/\D/g, '');
 
             // Simpan nilai numerik di input hidden
-            priceNumeric.value = numericValue ? parseInt(numericValue) : 0;
+            priceInput.value = numericValue ? parseInt(numericValue) : 0;
 
             // Format tampilan dengan separator ribuan
             if (numericValue) {
@@ -166,39 +350,23 @@
 
         // Inisialisasi nilai saat halaman dimuat
         document.addEventListener('DOMContentLoaded', function() {
-            const initialValue = priceNumeric.value;
+            const initialValue = priceInput.value;
             if (initialValue && initialValue > 0) {
-                priceInput.value = 'Rp ' + new Intl.NumberFormat('id-ID').format(initialValue);
-            }
-        });
-
-        // Validasi form sebelum submit
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Pastikan nilai numerik sudah terisi
-            if (!priceNumeric.value || priceNumeric.value == 0) {
-                // Jika gratis, set nilai ke 0
-                if (document.getElementById('is_free').value === '1') {
-                    priceNumeric.value = 0;
-                } else {
-                    // Jika tidak gratis, tampilkan error
-                    e.preventDefault();
-                    alert('Harap isi harga dengan benar');
-                    priceInput.focus();
-                }
+                priceDisplay.value = 'Rp ' + new Intl.NumberFormat('id-ID').format(initialValue);
             }
         });
 
         // Toggle price field based on is_free selection
         document.getElementById('is_free').addEventListener('change', function(e) {
             if (e.target.value === '1') {
-                priceInput.value = 'Rp 0';
-                priceNumeric.value = 0;
-                priceInput.setAttribute('readonly', 'readonly');
+                priceDisplay.value = 'Rp 0';
+                priceInput.value = 0;
+                priceDisplay.setAttribute('readonly', 'readonly');
             } else {
-                priceInput.removeAttribute('readonly');
-                if (priceInput.value === 'Rp 0') {
+                priceDisplay.removeAttribute('readonly');
+                if (priceDisplay.value === 'Rp 0') {
+                    priceDisplay.value = '';
                     priceInput.value = '';
-                    priceNumeric.value = '';
                 }
             }
         });
@@ -207,7 +375,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const isFreeSelect = document.getElementById('is_free');
             if (isFreeSelect.value === '1') {
-                priceInput.setAttribute('readonly', 'readonly');
+                priceDisplay.setAttribute('readonly', 'readonly');
             }
         });
         // Preview thumbnail

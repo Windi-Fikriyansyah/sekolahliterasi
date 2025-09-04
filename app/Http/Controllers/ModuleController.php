@@ -41,10 +41,11 @@ class ModuleController extends Controller
                     $query->whereRaw("LOWER(c.title) like ?", ["%" . strtolower($keyword) . "%"]);
                 })
                 ->addColumn('action', function ($row) {
+                    $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('module.destroy', $row->id);
 
                     $buttons = '<div class="btn-group" role="group">';
-                    $buttons .= '<a href="' . route('module.edit', $row->id) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
+                    $buttons .= '<a href="' . route('module.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
 
@@ -135,7 +136,19 @@ class ModuleController extends Controller
 
     public function edit($id)
     {
-        $module = DB::table('course_modules')->where('id', $id)->first();
+
+        try {
+            $decryptedId = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            return redirect()->route('module.index')->with('error', 'ID tidak valid');
+        }
+
+        $module = DB::table('course_modules')->where('id', $decryptedId)->first();
+
+        if (!$module) {
+            return redirect()->route('module.index')->with('error', 'Materi tidak ditemukan');
+        }
+
         $courses = DB::table('courses')->get();
         return view('module.create', compact('module', 'courses'));
     }

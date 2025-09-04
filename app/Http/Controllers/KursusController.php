@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class KursusController extends Controller
 {
@@ -23,18 +24,21 @@ class KursusController extends Controller
     {
         try {
             $kursus = DB::table('courses')
+                ->leftJoin('kategori', 'courses.id_kategori', '=', 'kategori.id') // menambahkan join dengan kategori
                 ->select([
-                    'id',
-                    'title',
-                    'description',
-                    'thumbnail',
-                    'price',
-                    'is_free',
-                    'status',
-                    'created_at',
-                    'updated_at'
+                    'courses.id',
+                    'courses.title',
+                    'courses.description',
+                    'courses.thumbnail',
+                    'courses.price',
+                    'courses.access_type',
+                    'courses.is_free',
+                    'courses.status',
+                    'kategori.nama_kategori', // menampilkan nama kategori
+                    'courses.created_at',
+                    'courses.updated_at'
                 ])
-                ->orderBy('created_at', 'desc');
+                ->orderBy('courses.created_at', 'desc');
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
@@ -43,7 +47,7 @@ class KursusController extends Controller
                     $deleteUrl = route('kursus.destroy', $row->id);
 
                     $buttons = '<div class="btn-group" role="group">';
-                    $buttons .= '<a href="' . route('kursus.edit', $row->id) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
+                    $buttons .= '<a href="' . route('kursus.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
 
@@ -89,7 +93,8 @@ class KursusController extends Controller
 
     public function create()
     {
-        return view('kursus.create');
+        $kategoris = DB::table('kategori')->get();
+        return view('kursus.create', compact('kategoris'));
     }
 
     public function store(Request $request)
@@ -97,16 +102,20 @@ class KursusController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'id_kategori' => 'required|string',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'required|numeric|min:0',
             'is_free' => 'required|boolean',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'access_type' => 'required|in:lifetime,subscription',
+            'subscription_duration' => 'nullable|integer|min:1',
+            'features' => 'nullable|array',
+            'features.*' => 'nullable|string|max:255',
         ]);
 
         try {
-            // Format price
-            $price = str_replace(['Rp', '.', ' '], '', $request->price);
-            $price = (float) $price;
+            // Jika gratis, set harga ke 0
+            $price = $request->is_free ? 0 : $request->price;
 
             // Handle thumbnail upload
             $thumbnailPath = null;
@@ -118,10 +127,14 @@ class KursusController extends Controller
             DB::table('courses')->insert([
                 'title' => $request->title,
                 'description' => $request->description,
+                'id_kategori' => $request->id_kategori,
                 'thumbnail' => $thumbnailPath,
                 'price' => $price,
                 'is_free' => $request->is_free,
+                'access_type' => $request->access_type,
+                'subscription_duration' => $request->access_type === 'subscription' ? $request->subscription_duration : null,
                 'status' => $request->status,
+                'features' => $request->features ? json_encode($request->features) : null,
                 'created_by' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now()
@@ -137,19 +150,35 @@ class KursusController extends Controller
 
     public function edit($id)
     {
-        $course = DB::table('courses')->where('id', $id)->first();
-        return view('kursus.create', compact('course'));
+        try {
+            $decryptedId = Crypt::decrypt($id);
+        } catch (\Exception $e) {
+            return redirect()->route('kursus.index')->with('error', 'ID tidak valid');
+        }
+        $course = DB::table('courses')->where('id', $decryptedId)->first();
+        if (!$course) {
+            return redirect()->route('kursus.index')->with('error', 'Materi tidak ditemukan');
+        }
+
+        $kategoris = DB::table('kategori')->get();
+
+        return view('kursus.create', compact('course', 'kategoris'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'id_kategori' => 'required|string',
             'description' => 'required|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'required|numeric|min:0',
             'is_free' => 'required|boolean',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'access_type' => 'required|in:lifetime,subscription',
+            'subscription_duration' => 'nullable|integer|min:1',
+            'features' => 'nullable|array',
+            'features.*' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -159,16 +188,19 @@ class KursusController extends Controller
                 return back()->with('error', 'Kursus tidak ditemukan');
             }
 
-            // Format price
-            $price = str_replace(['Rp', '.', ' '], '', $request->price);
-            $price = (float) $price;
+            // Jika gratis, set harga ke 0
+            $price = $request->is_free ? 0 : $request->price;
 
             $dataUpdate = [
                 'title' => $request->title,
+                'id_kategori' => $request->id_kategori,
                 'description' => $request->description,
                 'price' => $price,
                 'is_free' => $request->is_free,
+                'access_type' => $request->access_type,
+                'subscription_duration' => $request->access_type === 'subscription' ? $request->subscription_duration : null,
                 'status' => $request->status,
+                'features' => $request->features ? json_encode($request->features) : null,
                 'updated_at' => now()
             ];
 
@@ -191,6 +223,86 @@ class KursusController extends Controller
         } catch (\Exception $e) {
             Log::error('Error updating course: ' . $e->getMessage());
             return back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function kursus()
+    {
+        // Ambil semua data course dari tabel 'courses'
+        $courses = DB::table('courses')
+            ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
+            ->select('courses.id', 'courses.title', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
+            ->limit(6)
+            ->get();
+
+        // Kirim data ke view (misalnya ke halaman landing page kamu)
+        return view('welcome', compact('courses'));
+    }
+    public function course()
+    {
+        // Ambil semua data course dari tabel 'courses'
+        $courses = DB::table('courses')
+            ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
+            ->select('courses.id', 'courses.title', 'kategori.id as kategori_id', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
+            ->orderBy('courses.created_at', 'desc')
+            ->get();
+        $kategori = DB::table('kategori')->get();
+
+        return view('kursus', compact('courses', 'kategori'));
+    }
+    public function detail($slug)
+    {
+        // Ambil ID dari slug (angka di belakang)
+        $id = (int) substr(strrchr($slug, '-'), 1);
+
+        $course = DB::table('courses')
+            ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
+            ->select('courses.*', 'kategori.nama_kategori')
+            ->where('courses.id', $id)
+            ->first();
+
+        if (!$course) {
+            abort(404);
+        }
+
+        return view('kursus.detail', compact('course'));
+    }
+
+    public function checkout($id)
+    {
+        $course = DB::table('courses')->where('id', $id)->first();
+        return view('kursus.checkout', compact('course'));
+    }
+
+    public function pay(Request $request, $id)
+    {
+        // Contoh simpan transaksi
+        DB::table('transactions')->insert([
+            'course_id' => $id,
+            'user_id' => auth()->id(),
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('course')->with('success', 'Pembayaran berhasil, silakan cek riwayat transaksi!');
+    }
+
+    public function show($encryptedCourseId)
+    {
+        try {
+            $courseId = Crypt::decryptString($encryptedCourseId);
+
+            // Ambil data course dari database tanpa model
+            $course = DB::table('courses')->where('id', $courseId)->first();
+
+            if (!$course) {
+                return redirect()->back()->with('error', 'Kursus tidak ditemukan.');
+            }
+
+            return view('kursus.show', compact('course'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

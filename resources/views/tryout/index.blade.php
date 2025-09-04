@@ -1,16 +1,16 @@
 @extends('template.app')
-@section('title', 'Kursus')
+@section('title', 'Tryout')
 @section('content')
     <div class="page-heading">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Kursus</h3>
+                <h3>Tryout</h3>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Kursus</li>
+                        <li class="breadcrumb-item active" aria-current="page">Tryout</li>
                     </ol>
                 </nav>
             </div>
@@ -30,21 +30,18 @@
             <div class="card-header">
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">Daftar Kursus</h5>
-                    <a href="{{ route('kursus.create') }}" class="btn btn-primary" id="add-product-btn">
-                        <i class="bi bi-plus-circle"></i> Tambah
-                    </a>
+
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0" id="kursus-table" style="width: 100%">
+                    <table class="table align-middle mb-0" id="latihan-table" style="width: 100%">
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Thumbnail</th>
                                 <th>Judul</th>
                                 <th>Kategori</th>
-                                <th>Harga</th>
                                 <th>Tipe Akses</th>
                                 <th>Status</th>
                                 <th width="15%">Aksi</th>
@@ -106,11 +103,11 @@
                 }
             });
 
-            const table = $('#kursus-table').DataTable({
+            const table = $('#latihan-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('kursus.load') }}",
+                    url: "{{ route('tryout.load') }}",
                     type: "POST"
                 },
                 columns: [{
@@ -140,17 +137,6 @@
                     {
                         data: 'nama_kategori',
                         name: 'kategori.nama_kategori'
-                    },
-                    {
-                        data: 'price',
-                        name: 'price',
-                        render: function(data, type, row) {
-                            if (row.is_free) {
-                                return 'Gratis';
-                            } else {
-                                return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
-                            }
-                        }
                     },
                     {
                         data: 'access_type',
@@ -185,14 +171,14 @@
                 ]
             });
 
-            // Hapus kursus
+            // Hapus latihan
             $(document).on('click', '.delete-btn', function() {
                 const id = $(this).data('id');
-                const url = "{{ route('kursus.destroy', ':id') }}".replace(':id', id);
+                const url = "{{ route('tryout.destroy', ':id') }}".replace(':id', id);
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: "Data kursus akan dihapus permanen!",
+                    text: "Data latihan akan dihapus permanen!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
