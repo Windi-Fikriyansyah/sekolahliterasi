@@ -322,8 +322,9 @@
                 </form>
 
                 <div class="forgot-password">
-                    <a href="#">Lupa password?</a>
+                    <a href="{{ route('password.request') }}">Lupa password?</a>
                 </div>
+
 
                 <div class="divider"><span>Belum punya akun?</span></div>
 

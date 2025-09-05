@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriController;
@@ -178,5 +180,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+
 
 require __DIR__ . '/auth.php';
