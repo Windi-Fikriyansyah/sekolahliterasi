@@ -146,7 +146,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::prefix('kelas')->name('kelas.')->group(function () {
         Route::get('/', [KelasSayaController::class, 'index'])->name('index');
-        Route::get('/{slug}', [KelasSayaController::class, 'akses'])->name('akses');
+        Route::get('akses/{slug}', [KelasSayaController::class, 'akses'])->name('akses');
+        Route::get('/isi-materi/{id}', [KelasSayaController::class, 'pdfView'])->name('pdf_view');
+        Route::get('/mulai-belajar/{moduleId}', [KelasSayaController::class, 'mulai_belajar'])
+            ->name('mulai_belajar');
     });
 
     // routes/web.php
