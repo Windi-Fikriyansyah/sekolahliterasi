@@ -150,6 +150,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/isi-materi/{id}', [KelasSayaController::class, 'pdfView'])->name('pdf_view');
         Route::get('/mulai-belajar/{moduleId}', [KelasSayaController::class, 'mulai_belajar'])
             ->name('mulai_belajar');
+
+        Route::get('/latihan/{quizId}', [KelasSayaController::class, 'latihan'])->name('latihan');
+        Route::post('/latihan/{quizId}/submit', [KelasSayaController::class, 'submitLatihan'])->name('latihan.submit');
+        Route::get('/latihan/{quizId}/hasil', [KelasSayaController::class, 'hasilLatihan'])->name('latihan.hasil');
+
+        // Routes untuk tryout
+        Route::get('/tryout/{quizId}', [KelasSayaController::class, 'tryout'])->name('tryout');
+        Route::post('/tryout/{quizId}/submit', [KelasSayaController::class, 'submitLatihan'])->name('tryout.submit');
+        Route::get('/tryout/{quizId}/hasil', [KelasSayaController::class, 'hasilLatihan'])->name('tryout.hasil');
     });
 
     // routes/web.php

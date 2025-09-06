@@ -224,7 +224,7 @@
                                                         Latihan
                                                     </span>
                                                 </div>
-                                                <button
+                                                <a href="{{ route('kelas.latihan', $exercise->id) }}"
                                                     class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
                                                     Mulai
                                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
@@ -232,7 +232,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M9 5l7 7-7 7"></path>
                                                     </svg>
-                                                </button>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -299,7 +299,7 @@
                                                         Latihan
                                                     </span>
                                                 </div>
-                                                <button
+                                                <a href="{{ route('kelas.tryout', $exercise->id) }}"
                                                     class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
                                                     Mulai
                                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
@@ -307,7 +307,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2" d="M9 5l7 7-7 7"></path>
                                                     </svg>
-                                                </button>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
