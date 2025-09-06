@@ -136,9 +136,23 @@
 <body class="bg-primary-50">
     <!-- Navigation -->
     <!-- Navigation -->
+    <!-- Ganti bagian navigasi yang ada (baris sekitar 91-154) dengan kode ini: -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
+                <!-- Mobile menu button - dipindah ke kiri -->
+                <div class="md:hidden">
+                    <button
+                        class="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100"
+                        onclick="toggleMobileMenu()">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Logo - tetap di tengah pada mobile, kiri pada desktop -->
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <a href="/">
@@ -170,7 +184,7 @@
                     @endauth
                 </div>
 
-                <!-- Right Side -->
+                <!-- Right Side - User menu atau Login button -->
                 <div class="flex items-center space-x-4">
                     @auth
                         <div class="relative" x-data="{ open: false }">
@@ -179,7 +193,7 @@
                                     <path
                                         d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                                 </svg>
-                                <span class="text-gray-700 font-medium">{{ Auth::user()->name }}</span>
+                                <span class="text-gray-700 font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
                             </button>
 
                             <!-- Dropdown -->
@@ -203,22 +217,10 @@
                         </a>
                     @endauth
                 </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button
-                        class="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100"
-                        onclick="toggleMobileMenu()">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
             </div>
         </div>
 
-        <!-- Mobile menu -->
+        <!-- Mobile menu - tidak ada perubahan -->
         <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 @auth
