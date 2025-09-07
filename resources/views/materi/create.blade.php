@@ -19,20 +19,19 @@
 
                             <!-- Module Selection -->
                             <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="module_id">Modul</label>
+                                <label class="col-sm-2 col-form-label" for="course_id">Course</label>
                                 <div class="col-sm-10">
-                                    <select id="module_id" name="module_id"
-                                        class="form-control select2 @error('module_id') is-invalid @enderror" required>
+                                    <select id="course_id" name="course_id"
+                                        class="form-control select2 @error('course_id') is-invalid @enderror" required>
                                         <option value="">-- Pilih Modul --</option>
-                                        @foreach ($modules as $module)
-                                            <option value="{{ $module->id }}"
-                                                {{ old('module_id', $materi->module_id ?? '') == $module->id ? 'selected' : '' }}
-                                                data-course-id="{{ $module->course_id }}">
-                                                {{ $module->title }}
+                                        @foreach ($kursuss as $kursus)
+                                            <option value="{{ $kursus->id }}"
+                                                {{ old('course_id', $materi->course_id ?? '') == $kursus->id ? 'selected' : '' }}>
+                                                {{ $kursus->title }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('module_id')
+                                    @error('course_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -70,6 +69,19 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <!-- Description -->
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="description">Deskripsi</label>
+                                <div class="col-sm-10">
+                                    <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror"
+                                        rows="4" placeholder="Tuliskan deskripsi materi...">{{ old('description', $materi->description ?? '') }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
 
                             <!-- Video Upload (FilePond) -->
                             <div class="row mb-3 video-field" style="display: none;">

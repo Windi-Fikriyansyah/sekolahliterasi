@@ -26,7 +26,12 @@
 
 
 
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col items-start space-y-2">
+                            <a href="" target="_blank"
+                                class="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                <i class="fa-solid fa-download mr-2"></i> Download Sertifikat
+                            </a>
+
                             @php
                                 $accessType = strtolower($course->access_type);
 
@@ -58,6 +63,7 @@
                             </span>
                         </div>
 
+
                     </div>
                 </div>
             </div>
@@ -77,6 +83,20 @@
                                 Materi
                             </div>
                         </button>
+
+                        <button onclick="switchTab('video', event)" id="video-tab"
+                            class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
+                            <div class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                Video
+                            </div>
+                        </button>
+
+
                         <button onclick="switchTab('latihan', event)"
                             class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
                             <div class="flex items-center justify-center">
@@ -111,7 +131,7 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @if ($modules->isEmpty())
+                            @if ($materis->isEmpty())
                                 <div class="col-span-3 text-center py-12 text-gray-300">
                                     <svg class="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -122,7 +142,7 @@
                                     <p class="mt-6 text-lg font-medium">Belum ada materi untuk kelas ini.</p>
                                 </div>
                             @else
-                                @foreach ($modules as $module)
+                                @foreach ($materis as $module)
                                     <div
                                         class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
                                         <div class="p-6">
@@ -147,7 +167,7 @@
                                                         Materi
                                                     </span>
                                                 </div>
-                                                <a href="{{ route('kelas.mulai_belajar', $module->id) }}"
+                                                <a href="{{ route('kelas.pdf_view', $module->id) }}" target="_blank"
                                                     class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
                                                     Mulai Belajar
                                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
@@ -169,11 +189,94 @@
 
                     </div>
 
+                    <div id="video-content" class="tab-content hidden">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-semibold text-primary-200 mb-2">Video Pembelajaran</h2>
+                            <p class="text-gray-600">Tonton video untuk memahami materi lebih mudah</p>
+                        </div>
+
+                        @if ($videoContents->isEmpty())
+                            <div class="text-center py-12 text-gray-500">
+                                <svg class="w-20 h-20 mx-auto text-gray-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <p class="mt-6 text-lg font-medium">Belum ada materi video untuk modul ini.</p>
+                            </div>
+                        @else
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                @foreach ($videoContents as $content)
+                                    <div
+                                        class="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 hover:border-primary-100 hover:shadow-md transition-all duration-300">
+                                        <div class="p-6">
+                                            <div class="flex items-start justify-between mb-4">
+                                                <div class="flex-1">
+                                                    <h3 class="text-lg font-semibold text-primary-200 mb-2">
+                                                        {{ $content->title }}
+                                                    </h3>
+                                                    <div class="flex items-center text-sm text-gray-500 mb-3">
+                                                        <svg class="w-4 h-4 mr-1" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ \Carbon\Carbon::parse($content->created_at)->format('d M Y, H:i') }}
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
+                                                    Video
+                                                </span>
+                                            </div>
+
+                                            <!-- Video Player -->
+                                            @if ($content->video)
+                                                <div class="relative mb-4">
+                                                    <video class="w-full rounded-lg" controls controlsList="nodownload"
+                                                        oncontextmenu="return false;" poster="">
+                                                        <source src="{{ asset('storage/' . $content->video) }}"
+                                                            type="video/mp4">
+                                                        Browser Anda tidak mendukung pemutar video.
+                                                    </video>
+                                                </div>
+                                            @endif
+
+
+                                            <!-- Additional PDF if exists -->
+                                            @if ($content->file_pdf)
+                                                <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-6 h-6 text-red-500 mr-2" fill="currentColor"
+                                                            viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <span class="text-sm text-gray-600">Materi Pendukung</span>
+                                                    </div>
+                                                    <a href="{{ asset('storage/' . $content->file_pdf) }}"
+                                                        target="_blank"
+                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-3 py-1 rounded text-sm transition-colors">
+                                                        Buka PDF
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Latihan Tab -->
                     <div id="latihan-content" class="tab-content hidden">
                         <div class="mb-6">
                             <h2 class="text-xl font-semibold text-primary-200 mb-2">Latihan Soal</h2>
                             <p class="text-gray-600">Uji pemahaman Anda dengan latihan-latihan berikut</p>
+
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -224,15 +327,22 @@
                                                         Latihan
                                                     </span>
                                                 </div>
-                                                <a href="{{ route('kelas.latihan', $exercise->id) }}"
-                                                    class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                    Mulai
-                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                    </svg>
-                                                </a>
+                                                <div class="flex items-center justify-end space-x-2">
+                                                    <a href="{{ route('kelas.latihan', $exercise->id) }}"
+                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                        Mulai
+                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                        </svg>
+                                                    </a>
+                                                    {{-- <a href="{{ route('kelas.latihan.riwayat', $course->id) }}"
+                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow">
+                                                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat Nilai
+                                                    </a> --}}
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -248,6 +358,7 @@
                             <h2 class="text-xl font-semibold text-primary-200 mb-2">Tryout</h2>
                             <p class="text-gray-600">Ikuti ujian untuk mendapatkan sertifikat</p>
                         </div>
+
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @if ($tryout->isEmpty())
@@ -296,18 +407,25 @@
                                                 <div class="flex items-center">
                                                     <span
                                                         class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">
-                                                        Latihan
+                                                        Tryout
                                                     </span>
                                                 </div>
-                                                <a href="{{ route('kelas.tryout', $exercise->id) }}"
-                                                    class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                    Mulai
-                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                    </svg>
-                                                </a>
+                                                <div class="flex items-center justify-end space-x-2">
+                                                    <a href="{{ route('kelas.tryout', $exercise->id) }}"
+                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                        Mulai
+                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                        </svg>
+                                                    </a>
+                                                    {{-- <a href="{{ route('kelas.tryout.riwayat', $course->id) }}"
+                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow">
+                                                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat Nilai
+                                                    </a> --}}
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -344,11 +462,26 @@
             event.currentTarget.classList.add('active', 'border-primary-100', 'text-primary-100');
             event.currentTarget.classList.remove('border-transparent', 'text-gray-500');
         }
+
+        document.addEventListener('play', function(e) {
+            var videos = document.querySelectorAll('video');
+            for (var i = 0, len = videos.length; i < len; i++) {
+                if (videos[i] != e.target) {
+                    videos[i].pause();
+                }
+            }
+        }, true);
     </script>
 @endpush
 
 @push('style')
     <style>
+        /* Video responsive */
+        video {
+            max-height: 400px;
+            object-fit: contain;
+        }
+
         .floating-shapes {
             position: absolute;
             width: 100%;

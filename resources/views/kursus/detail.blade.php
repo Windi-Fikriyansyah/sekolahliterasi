@@ -131,7 +131,13 @@
                                 </div>
                             @endif
                         </div>
-
+                        <div class="mb-6">
+                            <label for="referral_code" class="block text-gray-700 font-medium mb-2">Kode Referral
+                                (Opsional)</label>
+                            <input type="text" name="referral_code" id="referral_code"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                                placeholder="Masukkan kode referral">
+                        </div>
                         <!-- Pricing Section -->
                         <div class="border-t border-gray-200 pt-4 mb-6">
                             <div class="space-y-3">
@@ -178,7 +184,7 @@
                                     Dapatkan Gratis Sekarang
                                 </a>
                             @else
-                                <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}"
+                                <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}" id="pay-now-btn"
                                     class="w-full btn-primary px-6 py-4 rounded-xl text-white font-semibold text-center block transition-all duration-300 transform hover:scale-105">
                                     Bayar Sekarang
                                 </a>
@@ -226,4 +232,22 @@
             transform: scale(1.05);
         }
     </style>
+@endpush
+@push('js')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const payBtn = document.getElementById("pay-now-btn");
+            payBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                let referralCode = document.getElementById("referral_code").value;
+                let baseUrl = payBtn.getAttribute("href");
+
+                if (referralCode) {
+                    window.location.href = baseUrl + "?referral_code=" + encodeURIComponent(referralCode);
+                } else {
+                    window.location.href = baseUrl;
+                }
+            });
+        });
+    </script>
 @endpush

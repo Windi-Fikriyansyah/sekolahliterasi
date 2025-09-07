@@ -5,7 +5,10 @@
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-sm mb-4 p-4">
-                <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">{{ $module->title }}</h1>
+                <div class="flex items-center gap-3">
+
+                    <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">{{ $module->title }}</h1>
+                </div>
 
                 <!-- Controls -->
                 <div class="flex flex-wrap items-center gap-2 sm:gap-4">

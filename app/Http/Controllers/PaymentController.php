@@ -25,6 +25,8 @@ class PaymentController extends Controller
             $courseId = Crypt::decryptString($encryptedCourseId);
             $course = DB::table('courses')->where('id', $courseId)->first();
             $user = Auth::user();
+            $referralCode = request()->query('referral_code');
+
 
             // Cek apakah user sudah memiliki akses ke course ini
             $hasAccess = DB::table('enrollments')
@@ -103,6 +105,7 @@ class PaymentController extends Controller
                 'invoice_id' => $invoice['id'],
                 'user_id' => $user->id,
                 'course_id' => $course->id,
+                'referral_code' => $referralCode,
                 'amount' => $course->price,
                 'status' => 'PENDING',
                 'expired_at' => $expiredAt,
@@ -258,12 +261,6 @@ class PaymentController extends Controller
                         'payment_status' => $status,
                         'enrolled_at' => now(),
                     ]);
-
-                Log::info('Enrollment updated with payment status', [
-                    'user_id' => $userId,
-                    'course_id' => $courseId,
-                    'status' => $status
-                ]);
             } else {
                 // Insert baru jika belum ada
                 DB::table('enrollments')->insert([
@@ -272,12 +269,39 @@ class PaymentController extends Controller
                     'payment_status' => $status,
                     'enrolled_at' => now(),
                 ]);
+            }
 
-                Log::info('Course access granted', [
-                    'user_id' => $userId,
-                    'course_id' => $courseId,
-                    'status' => $status
-                ]);
+            $transaction = DB::table('transactions')
+                ->where('user_id', $userId)
+                ->where('course_id', $courseId)
+                ->latest()
+                ->first();
+
+            if ($transaction && !empty($transaction->referral_code)) {
+                $referralUser = DB::table('users')
+                    ->where('referral_code', $transaction->referral_code)
+                    ->first();
+
+                if ($referralUser && $referralUser->id != $userId) {
+                    // Ambil persentase komisi dari tabel komisi
+                    $commissionRate = DB::table('komisi')->value('persentase') ?? 10; // default 10%
+
+                    $commissionAmount = ($commissionRate / 100) * $transaction->amount;
+
+                    DB::table('users')
+                        ->where('id', $referralUser->id)
+                        ->increment('balance', $commissionAmount);
+                    DB::table('referral_commissions')->insert([
+                        'user_id' => $referralUser->id,
+                        'referred_user_id' => $userId,
+                        'transaction_id' => $transaction->id,
+                        'course_id' => $courseId,
+                        'amount' => $commissionAmount,
+                        'percentage' => $commissionRate,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             Log::error('Failed to grant course access', [

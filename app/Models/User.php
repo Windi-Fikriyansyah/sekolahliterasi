@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'referral_code',
         'no_hp',
         'kabupaten',
         'kota',

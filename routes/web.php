@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TryoutController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -27,7 +29,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'role:siswa,guru'])->group(function () {
-    Route::get('/dashboard-user', [DashboardController::class, 'dashboardUser'])->name('dashboardUser');
+    Route::get('/home', [DashboardController::class, 'dashboardUser'])->name('dashboardUser');
 });
 
 
@@ -128,6 +130,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::post('/materi/upload-pdf-chunk', [MateriController::class, 'uploadPdfChunk'])->name('upload-pdf-chunk');
         Route::delete('/materi/delete-pdf-chunk', [MateriController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
     });
+
+    Route::prefix('withdraw')->name('withdraw.')->group(function () {
+        Route::get('/', [WithdrawController::class, 'index'])->name('index');
+        Route::post('/load', [WithdrawController::class, 'load'])->name('load');
+        Route::post('/{id}/approve', [WithdrawController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [WithdrawController::class, 'reject'])->name('reject');
+    });
 });
 
 
@@ -144,6 +153,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/show/{encryptedCourseId}', [KursusController::class, 'show'])->name('show');
     });
 
+
     Route::prefix('kelas')->name('kelas.')->group(function () {
         Route::get('/', [KelasSayaController::class, 'index'])->name('index');
         Route::get('akses/{slug}', [KelasSayaController::class, 'akses'])->name('akses');
@@ -159,6 +169,23 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/tryout/{quizId}', [KelasSayaController::class, 'tryout'])->name('tryout');
         Route::post('/tryout/{quizId}/submit', [KelasSayaController::class, 'submitLatihan'])->name('tryout.submit');
         Route::get('/tryout/{quizId}/hasil', [KelasSayaController::class, 'hasilLatihan'])->name('tryout.hasil');
+
+        Route::get('/latihan/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('latihan.riwayat');
+        Route::get('/tryout/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('tryout.riwayat');
+    });
+
+    Route::prefix('account')->name('account.')->group(function () {
+        Route::get('/', [AccountController::class, 'index'])->name('index');
+        Route::put('/update-profile', [AccountController::class, 'updateProfile'])->name('updateProfile');
+        Route::put('/update-password', [AccountController::class, 'updatePassword'])->name('updatePassword');
+        Route::get('/bank-accounts', [AccountController::class, 'bank'])->name('bank');
+        Route::post('/bank/save', [AccountController::class, 'saveBank'])->name('bank.save');
+        Route::post('/bank/delete', [AccountController::class, 'deleteBank'])->name('bank.delete');
+        Route::get('/bank/json', [AccountController::class, 'bankJson'])->name('bank.json');
+        Route::get('/withdrawal', [AccountController::class, 'withdrawal'])->name('withdrawal');
+        Route::post('/withdrawal', [AccountController::class, 'withdrawalProcess'])->name('withdrawalProcess');
+        Route::get('/mutasi', [AccountController::class, 'mutasi'])->name('mutasi');
+        Route::post('/mutasi/json', [AccountController::class, 'load'])->name('load');
     });
 
     // routes/web.php

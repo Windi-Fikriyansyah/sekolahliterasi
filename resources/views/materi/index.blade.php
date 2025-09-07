@@ -42,7 +42,7 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Judul Materi</th>
-                                <th>Judul Module</th>
+                                <th>Judul Course</th>
                                 <th>Type Materi</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -121,8 +121,8 @@
                         name: 'title'
                     },
                     {
-                        data: 'title_module',
-                        name: 'title_module'
+                        data: 'title_course',
+                        name: 'title_course'
                     },
 
                     {

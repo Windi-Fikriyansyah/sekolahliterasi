@@ -171,10 +171,25 @@ class TryoutController extends Controller
                 return redirect()->route('tryout.index')->with('error', 'course tidak ditemukan');
             }
 
-            // Mengambil pertanyaan
             $questions = DB::table('quiz_questions')
                 ->where('quiz_id', $decryptedId)
-                ->get();
+                ->get([
+                    'id',
+                    'question',
+                    'option_a',
+                    'option_b',
+                    'option_c',
+                    'option_d',
+                    'option_e',
+                    'correct_answer',
+                    'pembahasan' // Gunakan nama field asli dari database
+                ]);
+
+            // Transform data untuk konsistensi dengan frontend
+            $questions = $questions->map(function ($question) {
+                $question->explanation = $question->pembahasan; // Map pembahasan ke explanation
+                return $question;
+            });
 
             // Menambahkan questions ke objek soal
             $soal->questions = $questions;
@@ -200,7 +215,8 @@ class TryoutController extends Controller
             'questions.*.option_d' => 'nullable|string|max:255',
             'questions.*.option_e' => 'nullable|string|max:255',
             'questions.*.correct_answer' => 'required|in:A,B,C,D,E',
-            'quiz_type' => 'required|in:latihan,tryout'
+            'quiz_type' => 'required|in:latihan,tryout',
+            'questions.*.explanation' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -234,6 +250,7 @@ class TryoutController extends Controller
                     'option_d' => $q['option_d'] ?? null,
                     'option_e' => $q['option_e'] ?? null,
                     'correct_answer' => $q['correct_answer'],
+                    'pembahasan' => $q['explanation'] ?? null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -276,7 +293,8 @@ class TryoutController extends Controller
             'questions.*.option_d' => 'nullable|string|max:255',
             'questions.*.option_e' => 'nullable|string|max:255',
             'questions.*.correct_answer' => 'required|in:A,B,C,D,E',
-            'quiz_type' => 'required|in:latihan,tryout'
+            'quiz_type' => 'required|in:latihan,tryout',
+            'questions.*.explanation' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -327,6 +345,7 @@ class TryoutController extends Controller
                         'option_d' => $q['option_d'] ?? null,
                         'option_e' => $q['option_e'] ?? null,
                         'correct_answer' => $q['correct_answer'],
+                        'pembahasan' => $q['explanation'] ?? null,
                         'updated_at' => now(),
                     ]);
                 } else {
@@ -340,6 +359,7 @@ class TryoutController extends Controller
                         'option_d' => $q['option_d'] ?? null,
                         'option_e' => $q['option_e'] ?? null,
                         'correct_answer' => $q['correct_answer'],
+                        'pembahasan' => $q['explanation'] ?? null,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

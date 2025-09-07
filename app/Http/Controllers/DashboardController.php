@@ -7,10 +7,26 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
     public function dashboardOwner(Request $request)
     {
-        return view('dashboardOwner');
+        // Hitung jumlah siswa
+        $jumlahSiswa = DB::table('users')->where('role', 'siswa')->count();
+
+        // Hitung jumlah guru
+        $jumlahGuru = DB::table('users')->where('role', 'guru')->count();
+
+        // Hitung jumlah transaksi dengan status paid
+        $jumlahTransaksiPaid = DB::table('transactions')->where('status', 'PAID')->count();
+
+        // Hitung total amount (misal fieldnya 'amount')
+        $totalAmount = DB::table('transactions')->where('status', 'PAID')->sum('amount');
+
+        return view('dashboardOwner', compact(
+            'jumlahSiswa',
+            'jumlahGuru',
+            'jumlahTransaksiPaid',
+            'totalAmount'
+        ));
     }
     public function dashboardUser(Request $request)
     {

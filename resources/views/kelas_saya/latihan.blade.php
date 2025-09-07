@@ -8,38 +8,14 @@
             <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
                 <div class="p-6">
                     <div class="flex items-center mb-4">
-                        <a href="{{ url()->previous() }}" class="mr-4 text-gray-600 hover:text-primary-100 transition-colors">
+                        <a href="javascript:history.back()"
+                            class="mr-4 text-gray-600 hover:text-primary-100 transition-colors">
                             <i class="fa-solid fa-arrow-left text-xl"></i>
                         </a>
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-bold text-primary-200 mb-2">{{ $quiz->title }}</h1>
-                            <p class="text-gray-600">{{ $quiz->course_title }}</p>
+                            <p class="text-gray-600">{{ $quiz->title }}</p>
                         </div>
                     </div>
-
-                    <div class="flex flex-wrap items-center gap-4">
-                        <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                            {{ $quiz->quiz_type === 'latihan' ? 'Latihan' : 'Tryout' }}
-                        </span>
-                        <span class="text-sm text-gray-500">
-                            <i class="fa-solid fa-list mr-1"></i>
-                            {{ count($questions) }} soal
-                        </span>
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Progress</span>
-                    <span class="text-sm text-gray-500"><span id="current-question">1</span> dari
-                        {{ count($questions) }}</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-primary-100 h-2 rounded-full transition-all duration-300" id="progress-bar"
-                        style="width: {{ count($questions) > 0 ? (1 / count($questions)) * 100 : 0 }}%"></div>
                 </div>
             </div>
 
@@ -101,8 +77,7 @@
                                                             <input type="radio"
                                                                 name="answers[{{ $question->question_id }}]"
                                                                 value="{{ $optionKey }}"
-                                                                class="mt-1 mr-4 text-primary-100 focus:ring-primary-100 focus:ring-2"
-                                                                onchange="updateProgress()">
+                                                                class="mt-1 mr-4 text-primary-100 focus:ring-primary-100 focus:ring-2">
                                                             <span class="text-gray-700 leading-relaxed">
                                                                 <strong>{{ $optionKey }}.</strong> {{ $option }}
                                                             </span>
@@ -144,7 +119,6 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </section>
@@ -155,16 +129,8 @@
         <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4">
                 <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
-                    <div class="flex items-center justify-center w-12 h-12 mx-auto bg-yellow-100 rounded-full mb-4">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
-                            </path>
-                        </svg>
-                    </div>
                     <h3 class="text-lg font-semibold text-center text-gray-900 mb-2">Konfirmasi Submit</h3>
-                    <p class="text-gray-600 text-center mb-6">Apakah Anda yakin ingin menyelesaikan latihan ini? Jawaban
-                        tidak dapat diubah setelah submit.</p>
+                    <p class="text-gray-600 text-center mb-6">Apakah Anda yakin ingin menyelesaikan latihan ini?</p>
                     <div class="flex space-x-4">
                         <button type="button"
                             class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors"
@@ -182,52 +148,47 @@
         </div>
     </div>
 @endsection
-
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentQuestion = 1;
         const totalQuestions = {{ count($questions) }};
-        let timer = null;
+        const storageKey = "quiz_answers_{{ $quiz->id }}";
 
-        @if ($quiz->durasi)
-            let timeLeft = {{ $quiz->durasi * 60 }};
+        // Simpan jawaban ke localStorage
+        function saveAnswers() {
+            let answers = {};
+            document.querySelectorAll('input[type="radio"]:checked, textarea').forEach(input => {
+                if (input.type === "radio") {
+                    const qid = input.name.match(/\d+/)[0];
+                    answers[qid] = input.value;
+                } else if (input.tagName.toLowerCase() === "textarea") {
+                    const qid = input.name.match(/\d+/)[0];
+                    answers[qid] = input.value.trim();
+                }
+            });
+            localStorage.setItem(storageKey, JSON.stringify(answers));
+        }
 
-            function startTimer() {
-                timer = setInterval(function() {
-                    let minutes = Math.floor(timeLeft / 60);
-                    let seconds = timeLeft % 60;
-
-                    document.getElementById('timer').textContent =
-                        (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-
-                    if (timeLeft <= 300) {
-                        document.getElementById('timer-display').classList.add('text-red-600');
-                    }
-
-                    if (timeLeft <= 0) {
-                        clearInterval(timer);
-                        alert('Waktu habis! Latihan akan otomatis disubmit.');
-                        document.getElementById('quiz-form').submit();
-                    }
-
-                    timeLeft--;
-                }, 1000);
+        // Load jawaban dari localStorage
+        function loadAnswers() {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const answers = JSON.parse(saved);
+                Object.keys(answers).forEach(qid => {
+                    const val = answers[qid];
+                    const radio = document.querySelector(`input[name="answers[${qid}]"][value="${val}"]`);
+                    const textarea = document.querySelector(`textarea[name="answers[${qid}]"]`);
+                    if (radio) radio.checked = true;
+                    if (textarea) textarea.value = val;
+                });
             }
-            window.addEventListener('load', startTimer);
-        @endif
-
-        function updateProgress() {
-            const progress = (currentQuestion / totalQuestions) * 100;
-            document.getElementById('progress-bar').style.width = progress + '%';
-            document.getElementById('current-question').textContent = currentQuestion;
-            updateQuestionNav();
         }
 
         function updateQuestionNav() {
             document.querySelectorAll('.question-nav').forEach((btn, index) => {
                 const questionNum = index + 1;
                 const answered = isQuestionAnswered(questionNum);
-
                 btn.classList.remove('bg-primary-100', 'text-white', 'border-primary-100', 'bg-green-500');
 
                 if (questionNum === currentQuestion) {
@@ -240,7 +201,6 @@
 
         function isQuestionAnswered(questionNum) {
             const questionCard = document.querySelector(`.question-card[data-question="${questionNum}"]`);
-
             if (questionCard.querySelector('input[type="radio"]')) {
                 return questionCard.querySelector('input[type="radio"]:checked') !== null;
             } else if (questionCard.querySelector('textarea')) {
@@ -252,7 +212,6 @@
         function showQuestion(questionNum) {
             document.querySelectorAll('.question-card').forEach(card => card.classList.add('hidden'));
             document.querySelector(`.question-card[data-question="${questionNum}"]`).classList.remove('hidden');
-
             document.getElementById('prev-btn').disabled = questionNum === 1;
 
             if (questionNum === totalQuestions) {
@@ -262,8 +221,7 @@
                 document.getElementById('next-btn').classList.remove('hidden');
                 document.getElementById('submit-btn').classList.add('hidden');
             }
-
-            updateProgress();
+            updateQuestionNav();
         }
 
         function nextQuestion() {
@@ -294,21 +252,72 @@
         }
 
         function submitQuiz() {
-            if (timer) clearInterval(timer);
+            localStorage.removeItem(storageKey); // hapus jawaban setelah submit
             document.getElementById('quiz-form').submit();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            updateProgress();
+            loadAnswers();
+            updateQuestionNav();
 
-            // Update navigasi kalau ada perubahan jawaban
+            // Simpan jawaban saat ada perubahan
             document.querySelectorAll('input[type="radio"], textarea').forEach(input => {
-                input.addEventListener('change', updateQuestionNav);
+                input.addEventListener('change', () => {
+                    saveAnswers();
+                    updateQuestionNav();
+                });
                 if (input.tagName.toLowerCase() === 'textarea') {
-                    input.addEventListener('input', updateQuestionNav);
+                    input.addEventListener('input', () => {
+                        saveAnswers();
+                        updateQuestionNav();
+                    });
                 }
             });
+
+            // Intercept semua link keluar halaman (kecuali reload)
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href && href !== "javascript:history.back()") {
+                        e.preventDefault();
+                        confirmExit(href);
+                    }
+                });
+            });
+
+            // Tangkap tombol arrow back custom
+            const backBtn = document.querySelector('a[href="javascript:history.back()"]');
+            if (backBtn) {
+                backBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    confirmExit(document.referrer || '/');
+                });
+            }
+
+            // Tangkap tombol back browser
+            window.addEventListener('popstate', function(e) {
+                e.preventDefault();
+                confirmExit(document.referrer || '/');
+            });
         });
+
+        function confirmExit(targetUrl) {
+            Swal.fire({
+                title: "Yakin mau keluar?",
+                text: "Progres tidak akan tersimpan jika keluar sebelum submit.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, keluar",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem(storageKey);
+                    window.location.href = targetUrl;
+                }
+            });
+        }
 
         // Keyboard navigation
         document.addEventListener('keydown', function(e) {

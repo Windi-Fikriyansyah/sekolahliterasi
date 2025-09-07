@@ -137,24 +137,6 @@
 
             <!-- Action Buttons -->
             <div class="bg-white rounded-xl shadow-lg p-6">
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ url()->previous() }}"
-                        class="bg-primary-100 hover:bg-primary-200 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
-                        Kembali ke Kelas
-                    </a>
-
-                    @if ($score < 60)
-                        <a href="{{ route('kelas.latihan', $quiz->id) }}"
-                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
-                            Coba Lagi
-                        </a>
-                    @endif
-
-                    <button onclick="shareResult()"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center">
-                        Bagikan Hasil
-                    </button>
-                </div>
 
                 <!-- Tips -->
                 <div class="mt-6 p-4 bg-gray-50 rounded-lg">

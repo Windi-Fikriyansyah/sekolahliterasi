@@ -160,6 +160,12 @@
                             </select>
                             <div class="invalid-feedback">Jawaban benar harus dipilih</div>
                         </div>
+                        <!-- Di dalam modal soal (setelah correct_answer) -->
+                        <div class="mb-3">
+                            <label for="explanation" class="form-label">Pembahasan</label>
+                            <textarea name="explanation" id="explanation" class="form-control" rows="4"
+                                placeholder="Pembahasan jawaban (opsional)"></textarea>
+                        </div>
                     </form>
                 </div>
 
@@ -179,6 +185,15 @@
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap5-theme@1.3.2/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
     <style>
+        /* Tambahkan style untuk pembahasan */
+        .explanation-content {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0dcaf0;
+            padding: 12px;
+            border-radius: 0 4px 4px 0;
+            margin-top: 10px;
+        }
+
         .question-card {
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -466,7 +481,8 @@
                     option_c: $('#option_c').val().trim(),
                     option_d: $('#option_d').val().trim(),
                     option_e: $('#option_e').val().trim(),
-                    correct_answer: $('#correct_answer').val()
+                    correct_answer: $('#correct_answer').val(),
+                    explanation: $('#explanation').val().trim()
                 };
 
                 // Jika dalam mode edit, pertahankan ID soal
@@ -598,6 +614,9 @@
                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(${index})">
                                 <i class="bi bi-trash"></i> Hapus
                             </button>
+                            <button type="button" class="btn btn-sm btn-outline-info me-1" onclick="toggleExplanation(${index})">
+    <i class="bi bi-chat-text"></i> Pembahasan
+</button>
                         </div>
                     </div>
                 </div>
@@ -617,6 +636,10 @@
                                 <span class="badge bg-success">${q.correct_answer}</span>
                             </div>
                         </div>
+                        <div class="mt-3" id="explanation-${index}" style="${q.explanation ? '' : 'display: none;'}">
+    <strong>Pembahasan:</strong>
+    <div class="mt-2">${q.explanation || ''}</div>
+</div>
                     </div>
 
                     <!-- Hidden inputs untuk submit -->
@@ -628,6 +651,7 @@
                     <input type="hidden" name="questions[${index}][option_d]" value="${escapeHtml(q.option_d)}">
                     <input type="hidden" name="questions[${index}][option_e]" value="${escapeHtml(q.option_e)}">
                     <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
+                    <input type="hidden" name="questions[${index}][explanation]" value="${escapeHtml(q.explanation || '')}">
                 </div>
             </div>
         `;
@@ -635,6 +659,11 @@
             });
         }
 
+        // Fungsi untuk menampilkan/sembunyikan pembahasan
+        function toggleExplanation(index) {
+            const explanationEl = $(`#explanation-${index}`);
+            explanationEl.toggle();
+        }
         // Escape HTML untuk mencegah XSS
         function escapeHtml(text) {
             if (!text) return '';
@@ -655,6 +684,7 @@
             $('#option_d').val(q.option_d);
             $('#option_e').val(q.option_e);
             $('#correct_answer').val(q.correct_answer);
+            $('#explanation').val(q.explanation || '');
 
             $('#soalModalLabel').text('Edit Soal');
             $('#saveQuestionBtnText').text('Update Soal');

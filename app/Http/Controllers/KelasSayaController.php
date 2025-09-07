@@ -44,8 +44,14 @@ class KelasSayaController extends Controller
             ->where('courses.id', $id)
             ->first();
 
+        // Ambil semua content berdasarkan module_id
+        $contents = DB::table('contents')
+            ->where('course_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
         // Ambil modul materi untuk course ini
-        $modules = DB::table('course_modules')
+        $materis = DB::table('contents')
             ->where('course_id', $id)
             ->orderBy('order', 'asc')
             ->get();
@@ -66,44 +72,16 @@ class KelasSayaController extends Controller
             ->where('q.quiz_type', 'tryout')
             ->groupBy('q.id')
             ->get();
-
-        // Kirim data ke view
-        return view('kelas_saya.materi', compact('course', 'modules', 'latihan', 'tryout'));
-    }
-
-    public function mulai_belajar($moduleId)
-    {
-        // Validasi apakah user memiliki akses ke module ini
-        $module = DB::table('course_modules')
-            ->join('courses', 'course_modules.course_id', '=', 'courses.id')
-            ->join('enrollments', function ($join) {
-                $join->on('courses.id', '=', 'enrollments.course_id')
-                    ->where('enrollments.user_id', Auth::id());
-            })
-            ->select('course_modules.*', 'courses.title as course_title')
-            ->where('course_modules.id', $moduleId)
-            ->first();
-
-        if (!$module) {
-            return redirect()->route('kelas.index')->with('error', 'Anda tidak memiliki akses ke materi ini.');
-        }
-
-        // Ambil semua content berdasarkan module_id
-        $contents = DB::table('contents')
-            ->where('module_id', $moduleId)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        // Pisahkan content berdasarkan type
-        $textContents = $contents->where('type', 'pdf');
         $videoContents = $contents->where('type', 'video');
-
-        return view('kelas_saya.content', compact('module', 'contents', 'textContents', 'videoContents'));
+        // Kirim data ke view
+        return view('kelas_saya.materi', compact('course', 'materis', 'latihan', 'tryout', 'videoContents'));
     }
+
+
 
     public function pdfView($moduleId)
     {
-        $module = DB::table('contents')->where('module_id', $moduleId)->first();
+        $module = DB::table('contents')->where('id', $moduleId)->first();
 
         if (!$module || !$module->file_pdf) {
             abort(404, 'Materi PDF tidak ditemukan.');
@@ -163,7 +141,6 @@ class KelasSayaController extends Controller
     }
 
 
-    // Method untuk menampilkan tryout
     public function tryout($quizId)
     {
         // Validasi apakah user memiliki akses ke quiz ini
@@ -179,38 +156,43 @@ class KelasSayaController extends Controller
             ->first();
 
         if (!$quiz) {
-            return redirect()->route('kelas.index')->with('error', 'Anda tidak memiliki akses ke tryout ini.');
+            return redirect()->route('kelas.index')
+                ->with('error', 'Anda tidak memiliki akses ke tryout ini.');
         }
 
         // Ambil semua soal untuk quiz ini
         $questions = DB::table('quiz_questions as qq')
-            ->leftJoin('quiz_options as qo', 'qq.id', '=', 'qo.question_id')
             ->select(
                 'qq.id as question_id',
                 'qq.question',
-                'qq.question_type',
-                'qq.explanation',
-                DB::raw('GROUP_CONCAT(qo.option_text ORDER BY qo.id SEPARATOR "|||") as options'),
-                DB::raw('GROUP_CONCAT(qo.is_correct ORDER BY qo.id SEPARATOR "|||") as correct_answers')
+                'qq.option_a',
+                'qq.option_b',
+                'qq.option_c',
+                'qq.option_d',
+                'qq.option_e',
+                'qq.correct_answer'
             )
             ->where('qq.quiz_id', $quizId)
-            ->groupBy('qq.id', 'qq.question', 'qq.question_type', 'qq.explanation')
             ->orderBy('qq.id')
             ->get();
 
         // Format options untuk setiap soal
         foreach ($questions as $question) {
-            if ($question->options) {
-                $question->formatted_options = explode('|||', $question->options);
-                $question->correct_flags = explode('|||', $question->correct_answers);
-            } else {
-                $question->formatted_options = [];
-                $question->correct_flags = [];
-            }
+            $question->formatted_options = [
+                'A' => $question->option_a,
+                'B' => $question->option_b,
+                'C' => $question->option_c,
+                'D' => $question->option_d,
+                'E' => $question->option_e,
+            ];
+            $question->correct_answer = $question->correct_answer;
         }
 
         return view('kelas_saya.tryout', compact('quiz', 'questions'));
     }
+
+
+
 
     public function submitLatihan(Request $request, $quizId)
     {
@@ -225,6 +207,15 @@ class KelasSayaController extends Controller
             ->where('quiz_id', $quizId)
             ->get();
 
+        foreach ($answers as $questionId => $answer) {
+            DB::table('quiz_answer')->insert([
+                'user_id' => $userId,
+                'quiz_id' => $quizId,
+                'question_id' => $questionId,
+                'answer' => $answer,
+                'created_at' => now(),
+            ]);
+        }
         $totalQuestions = $questions->count();
         $correctAnswers = 0;
         $results = [];

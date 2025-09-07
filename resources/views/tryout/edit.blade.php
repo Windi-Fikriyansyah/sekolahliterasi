@@ -159,6 +159,12 @@
                             </select>
                             <div class="invalid-feedback">Jawaban benar harus dipilih</div>
                         </div>
+                        <!-- Di dalam modal soal (setelah correct_answer) -->
+                        <div class="mb-3">
+                            <label for="explanation" class="form-label">Pembahasan</label>
+                            <textarea name="explanation" id="explanation" class="form-control" rows="4"
+                                placeholder="Pembahasan jawaban (opsional)"></textarea>
+                        </div>
                     </form>
                 </div>
 
@@ -252,6 +258,7 @@
                             'option_d' => $q->option_d ?? '',
                             'option_e' => $q->option_e ?? '',
                             'correct_answer' => $q->correct_answer,
+                            'explanation' => $q->pembahasan ?? '',
                             'id' => $q->id, // Pastikan ID disertakan untuk update
                         ];
                     }),
@@ -458,7 +465,8 @@
                     option_c: $('#option_c').val().trim(),
                     option_d: $('#option_d').val().trim(),
                     option_e: $('#option_e').val().trim(),
-                    correct_answer: $('#correct_answer').val()
+                    correct_answer: $('#correct_answer').val(),
+                    explanation: $('#explanation').val().trim()
                 };
 
                 // Jika dalam mode edit, pertahankan ID soal
@@ -581,6 +589,17 @@
                     `<div class="option-item ${opt.isCorrect ? 'correct-answer' : ''}">${opt.key}. ${opt.value}</div>`
                 ).join('');
 
+                const hasExplanation = q.explanation && q.explanation.trim() !== '';
+                const explanationHtml = hasExplanation ?
+                    `<div class="mt-3" id="explanation-${index}">
+                <strong>Pembahasan:</strong>
+                <div class="explanation-content mt-2">${escapeHtml(q.explanation)}</div>
+            </div>` :
+                    `<div class="mt-3" id="explanation-${index}" style="display: none;">
+                <strong>Pembahasan:</strong>
+                <div class="explanation-content mt-2">Tidak ada pembahasan</div>
+            </div>`;
+
                 const questionHtml = `
         <div class="question-card" data-index="${index}">
             <div class="question-header">
@@ -593,6 +612,10 @@
                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(${index})">
                             <i class="bi bi-trash"></i> Hapus
                         </button>
+                        <!-- Di dalam question header (setelah tombol edit dan hapus) -->
+<button type="button" class="btn btn-sm btn-outline-info me-1" onclick="toggleExplanation(${index})">
+    <i class="bi bi-chat-text"></i> Pembahasan
+</button>
                     </div>
                 </div>
             </div>
@@ -612,6 +635,7 @@
                             <span class="badge bg-success">${q.correct_answer}</span>
                         </div>
                     </div>
+                    ${explanationHtml}
                 </div>
 
                 <!-- Hidden inputs untuk submit -->
@@ -623,6 +647,7 @@
                 <input type="hidden" name="questions[${index}][option_d]" value="${escapeHtml(q.option_d || '')}">
                 <input type="hidden" name="questions[${index}][option_e]" value="${escapeHtml(q.option_e || '')}">
                 <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
+                <input type="hidden" name="questions[${index}][explanation]" value="${escapeHtml(q.explanation || '')}">
             </div>
         </div>
     `;
@@ -631,6 +656,11 @@
         }
 
 
+        // Fungsi untuk menampilkan/sembunyikan pembahasan
+        function toggleExplanation(index) {
+            const explanationEl = $(`#explanation-${index}`);
+            explanationEl.toggle();
+        }
         // Escape HTML untuk mencegah XSS
         function escapeHtml(text) {
             if (!text) return '';
@@ -651,6 +681,7 @@
             $('#option_d').val(q.option_d || '');
             $('#option_e').val(q.option_e || '');
             $('#correct_answer').val(q.correct_answer);
+            $('#explanation').val(q.explanation || '');
 
             $('#soalModalLabel').text('Edit Soal');
             $('#saveQuestionBtnText').text('Update Soal');

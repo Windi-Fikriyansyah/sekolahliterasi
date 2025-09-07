@@ -28,10 +28,10 @@ class MateriController extends Controller
         try {
             // Join dengan tabel courses untuk mendapatkan judul kursus
             $kursus = DB::table('contents as cm')
-                ->join('course_modules as c', 'cm.module_id', '=', 'c.id')
+                ->join('courses as c', 'cm.course_id', '=', 'c.id')
                 ->select([
                     'cm.id',
-                    'c.title as title_module',
+                    'c.title as title_course',
                     'cm.title',
                     'cm.type',
                     'cm.created_at',
@@ -41,7 +41,7 @@ class MateriController extends Controller
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
-                ->filterColumn('title_module', function ($query, $keyword) {
+                ->filterColumn('title_course', function ($query, $keyword) {
                     $query->whereRaw("LOWER(c.title) like ?", ["%" . strtolower($keyword) . "%"]);
                 })
                 ->addColumn('action', function ($row) {
@@ -74,12 +74,11 @@ class MateriController extends Controller
         $courses = DB::table('courses')->get();
 
         // Ambil semua data modules dengan relasi ke courses
-        $modules = DB::table('course_modules')
-            ->join('courses', 'course_modules.course_id', '=', 'courses.id')
-            ->select('course_modules.*', 'courses.title as course_title')
+        $kursuss = DB::table('courses')
+            ->select('courses.*')
             ->get();
 
-        return view('materi.create', compact('courses', 'modules'));
+        return view('materi.create', compact('courses', 'kursuss'));
     }
 
     public function edit($id)
@@ -96,13 +95,9 @@ class MateriController extends Controller
             return redirect()->route('materi.index')->with('error', 'Materi tidak ditemukan');
         }
 
-        $courses = DB::table('courses')->get();
-        $modules = DB::table('course_modules')
-            ->join('courses', 'course_modules.course_id', '=', 'courses.id')
-            ->select('course_modules.*', 'courses.title as course_title')
-            ->get();
+        $kursuss = DB::table('courses')->get();
 
-        return view('materi.create', compact('courses', 'modules', 'materi'));
+        return view('materi.create', compact('kursuss', 'materi'));
     }
 
     /**
@@ -202,9 +197,10 @@ class MateriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'module_id' => 'required|exists:course_modules,id',
+            'course_id' => 'required|exists:courses,id',
             'type' => 'required|in:pdf,video',
             'title' => 'required|string|max:255',
+            'description' => 'nullable',
             'pdf_file' => 'nullable|string',
             'video_file' => 'nullable|string'
         ]);
@@ -224,10 +220,10 @@ class MateriController extends Controller
             }
 
             DB::table('contents')->insert([
-                'module_id' => $request->module_id,
-                'course_id' => $module ? $module->course_id : null,
+                'course_id' => $request->course_id,
                 'type' => $request->type,
                 'title' => $request->title,
+                'description' => $request->description,
                 'video' => $videoPath,
                 'file_pdf' => $filePath,
                 'created_at' => now(),
@@ -244,9 +240,10 @@ class MateriController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'module_id' => 'required|exists:course_modules,id',
+            'course_id' => 'required|exists:courses,id',
             'type' => 'required|in:pdf,video',
             'title' => 'required|string|max:255',
+            'description' => 'nullable',
             'pdf_file' => 'nullable|string',
             'video_file' => 'nullable|string'
         ]);
@@ -293,10 +290,10 @@ class MateriController extends Controller
             }
 
             DB::table('contents')->where('id', $id)->update([
-                'module_id' => $request->module_id,
-                'course_id' => $module ? $module->course_id : null,
+                'course_id' => $request->course_id,
                 'type' => $request->type,
                 'title' => $request->title,
+                'description' => $request->description,
                 'video' => $videoPath,
                 'file_pdf' => $filePath,
                 'updated_at' => now(),
