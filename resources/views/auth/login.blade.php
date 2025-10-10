@@ -4,383 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - KelasSatu</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #254768 0%, #1a3651 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
-
-        .login-wrapper {
-            display: flex;
-            width: 100%;
-            max-width: 900px;
-            min-height: 550px;
-            margin: 20px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
+    <title>Masuk | EduCourse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#fba615',
+                        secondary: '#0977c2',
+                    }
+                }
             }
         }
-
-        .login-container {
-            background: #f7f7f7;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* Logo + teks samping kiri */
-        .logo-side {
-            flex: 1;
-            background: linear-gradient(135deg, #3a6ea5 0%, #5a8dee 100%);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            flex-direction: column;
-            text-align: center;
-            color: white;
-            padding: 40px 20px 20px;
-        }
-
-        .logo-side img {
-            max-width: 150px;
-            margin-bottom: 20px;
-        }
-
-        .logo-side h2 {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .logo-side p {
-            margin-top: 10px;
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .header {
-            text-align: center;
-            padding: 15px 20px 10px 20px;
-            /* atas lebih kecil */
-            margin-bottom: 0;
-        }
-
-        .toast {
-            visibility: hidden;
-            min-width: 280px;
-            background-color: #333;
-            color: #fff;
-            text-align: left;
-            border-radius: 12px;
-            padding: 16px 20px;
-            position: fixed;
-            z-index: 9999;
-            top: 20px;
-            /* pojok atas */
-            right: 20px;
-            /* geser ke kanan */
-            font-size: 15px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.5s, transform 0.5s;
-        }
-
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .toast.success {
-            background: #28a745;
-        }
-
-        .toast.error {
-            background: #dc3545;
-        }
-
-        .toast.info {
-            background: #17a2b8;
-        }
-
-        .header .logo-img {
-            width: 140px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-
-        .header p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        .form-container {
-            padding: 10px 20px 20px 20px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #254768;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #eb631d;
-            box-shadow: 0 0 0 3px rgba(235, 99, 29, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #eb631d, #ff7a35);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 25px;
-            box-shadow: 0 6px 20px rgba(235, 99, 29, 0.3);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(235, 99, 29, 0.4);
-            background: linear-gradient(135deg, #d55419, #eb631d);
-        }
-
-        .forgot-password {
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .forgot-password a {
-            color: #eb631d;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-password a:hover {
-            color: #d55419;
-            text-decoration: underline;
-        }
-
-        /* Divider */
-        .divider {
-            text-align: center;
-            margin: 15px 0;
-            position: relative;
-            color: #666;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #ddd;
-            z-index: 1;
-        }
-
-        .divider span {
-            background: #f7f7f7;
-            padding: 0 20px;
-            position: relative;
-            z-index: 2;
-            font-size: 14px;
-        }
-
-        /* Tombol daftar */
-        .register-section h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #254768;
-            font-size: 18px;
-        }
-
-        .register-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .register-btn {
-            padding: 14px 20px;
-            border: 2px solid #254768;
-            background: white;
-            color: #254768;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-decoration: none;
-            /* HILANGKAN GARIS BAWAH */
-            display: inline-block;
-        }
-
-        .register-btn:hover {
-            background: #254768;
-            color: white;
-        }
-
-        .register-btn.guru:hover {
-            background: #eb631d;
-            border-color: #eb631d;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .login-wrapper {
-                flex-direction: column;
-                max-width: 450px;
-            }
-
-            .logo-side {
-                min-height: 200px;
-            }
-        }
-    </style>
+    </script>
 </head>
 
-<body>
-    <div class="login-wrapper">
-        <!-- Sisi Form Login -->
-        <div class="login-container">
-            <div class="header">
-                <!-- Ganti Portal Login dengan gambar logo -->
-                <img src="{{ asset('image/logo.png') }}" alt="Logo KelasSatu" class="logo-img">
-                <p>Silakan login untuk melanjutkan</p>
+<body class="bg-gray-50 font-sans">
+
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white shadow-lg rounded-xl w-full max-w-md p-8 space-y-6">
+            <div class="text-center">
+                <img src="{{ asset('image/logo.png') }}" alt="EduCourse" class="mx-auto h-16 mb-4">
+                <h2 class="text-2xl font-bold text-secondary">Selamat Datang Kembali</h2>
+                <p class="text-gray-500 text-sm">Masuk ke akun Anda untuk melanjutkan</p>
             </div>
 
-            <div class="form-container">
-                <form id="loginForm" method="POST" action="{{ route('login') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="text" id="email" name="email" required placeholder="Masukkan email">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required placeholder="Masukkan password">
-                    </div>
-
-                    <button type="submit" class="login-btn">Masuk</button>
-                </form>
-
-                <div class="forgot-password">
-                    <a href="{{ route('password.request') }}">Lupa password?</a>
+            <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="email" required
+                        class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                 </div>
 
-
-                <div class="divider"><span>Belum punya akun?</span></div>
-
-                <div class="register-section">
-                    <h3>Daftar Sebagai</h3>
-                    <div class="register-buttons">
-                        <a href="{{ route('register.siswa') }}" class="register-btn siswa">👨‍🎓 Siswa</a>
-                        <a href="{{ route('register.guru') }}" class="register-btn guru">👨‍🏫 Guru</a>
-                    </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Kata Sandi</label>
+                    <input type="password" name="password" id="password" required
+                        class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none">
                 </div>
-            </div>
-        </div>
 
-        <!-- Sisi Logo + Judul -->
-        <div class="logo-side">
-            <!-- Lottie container -->
-            <div id="lottie-logo" style="width:280px; height:280px; margin-bottom:20px;"></div>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="remember" class="text-primary focus:ring-primary rounded">
+                        <span class="ml-2 text-sm text-gray-600">Ingat saya</span>
+                    </label>
+                    <a href="#" class="text-sm text-secondary hover:text-primary">Lupa sandi?</a>
+                </div>
 
-            <h2>KelasSatu</h2>
-            <p>Platform Pembelajaran Modern</p>
+                <button type="submit"
+                    class="w-full py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-[1.02]">
+                    Masuk
+                </button>
+            </form>
+
+            <p class="text-center text-gray-600 text-sm">
+                Belum punya akun?
+                <a href="{{ route('register') }}" class="text-secondary hover:text-primary font-semibold">Daftar
+                    Sekarang</a>
+            </p>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
-    <script>
-        // Lottie animation
-        lottie.loadAnimation({
-            container: document.getElementById('lottie-logo'), // container div
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: 'https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json' // animasi e-course
-        });
+    @if ($errors->any())
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Buat container kalau belum ada
+                let container = document.getElementById("toast-container");
+                if (!container) {
+                    container = document.createElement("div");
+                    container.id = "toast-container";
+                    container.style.position = "fixed";
+                    container.style.top = "20px";
+                    container.style.right = "20px";
+                    container.style.zIndex = "9999";
+                    container.style.display = "flex";
+                    container.style.flexDirection = "column";
+                    container.style.gap = "10px"; // jarak antar toast
+                    document.body.appendChild(container);
+                }
 
-        function showToast(message, type = "info") {
-            const toast = document.getElementById("toast");
-            toast.className = "toast show " + type;
-            toast.innerText = message;
+                @foreach ($errors->all() as $error)
+                    showToast("{{ $error }}");
+                @endforeach
 
-            setTimeout(() => {
-                toast.className = toast.className.replace("show", "");
-            }, 4000);
-        }
-    </script>
+                function showToast(message) {
+                    let toast = document.createElement("div");
+                    toast.innerText = message;
+                    toast.style.background = "#e74c3c";
+                    toast.style.color = "white";
+                    toast.style.padding = "12px 20px";
+                    toast.style.borderRadius = "8px";
+                    toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+                    toast.style.opacity = "0";
+                    toast.style.transition = "opacity 0.5s ease";
+                    toast.style.fontSize = "14px";
+                    toast.style.fontWeight = "500";
 
-    <script>
-        @if (session('success'))
-            showToast("{{ session('success') }}", "success");
-        @endif
+                    container.appendChild(toast);
 
-        @if ($errors->any())
-            showToast("Email atau password salah. Silakan coba lagi.", "error");
-        @endif
-    </script>
+                    // animasi muncul
+                    setTimeout(() => {
+                        toast.style.opacity = "1";
+                    }, 100);
 
-
+                    // hilang setelah 4 detik
+                    setTimeout(() => {
+                        toast.style.opacity = "0";
+                        setTimeout(() => toast.remove(), 500);
+                    }, 4000);
+                }
+            });
+        </script>
+    @endif
 </body>
 
 </html>

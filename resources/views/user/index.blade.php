@@ -43,7 +43,7 @@
                                 <th>No HP</th>
                                 <th>Email</th>
                                 <th>Kabupaten</th>
-                                <th>Kota</th>
+                                <th>Provinsi</th>
                                 <th>Instansi</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -105,8 +105,8 @@
                         name: 'kabupaten'
                     },
                     {
-                        data: 'kota',
-                        name: 'kota'
+                        data: 'provinsi',
+                        name: 'provinsi'
                     },
                     {
                         data: 'instansi',

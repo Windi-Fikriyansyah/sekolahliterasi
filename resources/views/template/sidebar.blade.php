@@ -34,42 +34,58 @@
                     <div data-i18n="Notifications">Data Kategori</div>
                 </a>
             </li>
+            <li class="menu-item">
+                <a href="{{ route('kategori_buku.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-category"></i>
+                    <div data-i18n="Notifications">Data Kategori Buku</div>
+                </a>
+            </li>
         </ul>
     </li>
 
     <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">Manajemen Kursus</span>
+        <span class="menu-header-text">Manajemen Produk Digital</span>
     </li>
     <li class="menu-item">
-        <a href="{{ route('kursus.index') }}" class="menu-link">
+        <a href="{{ route('produk.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-book"></i>
-            <div data-i18n="Account Settings">Data Kursus</div>
+            <div data-i18n="Account Settings">Data Produk Digital</div>
         </a>
+    </li>
+    <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-collection"></i>
+            <div data-i18n="Account Settings">Data Detail</div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('materi.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-id-card"></i>
+                    <div data-i18n="Notifications">Data E-book & Kelas Video</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-category"></i>
+                    <div data-i18n="Notifications">Data Program</div>
+                </a>
+            </li>
+        </ul>
     </li>
 
-    <li class="menu-item">
-        <a href="{{ route('materi.index') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-book-open"></i>
-            <div data-i18n="Account Settings">Data Materi</div>
-        </a>
-    </li>
 
     <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">Manajemen Quiz</span>
+        <span class="menu-header-text">Manajemen Buku Fisik</span>
     </li>
     <li class="menu-item">
-        <a href="{{ route('latihan.index') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-edit-alt"></i>
-            <div data-i18n="Account Settings">Data Latihan</div>
+        <a href="{{ route('produk_buku.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Data Buku Fisik</div>
         </a>
     </li>
 
-    <li class="menu-item">
-        <a href="{{ route('tryout.index') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-task"></i>
-            <div data-i18n="Account Settings">Data Tryout</div>
-        </a>
-    </li>
+
+
 
 
     <li class="menu-header small text-uppercase">

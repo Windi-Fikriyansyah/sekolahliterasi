@@ -19,19 +19,19 @@
 
                             <!-- Module Selection -->
                             <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="course_id">Course</label>
+                                <label class="col-sm-2 col-form-label" for="product_id">Produk</label>
                                 <div class="col-sm-10">
-                                    <select id="course_id" name="course_id"
-                                        class="form-control select2 @error('course_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih Modul --</option>
-                                        @foreach ($kursuss as $kursus)
-                                            <option value="{{ $kursus->id }}"
-                                                {{ old('course_id', $materi->course_id ?? '') == $kursus->id ? 'selected' : '' }}>
-                                                {{ $kursus->title }}
+                                    <select id="product_id" name="product_id"
+                                        class="form-control select2 @error('product_id') is-invalid @enderror" required>
+                                        <option value="">-- Pilih Produk --</option>
+                                        @foreach ($products as $produk)
+                                            <option value="{{ $produk->id }}"
+                                                {{ old('product_id', $materi->product_id ?? '') == $produk->id ? 'selected' : '' }}>
+                                                {{ $produk->judul }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('course_id')
+                                    @error('product_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -39,26 +39,28 @@
 
                             <!-- Type Selection -->
                             <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="type">Tipe Materi</label>
+                                <label class="col-sm-2 col-form-label" for="jenis_materi">Tipe Materi</label>
                                 <div class="col-sm-10">
-                                    <select id="type" name="type"
-                                        class="form-control select2 @error('type') is-invalid @enderror" required>
+                                    <select id="jenis_materi" name="jenis_materi"
+                                        class="form-control select2 @error('jenis_materi') is-invalid @enderror" required>
                                         <option value="">-- Pilih Tipe --</option>
                                         <option value="pdf"
-                                            {{ old('type', $materi->type ?? '') == 'pdf' ? 'selected' : '' }}>PDF
+                                            {{ old('jenis_materi', $materi->jenis_materi ?? '') == 'pdf' ? 'selected' : '' }}>
+                                            PDF
                                         </option>
                                         <option value="video"
-                                            {{ old('type', $materi->type ?? '') == 'video' ? 'selected' : '' }}>Video
+                                            {{ old('jenis_materi', $materi->jenis_materi ?? '') == 'video' ? 'selected' : '' }}>
+                                            Video
                                         </option>
                                     </select>
-                                    @error('type')
+                                    @error('jenis_materi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
                             <!-- Title -->
-                            <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="title">Judul materi</label>
                                 <div class="col-sm-10">
                                     <input type="text" id="title" name="title"
@@ -68,15 +70,15 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Description -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="description">Deskripsi</label>
                                 <div class="col-sm-10">
-                                    <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror"
-                                        rows="4" placeholder="Tuliskan deskripsi materi...">{{ old('description', $materi->description ?? '') }}</textarea>
-                                    @error('description')
+                                    <textarea id="description" name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="4"
+                                        placeholder="Tuliskan deskripsi materi...">{{ old('deskripsi', $materi->deskripsi ?? '') }}</textarea>
+                                    @error('deskripsi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -97,7 +99,7 @@
                                     <input type="file" class="filepond" id="video-upload" name="video_file"
                                         accept="video/*">
                                     <input type="hidden" name="video_file" id="video_file"
-                                        value="{{ old('video_file', $materi->video ?? '') }}">
+                                        value="{{ old('video_file', $materi->file_path ?? '') }}">
                                     <div class="upload-progress">
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" style="width: 0%;"
@@ -106,14 +108,14 @@
                                     </div>
 
 
-                                    @if (isset($materi) && $materi->video)
+                                    @if (isset($materi) && $materi->jenis_materi === 'video' && $materi->file_path)
                                         <div class="mt-2" id="current-video">
                                             <span class="text-success">
                                                 <i class="bi bi-check-circle"></i>
                                                 Video saat ini tersimpan
                                             </span>
                                             <br>
-                                            <small class="text-muted">{{ basename($materi->video) }}</small>
+                                            <small class="text-muted">{{ basename($materi->file_path) }}</small>
                                         </div>
                                     @endif
 
@@ -139,7 +141,7 @@
                                     <input type="file" class="filepond" id="pdf-upload" name="pdf_file"
                                         accept="application/pdf,.pdf">
                                     <input type="hidden" name="pdf_file" id="pdf_file"
-                                        value="{{ old('pdf_file', $materi->file_pdf ?? '') }}">
+                                        value="{{ old('pdf_file', $materi->file_path ?? '') }}">
                                     <div class="upload-progress">
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" style="width: 0%;"
@@ -147,14 +149,14 @@
                                         </div>
                                     </div>
 
-                                    @if (isset($materi) && $materi->file_pdf)
+                                    @if (isset($materi) && $materi->jenis_materi === 'pdf' && $materi->file_path)
                                         <div class="mt-2" id="current-pdf">
                                             <span class="text-success">
                                                 <i class="bi bi-check-circle"></i>
                                                 File PDF saat ini tersimpan
                                             </span>
                                             <br>
-                                            <small class="text-muted">{{ basename($materi->file_pdf) }}</small>
+                                            <small class="text-muted">{{ basename($materi->file_path) }}</small>
                                         </div>
                                     @endif
 
@@ -251,7 +253,7 @@
 
         // Fungsi toggle content fields
         function toggleContentFields() {
-            const type = $('#type').val();
+            const type = $('#jenis_materi').val();
 
             if (type === 'video') {
                 $('.video-field').show();
@@ -577,13 +579,13 @@
             // Initialize Select2
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: '-- Pilih Opsi --',
+                placeholder: '-- Pilih Produk --',
                 allowClear: true,
                 width: '100%'
             });
 
             // Event handler untuk select tipe materi
-            $('#type').change(function() {
+            $('#jenis_materi').change(function() {
                 toggleContentFields();
             });
 
@@ -592,22 +594,22 @@
 
             // Jika create form (bukan edit), default ke video
             @if (!isset($materi))
-                $('#type').val('video').trigger('change');
+                $('#jenis_materi').val('video').trigger('change');
             @endif
 
             // Form validation before submit
             $('#materiForm').on('submit', function(e) {
-                const type = $('#type').val();
+                const type = $('#jenis_materi').val();
                 const videoFile = $('#video_file').val();
                 const pdfFile = $('#pdf_file').val();
 
-                if (type === 'video' && !videoFile && !@json(isset($materi) && $materi->video)) {
+                if (type === 'video' && !videoFile && !@json(isset($materi) && $materi->jenis_materi === 'video' && $materi->file_path)) {
                     e.preventDefault();
                     showAlert('error', 'Silakan upload video terlebih dahulu');
                     return false;
                 }
 
-                if (type === 'pdf' && !pdfFile && !@json(isset($materi) && $materi->file_pdf)) {
+                if (type === 'pdf' && !pdfFile && !@json(isset($materi) && $materi->jenis_materi === 'pdf' && $materi->file_path)) {
                     e.preventDefault();
                     showAlert('error', 'Silakan pilih file PDF terlebih dahulu');
                     return false;

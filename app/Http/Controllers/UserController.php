@@ -15,23 +15,26 @@ class UserController extends Controller
 {
     public function index()
     {
+
+
         return view('user.index');
     }
 
     public function load(Request $request)
     {
+
         try {
             $currentUserId = auth()->id();
 
             // Mengambil data pengguna dengan role guru atau siswa
-            $users = User::whereIn('role', ['guru', 'siswa'])
+            $users = User::where('role', 'user')
                 ->select([
                     'id',
                     'name',
                     'no_hp',
                     'email',
                     'kabupaten',
-                    'kota',
+                    'provinsi',
                     'instansi',
                     'created_at'
                 ])

@@ -27,22 +27,23 @@ class MateriController extends Controller
     {
         try {
             // Join dengan tabel courses untuk mendapatkan judul kursus
-            $kursus = DB::table('contents as cm')
-                ->join('courses as c', 'cm.course_id', '=', 'c.id')
+            $kursus = DB::table('materi as m')
+                ->join('products as p', 'm.product_id', '=', 'p.id')
                 ->select([
-                    'cm.id',
-                    'c.title as title_course',
-                    'cm.title',
-                    'cm.type',
-                    'cm.created_at',
-                    'cm.updated_at'
+                    'm.id',
+                    'p.judul',
+                    'm.deskripsi',
+                    'm.jenis_materi',
+                    'm.file_path',
+                    'm.created_at',
+                    'm.updated_at'
                 ])
-                ->orderBy('cm.created_at', 'desc');
+                ->orderBy('m.created_at', 'desc');
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
-                ->filterColumn('title_course', function ($query, $keyword) {
-                    $query->whereRaw("LOWER(c.title) like ?", ["%" . strtolower($keyword) . "%"]);
+                ->filterColumn('judul', function ($query, $keyword) {
+                    $query->whereRaw("LOWER(p.judul) like ?", ["%" . strtolower($keyword) . "%"]);
                 })
                 ->addColumn('action', function ($row) {
                     $deleteUrl = route('materi.destroy', $row->id);
@@ -70,15 +71,13 @@ class MateriController extends Controller
 
     public function create()
     {
-        // Ambil semua data courses
-        $courses = DB::table('courses')->get();
 
-        // Ambil semua data modules dengan relasi ke courses
-        $kursuss = DB::table('courses')
-            ->select('courses.*')
+        $products = DB::table('products')
+            ->select('products.*')
+            ->whereIn('tipe_produk', ['ebook', 'kelas_video'])
             ->get();
 
-        return view('materi.create', compact('courses', 'kursuss'));
+        return view('materi.create', compact('products'));
     }
 
     public function edit($id)
@@ -89,15 +88,18 @@ class MateriController extends Controller
             return redirect()->route('materi.index')->with('error', 'ID tidak valid');
         }
 
-        $materi = DB::table('contents')->where('id', $decryptedId)->first();
+        $materi = DB::table('materi')->where('id', $decryptedId)->first();
 
         if (!$materi) {
             return redirect()->route('materi.index')->with('error', 'Materi tidak ditemukan');
         }
 
-        $kursuss = DB::table('courses')->get();
+        $products = DB::table('products')
+            ->select('products.*')
+            ->whereIn('tipe_produk', ['ebook', 'kelas_video'])
+            ->get();
 
-        return view('materi.create', compact('kursuss', 'materi'));
+        return view('materi.create', compact('products', 'materi'));
     }
 
     /**
@@ -197,42 +199,37 @@ class MateriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'type' => 'required|in:pdf,video',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable',
+            'product_id' => 'required|exists:products,id',
+            'jenis_materi' => 'required|in:pdf,video',
+            'deskripsi' => 'nullable|string',
             'pdf_file' => 'nullable|string',
-            'video_file' => 'nullable|string'
+            'video_file' => 'nullable|string',
         ]);
 
         try {
-            // Get course_id from module
-            $module = DB::table('course_modules')->where('id', $request->module_id)->first();
-
+            // Tentukan path file berdasarkan jenis materi
             $filePath = null;
-            $videoPath = null;
 
-            // Handle file upload based on type
-            if ($request->type === 'pdf' && $request->pdf_file) {
+            if ($request->jenis_materi === 'pdf' && $request->pdf_file) {
                 $filePath = $request->pdf_file;
-            } elseif ($request->type === 'video' && $request->video_file) {
-                $videoPath = $request->video_file;
+            } elseif ($request->jenis_materi === 'video' && $request->video_file) {
+                $filePath = $request->video_file;
             }
 
-            DB::table('contents')->insert([
-                'course_id' => $request->course_id,
-                'type' => $request->type,
-                'title' => $request->title,
-                'description' => $request->description,
-                'video' => $videoPath,
-                'file_pdf' => $filePath,
-                'created_at' => now(),
-                'updated_at' => now(),
+            // dd($filePath);
+            // Simpan ke tabel materi
+            DB::table('materi')->insert([
+                'product_id'   => $request->product_id,
+                'jenis_materi' => $request->jenis_materi,
+                'deskripsi'    => $request->deskripsi,
+                'file_path'    => $filePath,
+                'created_at'   => now(),
+                'updated_at'   => now(),
             ]);
 
             return redirect()->route('materi.index')->with('success', 'Materi berhasil disimpan!');
         } catch (\Exception $e) {
-            Log::error('Store materi error: ' . $e->getMessage());
+            \Log::error('Store materi error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
@@ -240,103 +237,92 @@ class MateriController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'type' => 'required|in:pdf,video',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable',
-            'pdf_file' => 'nullable|string',
-            'video_file' => 'nullable|string'
+            'product_id'   => 'required|exists:products,id',
+            'jenis_materi' => 'required|in:pdf,video',
+            'deskripsi'    => 'nullable|string',
+            'pdf_file'     => 'nullable|string',
+            'video_file'   => 'nullable|string',
         ]);
 
         try {
-            $materi = DB::table('contents')->where('id', $id)->first();
+            $materi = DB::table('materi')->where('id', $id)->first();
             if (!$materi) {
                 return redirect()->back()->with('error', 'Materi tidak ditemukan');
             }
 
-            // Get course_id from module
-            $module = DB::table('course_modules')->where('id', $request->module_id)->first();
+            // Tentukan file lama untuk dihapus jika diganti
+            $oldFilePath = $materi->file_path;
+            $newFilePath = null;
 
-            $filePath = $materi->file_pdf;
-            $videoPath = $materi->video;
+            // Tentukan path file baru sesuai jenis_materi
+            if ($request->jenis_materi === 'pdf' && $request->pdf_file) {
+                $newFilePath = $request->pdf_file;
 
-            // Handle file update based on type
-            if ($request->type === 'pdf') {
-                if ($request->pdf_file) {
-                    // Delete old PDF file if exists and different
-                    if ($filePath && $filePath !== $request->pdf_file && Storage::disk('public')->exists($filePath)) {
-                        Storage::disk('public')->delete($filePath);
-                    }
-                    $filePath = $request->pdf_file;
+                // Jika file lama berbeda dan masih ada di storage, hapus
+                if ($oldFilePath && $oldFilePath !== $newFilePath && Storage::disk('public')->exists($oldFilePath)) {
+                    Storage::disk('public')->delete($oldFilePath);
                 }
-                // Clear video if switching from video to pdf
-                if ($videoPath && Storage::disk('public')->exists($videoPath)) {
-                    Storage::disk('public')->delete($videoPath);
+            } elseif ($request->jenis_materi === 'video' && $request->video_file) {
+                $newFilePath = $request->video_file;
+
+                // Jika file lama berbeda dan masih ada di storage, hapus
+                if ($oldFilePath && $oldFilePath !== $newFilePath && Storage::disk('public')->exists($oldFilePath)) {
+                    Storage::disk('public')->delete($oldFilePath);
                 }
-                $videoPath = null;
-            } elseif ($request->type === 'video') {
-                if ($request->video_file) {
-                    // Delete old video file if exists and different
-                    if ($videoPath && $videoPath !== $request->video_file && Storage::disk('public')->exists($videoPath)) {
-                        Storage::disk('public')->delete($videoPath);
-                    }
-                    $videoPath = $request->video_file;
-                }
-                // Clear PDF if switching from pdf to video
-                if ($filePath && Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath);
-                }
-                $filePath = null;
+            } else {
+                // Jika tidak ada file baru, gunakan file lama
+                $newFilePath = $oldFilePath;
             }
 
-            DB::table('contents')->where('id', $id)->update([
-                'course_id' => $request->course_id,
-                'type' => $request->type,
-                'title' => $request->title,
-                'description' => $request->description,
-                'video' => $videoPath,
-                'file_pdf' => $filePath,
-                'updated_at' => now(),
+            // Update data ke tabel materi
+            DB::table('materi')->where('id', $id)->update([
+                'product_id'   => $request->product_id,
+                'jenis_materi' => $request->jenis_materi,
+                'deskripsi'    => $request->deskripsi,
+                'file_path'    => $newFilePath,
+                'updated_at'   => now(),
             ]);
 
-            return redirect()->route('materi.index')->with('success', 'Materi berhasil diupdate!');
+            return redirect()->route('materi.index')->with('success', 'Materi berhasil diperbarui!');
         } catch (\Exception $e) {
             Log::error('Update materi error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
         }
     }
 
+
     public function destroy($id)
     {
         try {
-            // Get materi data first to delete files
-            $materi = DB::table('contents')->where('id', $id)->first();
+            // Ambil data materi berdasarkan ID
+            $materi = DB::table('materi')->where('id', $id)->first();
 
-            if ($materi) {
-                // Delete associated files
-                if ($materi->file_pdf && Storage::disk('public')->exists($materi->file_pdf)) {
-                    Storage::disk('public')->delete($materi->file_pdf);
-                }
+            if (!$materi) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Materi tidak ditemukan'
+                ], 404);
+            }
 
-                if ($materi->video && Storage::disk('public')->exists($materi->video)) {
-                    Storage::disk('public')->delete($materi->video);
-                }
+            // Hapus file terkait jika ada
+            if ($materi->file_path && Storage::disk('public')->exists($materi->file_path)) {
+                Storage::disk('public')->delete($materi->file_path);
+            }
 
-                // Delete database record
-                $deleted = DB::table('contents')->where('id', $id)->delete();
+            // Hapus data materi dari database
+            $deleted = DB::table('materi')->where('id', $id)->delete();
 
-                if ($deleted) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Materi berhasil dihapus'
-                    ]);
-                }
+            if ($deleted) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Materi berhasil dihapus'
+                ]);
             }
 
             return response()->json([
                 'success' => false,
-                'message' => 'Materi tidak ditemukan'
-            ], 404);
+                'message' => 'Gagal menghapus materi'
+            ], 500);
         } catch (\Exception $e) {
             Log::error('Error deleting materi: ' . $e->getMessage());
             return response()->json([
@@ -345,6 +331,7 @@ class MateriController extends Controller
             ], 500);
         }
     }
+
 
     public function uploadPdfChunk(Request $request)
     {

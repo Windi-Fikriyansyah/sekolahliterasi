@@ -30,13 +30,34 @@ class DashboardController extends Controller
     }
     public function dashboardUser(Request $request)
     {
-        $courses = DB::table('courses')
-            ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
-            ->select('courses.id', 'courses.title', 'kategori.id as kategori_id', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
-            ->orderBy('courses.created_at', 'desc')
+        $programs = DB::table('products')
+            ->where('tipe_produk', 'program')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
             ->get();
-        $kategori = DB::table('kategori')->get();
 
-        return view('dashboardUser', compact('courses', 'kategori'));
+        $kelasVideo = DB::table('products')
+            ->where('tipe_produk', 'kelas_video')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
+        $ebooks = DB::table('products')
+            ->where('tipe_produk', 'ebook')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
+        $bukus = DB::table('products')
+            ->where('tipe_produk', 'buku')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
+        return view('dashboardUser', compact('programs', 'kelasVideo', 'ebooks', 'bukus'));
     }
 }

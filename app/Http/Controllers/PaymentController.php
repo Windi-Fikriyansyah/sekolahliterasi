@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 // Import Xendit classes correctly
 use Xendit\Configuration;
@@ -19,238 +20,325 @@ use Xendit\Invoice\CustomerObject;
 
 class PaymentController extends Controller
 {
-    public function createPayment($encryptedCourseId)
+
+
+    public function createPayment($id)
     {
+
+
         try {
-            $courseId = Crypt::decryptString($encryptedCourseId);
-            $course = DB::table('courses')->where('id', $courseId)->first();
-            $user = Auth::user();
+            $productid = Crypt::decrypt($id);
+
+            $produk   = DB::table('products')->where('id', $productid)->first();
+            $user     = Auth::user();
             $referralCode = request()->query('referral_code');
 
-
-            // Cek apakah user sudah memiliki akses ke course ini
+            // dd($referralCode);
             $hasAccess = DB::table('enrollments')
                 ->where('user_id', $user->id)
-                ->where('course_id', $course->id)
+                ->where('product_id', $produk->id)
                 ->exists();
 
+
+            $unpaidTrx = DB::table('transactions')
+                ->where('user_id', $user->id)
+                ->where('product_id', $produk->id)
+                ->whereIn('status', ['UNPAID', 'PENDING'])
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($unpaidTrx) {
+                return redirect()->route('history.index')
+                    ->with('toast', [
+                        'type' => 'info',
+                        'message' => 'Anda masih memiliki transaksi yang belum dibayar. Silakan selesaikan pembayaran di history.'
+                    ]);
+            }
+
             if ($hasAccess) {
-                return redirect()->route('course.show', $encryptedCourseId)
+                return redirect()->route('produk.detail', $id)
                     ->with('info', 'Anda sudah memiliki akses ke kursus ini.');
             }
 
-            // Jika course gratis, langsung berikan akses
-            if ($course->is_free) {
-                return $this->grantFreeAccess($user->id, $course->id, $encryptedCourseId);
+
+
+
+            $apiKey = config('services.tripay.api_key');
+            $url    = config('services.tripay.sandbox');
+
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey
+            ])->get($url);
+
+            if (!$response->successful()) {
+                throw new \Exception('Gagal mengambil channel pembayaran Tripay');
             }
 
-            $existingTransaction = DB::table('transactions')
-                ->where('user_id', $user->id)
-                ->where('course_id', $course->id)
-                ->where('status', 'PENDING')
-                ->where('expired_at', '>', now())
-                ->first();
 
-            if ($existingTransaction) {
-                // Jika ada transaksi pending, redirect ke invoice URL yang sama
-                $invoiceData = json_decode($existingTransaction->xendit_data, true);
-                return redirect($invoiceData['invoice_url'])
-                    ->with('info', 'Anda memiliki pembayaran yang masih pending. Lanjutkan pembayaran.');
-            }
 
-            // Configure Xendit with API Key
-            Configuration::setXenditKey(env('XENDIT_API_KEY'));
+            $channels = $response->json('data');
 
-            // Generate external ID yang unik
-            $externalId = 'course-' . $course->id . '-' . $user->id . '-' . time();
+            // dd($channels);
 
-            // Hitung expired date (24 jam dari sekarang)
-            $expiredAt = Carbon::now()->addHours(24);
-
-            // Create invoice items
-            $invoiceItem = new InvoiceItem([
-                'name' => $course->title,
-                'quantity' => 1,
-                'price' => (float)$course->price,
-                'category' => $course->nama_kategori ?? 'Course'
+            return view('produk.checkout', [
+                'produk' => $produk,
+                'channels' => $channels,
+                'encryptedCourseId' => $id,
+                'referralCode' => $referralCode,
             ]);
-
-            // Create customer object
-            $customer = new CustomerObject([
-                'given_names' => $user->name,
-                'email' => $user->email,
-            ]);
-
-            // Create invoice request
-            $createInvoiceRequest = new CreateInvoiceRequest([
-                'external_id' => $externalId,
-                'payer_email' => $user->email,
-                'description' => 'Pembayaran Kursus: ' . $course->title,
-                'amount' => (float)$course->price,
-                'invoice_duration' => 86400, // 24 jam dalam detik
-                'success_redirect_url' => route('payment.success', $encryptedCourseId),
-                'failure_redirect_url' => route('payment.failed', $encryptedCourseId),
-                'currency' => 'IDR',
-                'items' => [$invoiceItem],
-                'customer' => $customer
-            ]);
-
-            // Create invoice using the API
-            $apiInstance = new InvoiceApi();
-            $invoice = $apiInstance->createInvoice($createInvoiceRequest);
-
-            // Simpan data transaksi ke database
-            DB::table('transactions')->insert([
-                'external_id' => $externalId,
-                'invoice_id' => $invoice['id'],
-                'user_id' => $user->id,
-                'course_id' => $course->id,
-                'referral_code' => $referralCode,
-                'amount' => $course->price,
-                'status' => 'PENDING',
-                'expired_at' => $expiredAt,
-                'xendit_data' => json_encode($invoice),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            Log::info('Invoice created', [
-                'external_id' => $externalId,
-                'invoice_id' => $invoice['id'],
-                'user_id' => $user->id,
-                'course_id' => $course->id,
-                'amount' => $course->price
-            ]);
-
-            return redirect($invoice['invoice_url']);
         } catch (\Exception $e) {
-            Log::error('Payment creation failed', [
+            Log::error('Tripay Payment error', [
                 'error' => $e->getMessage(),
-                'course_id' => $courseId ?? null,
                 'user_id' => Auth::id()
             ]);
 
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat membuat pembayaran. Silakan coba lagi.');
+            return redirect()->back()->with('error', 'Terjadi kesalahan, silakan coba lagi.');
         }
     }
 
-    private function grantFreeAccess($userId, $courseId, $encryptedCourseId)
+
+    public function processPayment(Request $request, $encryptedCourseId)
+    {
+
+        try {
+
+            $productid = Crypt::decrypt($encryptedCourseId);
+
+            $produk   = DB::table('products')->where('id', $productid)->first();
+            $user     = Auth::user();
+
+
+            if (!$produk) {
+                return redirect()->back()->with('error', 'Produk tidak ditemukan.');
+            }
+
+            $unpaidTrx = DB::table('transactions')
+                ->where('user_id', $user->id)
+                ->where('product_id', $produk->id)
+                ->whereIn('status', ['UNPAID', 'PENDING'])
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+
+            if ($unpaidTrx) {
+                return redirect()->route('history.index')
+                    ->with('toast', [
+                        'type' => 'info',
+                        'message' => 'Anda masih memiliki transaksi yang belum dibayar. Silakan selesaikan pembayaran di history.'
+                    ]);
+            }
+
+            $channel = $request->input('channel');
+
+            $referralCode = $request->input('referral_code');
+
+            // Data transaksi
+            $merchantRef = 'INV-' . $produk->id . '-' . $user->id . '-' . time();
+            $amount = (int) $produk->harga;
+
+            $merchantCode = config('services.tripay.merchant_code');
+            $privateKey   = config('services.tripay.private_key');
+            $apiKey       = config('services.tripay.api_key');
+
+            $signature = hash_hmac('sha256', $merchantCode . $merchantRef . $amount, $privateKey);
+
+            $payload = [
+                'method'        => $channel,
+                'merchant_ref'  => $merchantRef,
+                'amount'        => $amount,
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'customer_phone' => $user->phone ?? '081234567890',
+                'order_items'   => [
+                    [
+                        'sku'       => 'PRODUK-' . $produk->id,
+                        'name'      => $produk->judul,
+                        'price'     => $amount,
+                        'quantity'  => 1,
+                        'subtotal'  => $amount,
+                    ]
+                ],
+                'callback_url'  => route('payment.callback'),
+                'return_url'    =>  route('payment.redirect', $encryptedCourseId),
+                'expired_time'  => now()->addDay()->timestamp,
+                'signature'     => $signature,
+            ];
+
+
+            $url = config('services.tripay.urlcreatetripay');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey
+            ])->post($url, $payload);
+
+
+            if (!$response->successful()) {
+                Log::error('Tripay transaction failed', [
+                    'status' => $response->status(),
+                    'body'   => $response->body(),
+                ]);
+                return redirect()->back()->with('error', 'Gagal membuat transaksi pembayaran.');
+            }
+
+            $result = $response->json();
+
+            if (!isset($result['success']) || !$result['success']) {
+                return redirect()->back()->with('error', $result['message'] ?? 'Gagal membuat transaksi.');
+            }
+
+            $data = $result['data'];
+
+            $invoiceId = $data['reference'] ?? $merchantRef;
+
+            DB::table('transactions')->insert([
+                'external_id'     => $merchantRef,
+                'invoice_id'      => $invoiceId,
+                'user_id'         => $user->id,
+                'product_id'       => $produk->id,
+                'referral_code'   => $referralCode,
+                'amount'          => $amount,
+                'status'          => $data['status'],
+                'expired_at'      => Carbon::createFromTimestamp($data['expired_time']),
+                'payment_method'  => $data['payment_method'],
+                'payment_channel' => $channel,
+                'tripay_data'     => json_encode($data),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+            Log::info('Transaction created', [
+                'merchant_ref' => $merchantRef,
+                'invoice_id' => $invoiceId,
+                'user_id' => $user->id
+            ]);
+
+            return redirect($data['checkout_url']);
+        } catch (\Exception $e) {
+            Log::error('processTransaction error', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan, silakan coba lagi.');
+        }
+    }
+
+
+
+    public function redirectAfterPayment(Request $request, $encryptedCourseId)
     {
         try {
-            // Berikan akses gratis
-            DB::table('enrollments')->insert([
-                'user_id' => $userId,
-                'course_id' => $courseId,
-                'enrolled_at' => now()
+            Log::info('RedirectAfterPayment called with parameters:', [
+                'all_query_params' => $request->query->all(),
+                'encryptedCourseId' => $encryptedCourseId,
+                'full_url' => $request->fullUrl()
             ]);
+            $reference = $request->query('tripay_reference');
 
-            // Simpan transaksi gratis untuk tracking
-            DB::table('transactions')->insert([
-                'external_id' => 'free-' . $courseId . '-' . $userId . '-' . time(),
-                'invoice_id' => 'FREE-' . time(),
-                'user_id' => $userId,
-                'course_id' => $courseId,
-                'amount' => 0,
-                'status' => 'PAID',
-                'payment_method' => 'FREE',
-                'paid_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            if (!$reference) {
+                return redirect()->route('produk.detail', $encryptedCourseId)
+                    ->with('error', 'Parameter referensi pembayaran tidak ditemukan.');
+            }
 
-            return redirect()->route('course.show', $encryptedCourseId)
-                ->with('success', 'Selamat! Anda berhasil mendapatkan akses gratis ke kursus ini.');
+            $trx = DB::table('transactions')->where('invoice_id', $reference)->first();
+
+            if (!$trx) {
+
+                $trx = DB::table('transactions')->where('external_id', $reference)->first();
+
+                if (!$trx) {
+                    Log::warning('Transaksi tidak ditemukan', ['reference' => $reference]);
+                    return redirect()->route('produk.detail', $encryptedCourseId)
+                        ->with('error', 'Transaksi tidak ditemukan. Silakan hubungi admin dengan kode referensi: ' . $reference);
+                }
+            }
+
+
+            if ($trx->user_id !== Auth::id()) {
+                return redirect()->route('produk.detail', $encryptedCourseId)
+                    ->with('error', 'Anda tidak memiliki akses ke transaksi ini.');
+            }
+
+            if ($trx->status === 'PAID') {
+                return $this->success($encryptedCourseId);
+            } elseif (in_array($trx->status, ['UNPAID', 'PENDING'])) {
+                return redirect()->route('produk.detail', $encryptedCourseId)
+                    ->with('info', 'Pembayaran Anda masih menunggu konfirmasi. Silakan selesaikan pembayaran.');
+            } else {
+                return $this->failed($encryptedCourseId);
+            }
         } catch (\Exception $e) {
-            Log::error('Free access grant failed', [
+            Log::error('Redirect after payment error', [
                 'error' => $e->getMessage(),
-                'user_id' => $userId,
-                'course_id' => $courseId
+                'reference' => $request->query('reference')
             ]);
 
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memberikan akses. Silakan coba lagi.');
+            return redirect()->route('produk.detail', $encryptedCourseId)
+                ->with('error', 'Terjadi kesalahan sistem. Silakan hubungi admin.');
         }
     }
 
     public function callback(Request $request)
     {
         try {
-            // Verifikasi callback token dari Xendit
-            $callbackToken = $request->header('x-callback-token');
-            if ($callbackToken !== env('XENDIT_CALLBACK_TOKEN')) {
-                Log::warning('Invalid callback token', ['token' => $callbackToken]);
-                return response()->json(['status' => 'invalid token'], 400);
+            $privateKey = config('services.tripay.private_key');
+
+            $json = $request->getContent();
+
+            $signature = hash_hmac('sha256', $json, $privateKey);
+
+            if ($request->header('X-Callback-Signature') !== $signature) {
+                Log::warning('Invalid callback signature', [
+                    'received' => $request->header('X-Callback-Signature'),
+                    'expected' => $signature,
+                    'body' => $json,
+                ]);
+                return response()->json(['success' => false, 'message' => 'Invalid signature'], 403);
             }
 
-            $data = $request->all();
-            Log::info('Xendit callback received', $data);
+            $data = json_decode($json, true);
 
-            $externalId = $data['external_id'] ?? null;
-            $invoiceId = $data['id'] ?? null;
-            $status = $data['status'] ?? null;
-
-            if (!$externalId || !$invoiceId) {
-                Log::error('Missing external_id or invoice_id in callback');
-                return response()->json(['status' => 'missing data'], 400);
+            if ($request->header('X-Callback-Event') !== 'payment_status') {
+                return response()->json(['success' => false, 'message' => 'Invalid event'], 400);
             }
 
-            // Ambil data transaksi dari database
-            $transaction = DB::table('transactions')
-                ->where('external_id', $externalId)
-                ->where('invoice_id', $invoiceId)
-                ->first();
 
-            if (!$transaction) {
-                Log::error('Transaction not found', ['external_id' => $externalId]);
-                return response()->json(['status' => 'transaction not found'], 404);
-            }
+            $trx = DB::table('transactions')->where('invoice_id', $data['reference'])->first();
 
-            // Update status transaksi
-            $updateData = [
-                'status' => strtoupper($status),
-                'xendit_data' => json_encode($data),
-                'updated_at' => now(),
-            ];
-
-            if ($status === 'PAID') {
-                $updateData['paid_at'] = Carbon::parse($data['paid_at'] ?? now());
-                $updateData['payment_method'] = $data['payment_method'] ?? null;
-                $updateData['payment_channel'] = $data['payment_channel'] ?? null;
+            if (!$trx) {
+                Log::error('Callback transaksi tidak ditemukan', ['reference' => $data['reference']]);
+                return response()->json(['success' => false], 404);
             }
 
             DB::table('transactions')
-                ->where('id', $transaction->id)
-                ->update($updateData);
-
-            // Jika pembayaran berhasil, berikan akses ke course
-            if ($status === 'PAID') {
-                $this->grantCourseAccess($transaction->user_id, $transaction->course_id, $transaction->status);
-
-                Log::info('Payment successful and access granted', [
-                    'transaction_id' => $transaction->id,
-                    'user_id' => $transaction->user_id,
-                    'course_id' => $transaction->course_id
+                ->where('id', $trx->id)
+                ->update([
+                    'status' => $data['status'],
+                    'paid_at' => isset($data['paid_at']) ? Carbon::createFromTimestamp($data['paid_at']) : null,
+                    'updated_at' => now(),
                 ]);
+
+
+            if ($data['status'] === 'PAID') {
+
+                $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
             }
 
-            return response()->json(['status' => 'success']);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('Callback processing failed', [
-                'error' => $e->getMessage(),
-                'data' => $request->all()
-            ]);
-
-            return response()->json(['status' => 'error'], 500);
+            Log::error('Callback error', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
         }
     }
 
-    private function grantCourseAccess($userId, $courseId, $status)
+
+
+
+    private function grantCourseAccess($userId, $productid, $status)
     {
         try {
             $enrollment = DB::table('enrollments')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('product_id', $productid)
                 ->first();
 
             if ($enrollment) {
@@ -265,15 +353,17 @@ class PaymentController extends Controller
                 // Insert baru jika belum ada
                 DB::table('enrollments')->insert([
                     'user_id' => $userId,
-                    'course_id' => $courseId,
+                    'product_id' => $productid,
                     'payment_status' => $status,
                     'enrolled_at' => now(),
                 ]);
             }
 
+
+
             $transaction = DB::table('transactions')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('product_id', $productid)
                 ->latest()
                 ->first();
 
@@ -295,7 +385,7 @@ class PaymentController extends Controller
                         'user_id' => $referralUser->id,
                         'referred_user_id' => $userId,
                         'transaction_id' => $transaction->id,
-                        'course_id' => $courseId,
+                        'product_id' => $productid,
                         'amount' => $commissionAmount,
                         'percentage' => $commissionRate,
                         'created_at' => now(),
@@ -307,21 +397,35 @@ class PaymentController extends Controller
             Log::error('Failed to grant course access', [
                 'error' => $e->getMessage(),
                 'user_id' => $userId,
-                'course_id' => $courseId
+                'product_id' => $productid
             ]);
         }
     }
 
 
+
     public function success($encryptedCourseId)
     {
-        return redirect()->route('course.show', $encryptedCourseId)
-            ->with('success', 'Pembayaran berhasil! Anda sekarang memiliki akses ke kursus ini.');
+        $productid = Crypt::decrypt($encryptedCourseId);
+        $trx = DB::table('transactions')
+            ->where('product_id', $productid)
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->first();
+
+        if ($trx && $trx->status === 'PAID') {
+            return redirect()->route('produk.detail', $encryptedCourseId)
+                ->with('success', 'Pembayaran berhasil! Anda sekarang memiliki akses ke kursus ini.');
+        }
+
+        return redirect()->route('produk.detail', $encryptedCourseId)
+            ->with('error', 'Status pembayaran belum dikonfirmasi. Silakan tunggu atau hubungi admin.');
     }
+
 
     public function failed($encryptedCourseId)
     {
-        return redirect()->route('course.show', $encryptedCourseId)
-            ->with('error', 'Pembayaran gagal atau dibatalkan. Silakan coba lagi.');
+        return redirect()->route('produk.detail', $encryptedCourseId)
+            ->with('error', 'Pembayaran gagal atau sudah kedaluwarsa. Silakan coba lagi.');
     }
 }

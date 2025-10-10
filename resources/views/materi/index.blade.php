@@ -4,13 +4,13 @@
     <div class="page-heading">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Materi</h3>
+                <h3>Materi Ebook & Kelas Video</h3>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Materi</li>
+                        <li class="breadcrumb-item active" aria-current="page">Materi Ebook & Kelas Video</li>
                     </ol>
                 </nav>
             </div>
@@ -27,28 +27,43 @@
         @endif
 
         <div class="card radius-10">
-            <div class="card-header">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0">Daftar Materi</h5>
-                    <a href="{{ route('materi.create') }}" class="btn btn-primary" id="add-product-btn">
-                        <i class="bi bi-plus-circle"></i> Tambah
-                    </a>
-                </div>
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Daftar Materi</h5>
+                <a href="{{ route('materi.create') }}" class="btn btn-primary" id="add-product-btn">
+                    <i class="bi bi-plus-circle"></i> Tambah
+                </a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0" id="kursus-table" style="width: 100%">
+                    <table class="table align-middle mb-0" id="materi-table" style="width: 100%">
                         <thead class="table-light">
                             <tr>
                                 <th width="5%">No</th>
-                                <th>Judul Materi</th>
-                                <th>Judul Course</th>
-                                <th>Type Materi</th>
+                                <th>Nama Produk</th>
+                                <th>Jenis Materi</th>
+                                <th>Deskripsi</th>
+                                <th>File</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal View File -->
+    <div class="modal fade" id="viewFileModal" tabindex="-1" aria-labelledby="viewFileLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewFileLabel">Lihat Materi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center" id="fileContent">
+                    <!-- PDF / VIDEO ditampilkan di sini -->
                 </div>
             </div>
         </div>
@@ -64,28 +79,24 @@
             padding: 0.35em 0.65em;
             font-size: 0.75em;
             font-weight: 700;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
             border-radius: 0.25rem;
         }
 
         .status-active {
-            color: #fff;
             background-color: #198754;
+            color: #fff;
         }
 
         .status-inactive {
-            color: #fff;
             background-color: #dc3545;
+            color: #fff;
         }
 
-        .thumbnail-img {
-            width: 60px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
+        iframe,
+        video {
+            width: 100%;
+            height: 80vh;
+            border-radius: 8px;
         }
     </style>
 @endpush
@@ -95,6 +106,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $.ajaxSetup({
@@ -103,7 +115,7 @@
                 }
             });
 
-            const table = $('#kursus-table').DataTable({
+            const table = $('#materi-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -117,17 +129,33 @@
                         searchable: false
                     },
                     {
-                        data: 'title',
-                        name: 'title'
+                        data: 'judul',
+                        name: 'judul'
                     },
                     {
-                        data: 'title_course',
-                        name: 'title_course'
+                        data: 'jenis_materi',
+                        name: 'jenis_materi'
                     },
-
                     {
-                        data: 'type',
-                        name: 'type'
+                        data: 'deskripsi',
+                        name: 'deskripsi',
+                        render: function(data) {
+                            return data ? data.substring(0, 100) + '...' : '-';
+                        }
+                    },
+                    {
+                        data: null,
+                        name: 'file',
+                        render: function(data) {
+                            if (!data.file_path) {
+                                return '<span class="text-muted">Tidak ada file</span>';
+                            }
+                            return `<button class="btn btn-info btn-sm view-file" data-path="${data.file_path}" data-jenis="${data.jenis_materi}">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </button>`;
+                        },
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'action',
@@ -138,14 +166,33 @@
                 ]
             });
 
-            // Hapus kursus
+            // Lihat file
+            $(document).on('click', '.view-file', function() {
+                const path = $(this).data('path');
+                const jenis = $(this).data('jenis');
+                let content = '';
+
+                if (jenis === 'pdf') {
+                    content = `<iframe src="/storage/${path}" frameborder="0"></iframe>`;
+                } else if (jenis === 'video') {
+                    content = `<video controls>
+                                    <source src="/storage/${path}" type="video/mp4">
+                                    Browser Anda tidak mendukung video.
+                               </video>`;
+                }
+
+                $('#fileContent').html(content);
+                $('#viewFileModal').modal('show');
+            });
+
+            // Hapus materi
             $(document).on('click', '.delete-btn', function() {
                 const id = $(this).data('id');
                 const url = "{{ route('materi.destroy', ':id') }}".replace(':id', id);
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
-                    text: "Data kursus akan dihapus permanen!",
+                    text: "Data materi akan dihapus permanen!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',

@@ -12,8 +12,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    const ROLE_SISWA = 'siswa';
-    const ROLE_GURU = 'guru';
+    const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
     const ROLE_OWNER = 'owner';
 
@@ -28,10 +27,14 @@ class User extends Authenticatable
         'password',
         'role',
         'referral_code',
+        'referred_by',
         'no_hp',
         'kabupaten',
-        'kota',
         'instansi',
+        'provinsi',
+        'balance',
+        'alamat',
+        'profesi'
     ];
 
     /**

@@ -4,374 +4,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>KelasSatu - Platform E-Course Terbaik</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <title>E-Course Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @stack('style')
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#f7f7f7',
-                            100: '#eb631d',
-                            200: '#254768',
-                        },
+                        'primary': '#fba615',
+                        'secondary': '#0977c2',
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in',
-                        'slide-in': 'slideIn 0.5s ease-out'
+                        'fade-in-up': 'fadeInUp 0.6s ease-out',
+                        'bounce-in': 'bounceIn 0.6s ease-out',
+                        'slide-in-left': 'slideInLeft 0.6s ease-out',
+                        'slide-in-right': 'slideInRight 0.6s ease-out',
+                        'pulse-gentle': 'pulseGentle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(30px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            }
+                        },
+                        bounceIn: {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'scale(0.3)'
+                            },
+                            '50%': {
+                                opacity: '1',
+                                transform: 'scale(1.05)'
+                            },
+                            '70%': {
+                                transform: 'scale(0.9)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'scale(1)'
+                            }
+                        },
+                        slideInLeft: {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateX(-30px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateX(0)'
+                            }
+                        },
+                        slideInRight: {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateX(30px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateX(0)'
+                            }
+                        },
+                        pulseGentle: {
+                            '0%, 100%': {
+                                opacity: '1'
+                            },
+                            '50%': {
+                                opacity: '0.8'
+                            }
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0977c2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #fba615;
+        }
+
+        /* Loading animation */
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #fba615, #0977c2);
+            z-index: 9999;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0%;
             }
 
-            to {
-                opacity: 1;
+            50% {
+                width: 70%;
+            }
+
+            100% {
+                width: 100%;
             }
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
+        /* Floating animation */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
             }
 
-            to {
-                transform: translateX(0);
+            50% {
+                transform: translateY(-10px);
             }
         }
 
-        /* Custom styles untuk warna yang diberikan */
-        .bg-primary-50 {
-            background-color: #f7f7f7;
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
         }
 
-        .bg-primary-100 {
-            background-color: #eb631d;
+        /* Shine effect */
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
         }
 
-        .bg-primary-200 {
-            background-color: #254768;
+        .shine-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            transition: left 0.5s;
         }
 
-        .text-primary-100 {
-            color: #eb631d;
-        }
-
-        .text-primary-200 {
-            color: #254768;
-        }
-
-        .border-primary-100 {
-            border-color: #eb631d;
-        }
-
-        .hover\:bg-primary-100:hover {
-            background-color: #eb631d;
-        }
-
-        .hover\:text-primary-100:hover {
-            color: #eb631d;
-        }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, #254768 0%, #1a334d 100%);
-        }
-
-        .btn-primary {
-            background-color: #eb631d;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #d45615;
-        }
-
-        .btn-outline {
-            border: 2px solid #eb631d;
-            color: #eb631d;
-        }
-
-        .btn-outline:hover {
-            background-color: #eb631d;
-            color: white;
-        }
-
-        .course-badge {
-            background-color: rgba(235, 99, 29, 0.1);
-            color: #eb631d;
-        }
-
-        /* Styles for testimonial section */
-        .testimonial-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .testimonial-avatar {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-        }
-
-        .quote-icon {
-            color: rgba(235, 99, 29, 0.2);
+        .shine-effect:hover::before {
+            left: 100%;
         }
     </style>
-    @stack('style')
 </head>
 
-<body class="bg-primary-50">
-    <!-- Navigation -->
-    <!-- Navigation -->
-    <!-- Ganti bagian navigasi yang ada (baris sekitar 91-154) dengan kode ini: -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Mobile menu button - dipindah ke kiri -->
-                <div class="md:hidden">
-                    <button
-                        class="text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-100"
-                        onclick="toggleMobileMenu()">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+<body class="font-sans">
+    <!-- Loading Bar -->
+    <div class="loading-bar"></div>
 
-                <!-- Logo - tetap di tengah pada mobile, kiri pada desktop -->
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <a href="/">
-                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    @auth
-                        <a href="{{ route('dashboardUser') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
-                        <a href="{{ route('course') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beli
-                            Kelas</a>
-                        <a href="{{ route('kelas.index') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kelas
-                            Saya</a>
-                    @else
-                        <a href="#"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
-                        <a href="{{ route('course') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kursus</a>
-                        <a href="#about"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Tentang</a>
-                        <a href="#contact"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kontak</a>
-                    @endauth
-                </div>
-
-                <!-- Right Side - User menu atau Login button -->
-                <div class="flex items-center space-x-4">
-                    @auth
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
-                                <svg class="w-8 h-8 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                                </svg>
-                                <span class="text-gray-700 font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
-                            </button>
-
-                            <!-- Dropdown -->
-                            <div x-show="open" @click.away="open = false"
-                                class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50">
-                                <a href="{{ route('account.index') }}"
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
-                                <a href="{{ route('history.index') }}"
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">History
-                                    Transaksi</a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="btn-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Masuk
-                        </a>
-                    @endauth
-                </div>
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a href="#" class="transform transition-transform duration-300 hover:scale-105">
+                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo" class="h-14 w-auto object-contain">
+                </a>
             </div>
-        </div>
 
-        <!-- Mobile menu - tidak ada perubahan -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <div class="px-2 pt-2 pb-3 space-y-1">
+            <!-- Tombol Menu Mobile -->
+            <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+
+            <!-- Navigation Desktop -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="/" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    Beranda
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    Program
+                    <span
+                        class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="{{ route('kelasvideo') }}"
+                    class="text-gray-700 hover:text-secondary font-medium relative group">
+                    Kelas Video
+                    <span
+                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    E-Book
+                    <span
+                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    Buku
+                    <span
+                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
                 @auth
-                    <a href="/" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
-                    <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Beli
-                        Kelas</a>
-                    <a href="" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kelas
-                        Saya</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="w-full text-left px-3 py-2 text-gray-600 hover:text-primary-100">Logout</button>
-                    </form>
+                    <a href="{{ route('kelas.index') }}"
+                        class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Kelas Saya
+                        <span
+                            class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                @endauth
+
+                <a href="#" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    Testimoni
+                    <span
+                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#" class="text-gray-700 hover:text-secondary font-medium relative group">
+                    FAQ
+                    <span
+                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </nav>
+
+            <!-- Tombol Login & Register (Desktop) -->
+            <div class="hidden md:flex items-center space-x-4">
+                @auth
+                    <div class="relative">
+                        <button id="profile-btn"
+                            class="flex items-center space-x-2 focus:outline-none text-gray-700 hover:text-primary">
+                            <i class="fa-solid fa-user-circle text-3xl"></i>
+                            <i class="fa-solid fa-chevron-down text-gray-600 text-sm"></i>
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div id="userDropdown"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                            </form>
+                        </div>
+                    </div>
                 @else
-                    <a href="#" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
-                    <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kursus</a>
-                    <a href="#about" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Tentang</a>
-                    <a href="#contact" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kontak</a>
-                    <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Masuk</a>
+                    <a href="{{ route('login') }}"
+                        class="px-4 py-2 text-secondary font-medium hover:text-primary transition">Masuk</a>
+                    <a href="{{ route('register.index') }}"
+                        class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition shine-effect">Daftar</a>
                 @endauth
             </div>
         </div>
-    </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-md">
+            <nav class="flex flex-col p-4 space-y-3">
+                <a href="/" class="text-gray-700 hover:text-secondary">Beranda</a>
+                <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary">Program</a>
+                <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">Kelas Video</a>
+                <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
+                <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
+                <a href="#" class="text-gray-700 hover:text-secondary">Testimoni</a>
+                <a href="#" class="text-gray-700 hover:text-secondary">FAQ</a>
+                <div class="flex space-x-2 mt-3">
+                    <a href="{{ route('login') }}"
+                        class="flex-1 px-4 py-2 border border-secondary text-secondary rounded-md hover:bg-secondary hover:text-white transition-all">Masuk</a>
+                    <a href="{{ route('register.index') }}"
+                        class="flex-1 px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all">Daftar</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
 
     @yield('content')
 
+    <footer class="bg-secondary text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div class="animate-fade-in-up">
+                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo"
+                        class="h-14 w-auto object-contain mb-4 transform transition-transform duration-300 hover:scale-105">
 
-
-
-
-    <!-- Footer -->
-    <footer class="bg-primary-200 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-2xl font-bold text-primary-100 mb-4">KelasSatu</h3>
-                    <p class="text-blue-100 mb-4">Platform e-learning terdepan untuk masa depan yang lebih cerah.</p>
+                    <p class="mb-4">Platform pembelajaran online terbaik dengan berbagai pilihan E-Course dan E-Book
+                        berkualitas.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-blue-100 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                            </svg>
+                        <a href="#"
+                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                            <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="text-blue-100 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.20-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
-                            </svg>
+                        <a href="#"
+                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#"
+                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#"
+                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                            <i class="fab fa-linkedin-in"></i>
                         </a>
                     </div>
                 </div>
 
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Platform</h4>
-                    <ul class="space-y-2 text-blue-100">
-                        <li><a href="#" class="hover:text-white transition-colors">Kursus</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Instruktur</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Sertifikasi</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Komunitas</a></li>
+                <!-- Quick Links -->
+                <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
+                    <h4 class="font-bold text-lg mb-4">Tautan Cepat</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Beranda</a>
+                        </li>
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Tentang
+                                Kami</a></li>
+                        <li><a href="{{ route('program') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Program</a>
+                        </li>
+                        <li><a href="{{ route('kelasvideo') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kelas
+                                Video</a></li>
+                        <li>
+                            <a href="{{ route('ebook') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">E-Book</a>
+                        </li>
+                        <li><a href="{{ route('buku') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Buku</a>
+                        </li>
                     </ul>
                 </div>
 
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Dukungan</h4>
-                    <ul class="space-y-2 text-blue-100">
-                        <li><a href="#" class="hover:text-white transition-colors">Bantuan</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Kontak</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Status</a></li>
+                <!-- Support -->
+                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h4 class="font-bold text-lg mb-4">Dukungan</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Bantuan</a>
+                        </li>
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">FAQ</a>
+                        </li>
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kebijakan
+                                Privasi</a></li>
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Syarat
+                                & Ketentuan</a></li>
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kontak</a>
+                        </li>
                     </ul>
                 </div>
 
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Perusahaan</h4>
-                    <ul class="space-y-2 text-blue-100">
-                        <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Karir</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
-                    </ul>
+                <!-- Newsletter -->
+                <div class="animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <h4 class="font-bold text-lg mb-4">Berlangganan Newsletter</h4>
+                    <p class="mb-4">Dapatkan informasi terbaru tentang E-Course dan E-Book terbaru.</p>
+                    <form class="flex transform transition-all duration-300 hover:scale-105">
+                        <input type="email" placeholder="Email Anda"
+                            class="px-4 py-2 rounded-l-lg text-gray-800 w-full focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
+                        <button type="submit"
+                            class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition-all duration-300 shine-effect">
+                            Kirim
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <div class="border-t border-blue-800 mt-8 pt-8 text-center text-blue-100">
-                <p>&copy; 2024 KelasSatu. Seluruh hak cipta dilindungi.</p>
+            <div class="border-t border-gray-600 pt-6 text-center animate-fade-in-up">
+                <p>&copy; 2023 EduCourse. All rights reserved.</p>
             </div>
         </div>
     </footer>
-    <script src="//unpkg.com/alpinejs" defer></script>
 
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script>
-        // Image slider functionality
-        let currentSlideIndex = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.slider-dot');
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileBtn = document.getElementById('profile-btn');
+            const userDropdown = document.getElementById('userDropdown');
 
-        function toggleFaq(id) {
-            const answer = document.getElementById('answer-' + id);
-            const icon = document.getElementById('icon-' + id);
-            if (answer.classList.contains('hidden')) {
-                answer.classList.remove('hidden');
-                icon.classList.add('rotate-45'); // Ubah ikon jadi tanda minus
-            } else {
-                answer.classList.add('hidden');
-                icon.classList.remove('rotate-45');
+            if (profileBtn && userDropdown) {
+                // Toggle tampil/sembunyi saat tombol profil diklik
+                profileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('hidden');
+                });
+
+                // Tutup dropdown jika klik di luar area profil/dropdown
+                window.addEventListener('click', (e) => {
+                    if (!profileBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
             }
-        }
+        });
+    </script>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.style.opacity = i === index ? '1' : '0';
+    <script>
+        // Enhanced slider functionality with smooth transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loading animation
+            setTimeout(() => {
+                document.querySelector('.loading-bar').style.display = 'none';
+            }, 2000);
+
+            // Slider
+            const sliderWrapper = document.querySelector('.slider-wrapper');
+            const slides = document.querySelectorAll('.slider-slide');
+            const prevBtn = document.querySelector('.slider-prev');
+            const nextBtn = document.querySelector('.slider-next');
+            const indicators = document.querySelectorAll('.slider-indicator');
+
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            let slideInterval;
+
+            function updateSlider() {
+                sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+                // Update indicators
+                indicators.forEach((indicator, index) => {
+                    if (index === currentSlide) {
+                        indicator.classList.add('active', 'bg-opacity-100');
+                        indicator.classList.remove('bg-opacity-50');
+                    } else {
+                        indicator.classList.remove('active', 'bg-opacity-100');
+                        indicator.classList.add('bg-opacity-50');
+                    }
+                });
+            }
+
+            // Next slide
+            nextBtn.addEventListener('click', function() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlider();
+                resetAutoSlide();
             });
 
-            dots.forEach((dot, i) => {
-                dot.style.opacity = i === index ? '1' : '0.5';
+            // Previous slide
+            prevBtn.addEventListener('click', function() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlider();
+                resetAutoSlide();
             });
-        }
 
-        function nextSlide() {
-            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-            showSlide(currentSlideIndex);
-        }
+            // Indicator click
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', function() {
+                    currentSlide = index;
+                    updateSlider();
+                    resetAutoSlide();
+                });
+            });
 
-        function currentSlide(index) {
-            currentSlideIndex = index - 1;
-            showSlide(currentSlideIndex);
-        }
+            // Auto slide
+            function startAutoSlide() {
+                slideInterval = setInterval(function() {
+                    currentSlide = (currentSlide + 1) % totalSlides;
+                    updateSlider();
+                }, 5000);
+            }
 
-        // Auto-advance slides
-        setInterval(nextSlide, 5000);
+            function resetAutoSlide() {
+                clearInterval(slideInterval);
+                startAutoSlide();
+            }
 
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        }
+            startAutoSlide();
 
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+            // Enhanced FAQ functionality
+            const faqQuestions = document.querySelectorAll('.faq-question');
+
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    const faqItem = this.parentElement;
+
+                    // Toggle answer visibility with smooth animation
+                    if (answer.classList.contains('hidden')) {
+                        answer.classList.remove('hidden');
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        faqItem.classList.add('bg-gray-50');
+                    } else {
+                        answer.style.maxHeight = '0';
+                        setTimeout(() => {
+                            answer.classList.add('hidden');
+                        }, 300);
+                        faqItem.classList.remove('bg-gray-50');
+                    }
+
+                    // Rotate icon
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+
+            // Add scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            document.querySelectorAll('.course-card, .testimonial-card, .animate-fade-in-up').forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+
+            // Header scroll effect
+            let lastScrollY = window.scrollY;
+            const header = document.querySelector('header');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                    header.style.transform = 'translateY(-100%)';
+                } else {
+                    header.style.transform = 'translateY(0)';
                 }
+                lastScrollY = window.scrollY;
+            });
+
+            // Add hover sound effects (optional)
+            const buttons = document.querySelectorAll('button, a');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // Add floating animation to random elements
+        function addFloatingAnimation() {
+            const elements = document.querySelectorAll('.course-card, .testimonial-card');
+            elements.forEach((el, index) => {
+                if (index % 3 === 0) {
+                    el.classList.add('float-animation');
+                    el.style.animationDelay = `${index * 0.2}s`;
+                }
+            });
+        }
+
+        // Initialize floating animation
+        document.addEventListener('DOMContentLoaded', addFloatingAnimation);
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const icon = menuBtn.querySelector('i');
+
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('animate-fade-in-up');
+
+                // Ganti icon antara bars dan times
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
             });
         });
     </script>

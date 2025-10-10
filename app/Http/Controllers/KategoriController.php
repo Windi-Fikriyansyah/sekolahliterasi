@@ -106,8 +106,8 @@ class KategoriController extends Controller
 
     public function edit($id)
     {
-        $course = DB::table('kategori')->where('id', $id)->first();
-        return view('kategori.create', compact('course'));
+        $kategori = DB::table('kategori')->where('id', $id)->first();
+        return view('kategori.create', compact('kategori'));
     }
 
     public function update(Request $request, $id)
