@@ -35,9 +35,7 @@ Route::get('/program', [ProgramController::class, 'index'])->name('program');
 Route::get('/E-book', [EbookController::class, 'index'])->name('ebook');
 Route::get('/Buku', [BukuController::class, 'index'])->name('buku');
 Route::get('/Kelas-Video', [KelasVideoController::class, 'index'])->name('kelasvideo');
-Route::prefix('produk')->name('produk.')->group(function () {
-    Route::get('/{id}', [ProdukController::class, 'show'])->name('show');
-});
+
 
 
 
@@ -238,6 +236,10 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 
 Route::get('/landing/{product_id}', [ProgramController::class, 'landing_page'])
     ->name('landing.page');
+
+Route::prefix('produk')->name('produk.')->group(function () {
+    Route::get('/{id}', [ProdukController::class, 'show'])->name('show');
+});
 
 
 
