@@ -78,7 +78,7 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($program->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $program->id) }}"
+                                <a href="{{ route('landing.page', $program->id) }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>
@@ -231,10 +231,12 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($buku->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $buku->id) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
+                                <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                    class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                    title="Tambah ke Keranjang">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+
                             </div>
                         </div>
                     </div>

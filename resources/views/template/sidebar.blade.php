@@ -84,6 +84,16 @@
         </a>
     </li>
 
+    <li class="menu-header small text-uppercase">
+        <span class="menu-header-text">Pengaturan Web</span>
+    </li>
+    <li class="menu-item">
+        <a href="{{ route('lp_programs.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Atur Landing Page</div>
+        </a>
+    </li>
+
 
 
 

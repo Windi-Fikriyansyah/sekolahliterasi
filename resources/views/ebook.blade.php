@@ -54,7 +54,7 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($ebook->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $ebook->id) }}"
+                                <a href="{{ route('produk.show', Crypt::encrypt($ebook->id)) }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>

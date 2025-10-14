@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Course Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @stack('style')
     <script>
@@ -85,6 +86,29 @@
         }
     </script>
     <style>
+        input[type="checkbox"].accent-primary {
+            accent-color: #fba615;
+            /* Warna utama */
+        }
+
+        #cart-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #cart-items::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #cart-items::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #fba615, #0977c2);
+            border-radius: 10px;
+        }
+
+        #cart-items::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #0977c2, #fba615);
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -240,8 +264,57 @@
             </nav>
 
             <!-- Tombol Login & Register (Desktop) -->
+            <!-- Tombol Login & Register (Desktop) -->
             <div class="hidden md:flex items-center space-x-4">
                 @auth
+                    <!-- 🔹 Ikon Keranjang -->
+                    <div class="relative">
+                        <button id="cart-btn" class="relative text-gray-700 hover:text-primary focus:outline-none">
+                            <i class="fa-solid fa-shopping-cart text-2xl"></i>
+                            <span id="cart-count"
+                                class="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                                0
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Keranjang -->
+                        <!-- Dropdown Keranjang -->
+                        <div id="cartDropdown"
+                            class="hidden absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
+
+                            <!-- Header Keranjang -->
+                            <div class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
+                                <h3 class="font-bold text-lg flex items-center justify-between">
+                                    <span><i class="fas fa-shopping-cart mr-2"></i>Keranjang Belanja</span>
+                                    <span id="cart-count-header"
+                                        class="bg-white text-primary text-sm px-2.5 py-1 rounded-full font-bold">0</span>
+                                </h3>
+                            </div>
+
+                            <!-- Body Keranjang -->
+                            <div id="cart-items" class="p-4 max-h-80 overflow-y-auto">
+                                <div class="flex flex-col items-center justify-center py-8 text-gray-400">
+                                    <i class="fas fa-shopping-basket text-5xl mb-3 opacity-50"></i>
+                                    <p class="text-sm">Keranjang Anda masih kosong</p>
+                                </div>
+                            </div>
+
+                            <!-- Footer Keranjang -->
+                            <div id="cart-footer" class="hidden border-t border-gray-200 bg-gray-50 p-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="font-semibold text-gray-700">Total Belanja:</span>
+                                    <span id="cart-total" class="text-primary font-bold text-xl">Rp 0</span>
+                                </div>
+                                <button id="checkout-btn" onclick="checkoutSelected()"
+                                    class="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                                    <i class="fas fa-credit-card mr-2"></i>
+                                    Checkout Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🔹 Ikon Profil -->
                     <div class="relative">
                         <button id="profile-btn"
                             class="flex items-center space-x-2 focus:outline-none text-gray-700 hover:text-primary">
@@ -249,7 +322,6 @@
                             <i class="fa-solid fa-chevron-down text-gray-600 text-sm"></i>
                         </button>
 
-                        <!-- Dropdown -->
                         <div id="userDropdown"
                             class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                             <form action="{{ route('logout') }}" method="POST">
@@ -266,6 +338,8 @@
                         class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition shine-effect">Daftar</a>
                 @endauth
             </div>
+
+
         </div>
 
         <!-- Mobile Menu -->
@@ -390,6 +464,205 @@
             </div>
         </div>
     </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cartBtn = document.getElementById("cart-btn");
+            const cartDropdown = document.getElementById("cartDropdown");
+            const cartCount = document.getElementById("cart-count");
+            const cartCountHeader = document.getElementById("cart-count-header");
+            const cartItemsContainer = document.getElementById("cart-items");
+            const cartFooter = document.getElementById("cart-footer");
+            const cartTotal = document.getElementById("cart-total");
+
+            // 🔹 Load data cart dari database
+            async function loadCart() {
+                try {
+                    const res = await fetch("/buku/cart");
+                    if (!res.ok) throw new Error("Gagal memuat cart");
+                    const items = await res.json();
+
+                    cartCount.textContent = items.length;
+                    cartCountHeader.textContent = items.length;
+
+                    if (items.length === 0) {
+                        cartItemsContainer.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-8 text-gray-400">
+                <i class="fas fa-shopping-basket text-5xl mb-3 opacity-50"></i>
+                <p class="text-sm">Keranjang Anda masih kosong</p>
+            </div>`;
+                        cartFooter.classList.add("hidden");
+                        return;
+                    }
+
+                    let total = 0;
+                    cartItemsContainer.innerHTML = items.map(item => {
+                        const subtotal = parseInt(item.harga) * item.qty;
+                        if (item.checked) total += subtotal;
+
+                        return `
+            <div class="flex items-start justify-between border-b py-3">
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="mt-1 accent-primary"
+                        ${item.checked ? 'checked' : ''}
+                        onchange="toggleCheck(${item.cart_id}, this.checked)">
+                    <img src="/storage/${item.thumbnail}" class="w-14 h-14 rounded object-cover">
+                    <div>
+                        <h4 class="font-semibold text-sm">${item.judul}</h4>
+                        <p class="text-primary font-bold text-sm">Rp ${parseInt(item.harga).toLocaleString('id-ID')}</p>
+                        <div class="flex items-center mt-1 space-x-2">
+                            <button onclick="updateQty(${item.cart_id}, ${item.qty - 1})" class="px-2 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                            <span class="text-sm font-semibold w-6 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${item.cart_id}, ${item.qty + 1})" class="px-2 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="removeFromCart(${item.cart_id})" class="text-gray-400 hover:text-red-500">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>`;
+                    }).join("");
+
+                    cartTotal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+                    cartFooter.classList.remove("hidden");
+
+                    // Tombol checkout aktif hanya jika ada yang dipilih
+                    document.getElementById("checkout-btn").disabled = total === 0;
+                    document.getElementById("checkout-btn").classList.toggle("opacity-50", total === 0);
+                } catch (err) {
+                    console.error(err);
+                    cartItemsContainer.innerHTML =
+                        `<p class="text-center text-gray-500 py-4">Gagal memuat data keranjang.</p>`;
+                }
+            }
+
+
+            // 🔹 Hapus item dari cart
+            window.removeFromCart = async function(id) {
+                await fetch(`/buku/cart/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                });
+                showToast("🗑️ Item dihapus dari keranjang");
+                loadCart();
+            }
+
+            // 🔹 Checkout
+            window.checkoutSelected = async function() {
+                try {
+                    const res = await fetch("/buku/cart");
+                    const items = await res.json();
+                    const selected = items.filter(i => i.checked);
+
+                    if (selected.length === 0) {
+                        showToast("⚠️ Pilih produk terlebih dahulu", "warning");
+                        return;
+                    }
+
+                    showToast("✅ Mengalihkan ke halaman checkout...", "success");
+
+                    // Langsung arahkan ke halaman checkout
+                    setTimeout(() => {
+                        window.location.href = "{{ route('buku.checkout') }}";
+                    }, 800);
+                } catch (err) {
+                    console.error(err);
+                    showToast("❌ Terjadi kesalahan saat checkout", "error");
+                }
+            };
+
+
+
+            // 🔹 Toggle dropdown
+            if (cartBtn && cartDropdown) {
+                cartBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    cartDropdown.classList.toggle("hidden");
+                    if (!cartDropdown.classList.contains("hidden")) {
+                        loadCart();
+                    }
+                });
+
+                document.addEventListener("click", (e) => {
+                    if (!cartBtn.contains(e.target) && !cartDropdown.contains(e.target)) {
+                        cartDropdown.classList.add("hidden");
+                    }
+                });
+            }
+
+            window.addToCart = function(product_id, title) {
+                fetch("/buku/cart/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({
+                            product_id
+                        }),
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'exists') {
+                            showToast(`⚠️ ${title} sudah ada di keranjang`, "warning");
+                        } else {
+                            showToast(`✅ ${title} ditambahkan ke keranjang`);
+                        }
+                        loadCart();
+                    })
+                    .catch(() => showToast("❌ Gagal menambahkan produk", "error"));
+            };
+
+            window.updateQty = async function(id, qty) {
+                if (qty < 1) {
+                    showToast("Jumlah tidak boleh kurang dari 1", "warning");
+                    return;
+                }
+
+                await fetch(`/buku/cart/${id}/qty`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({
+                            qty
+                        }),
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        loadCart();
+                    })
+                    .catch(() => showToast("❌ Gagal memperbarui jumlah", "error"));
+            };
+
+            window.toggleCheck = async function(id, checked) {
+                await fetch(`/buku/cart/${id}/toggle`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({
+                            checked
+                        }),
+                    })
+                    .then(() => {
+                        loadCart();
+                    })
+                    .catch(() => showToast("❌ Gagal memperbarui pilihan", "error"));
+            };
+
+
+            // Pertama kali load
+            loadCart();
+        });
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -589,6 +862,49 @@
                 icon.classList.toggle('fa-times');
             });
         });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const colors = {
+                success: 'bg-green-500',
+                warning: 'bg-yellow-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+            };
+
+            toast.className =
+                `${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 animate-slide-in`;
+            toast.innerHTML = `
+        <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'warning' ? 'fa-triangle-exclamation' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info'} text-white"></i>
+        <span>${message}</span>
+    `;
+
+            container.appendChild(toast);
+
+            // Hapus otomatis setelah 3 detik
+            setTimeout(() => {
+                toast.classList.add('animate-fade-out');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // ✅ Tambahkan animasi CSS sederhana
+        const style = document.createElement('style');
+        style.innerHTML = `
+@keyframes slide-in {
+    0% { opacity: 0; transform: translateX(100%); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes fade-out {
+    0% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(100%); }
+}
+.animate-slide-in { animation: slide-in 0.4s ease-out; }
+.animate-fade-out { animation: fade-out 0.4s ease-in forwards; }
+`;
+        document.head.appendChild(style);
     </script>
     @stack('js')
 </body>

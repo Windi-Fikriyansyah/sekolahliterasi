@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriBukuController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProdukBukuController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\TryoutController;
 use App\Http\Controllers\user\BukuController;
 use App\Http\Controllers\user\EbookController;
@@ -133,6 +135,21 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::delete('/materi/delete-pdf-chunk', [MateriController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
     });
 
+    Route::prefix('lp_programs')->name('lp_programs.')->group(function () {
+        Route::get('/', [ProgramsController::class, 'index'])->name('index');
+        Route::post('/load', [ProgramsController::class, 'load'])->name('load');
+        Route::get('/atur/{id}', [ProgramsController::class, 'atur'])->name('atur');
+        Route::post('/update/{id}', [ProgramsController::class, 'updateAtur'])->name('updateAtur');
+        Route::get('/{landing_page_id}/create', [ProgramsController::class, 'create'])
+            ->name('create');
+        Route::post('/store', [ProgramsController::class, 'store'])
+            ->name('store');
+
+        Route::delete('/section/{id}', [ProgramsController::class, 'deleteSection'])->name('deleteSection');
+        Route::put('/section/{id}/update', [ProgramsController::class, 'updateSection'])->name('updateSection');
+        Route::put('/update-all/{id}', [ProgramsController::class, 'updateAll'])->name('updateAll');
+    });
+
     Route::prefix('withdraw')->name('withdraw.')->group(function () {
         Route::get('/', [WithdrawController::class, 'index'])->name('index');
         Route::post('/load', [WithdrawController::class, 'load'])->name('load');
@@ -152,6 +169,22 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/checkout/{id}/pay', [ProdukController::class, 'pay'])->name('pay');
         Route::get('/detail/{encryptedCourseId}', [ProdukController::class, 'detail'])->name('detail');
     });
+
+    Route::prefix('buku')->name('buku.')->group(function () {
+        Route::get('/checkout', [CartController::class, 'checkoutBuku'])->name('checkout');
+        Route::get('/checkout-buku/kota/{provinsi_id}', [CartController::class, 'getKota']);
+        Route::get('/checkout-buku/kecamatan/{city_id}', [CartController::class, 'getKecamatan']);
+        Route::post('/checkout-buku/ongkir', [CartController::class, 'getOngkir']);
+
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+        Route::put('/cart/{cart}/qty', [CartController::class, 'updateQty'])->name('cart.updateQty');
+        Route::put('/cart/{id}/toggle', [CartController::class, 'toggleCheck'])->name('cart.toggleCheck');
+        Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
+        Route::get('/cart-total', [CartController::class, 'total'])->name('cart.total');
+    });
+
+
 
 
     Route::prefix('kelas')->name('kelas.')->group(function () {
@@ -202,6 +235,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+
+Route::get('/landing/{product_id}', [ProgramController::class, 'landing_page'])
+    ->name('landing.page');
+
 
 
 require __DIR__ . '/auth.php';

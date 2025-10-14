@@ -22,6 +22,7 @@ class PaymentController extends Controller
 {
 
 
+
     public function createPayment($id)
     {
 
@@ -309,21 +310,39 @@ class PaymentController extends Controller
                 return response()->json(['success' => false], 404);
             }
 
-            DB::table('transactions')
-                ->where('id', $trx->id)
-                ->update([
+            DB::beginTransaction();
+
+            try {
+                // Update status transaksi
+                DB::table('transactions')
+                    ->where('id', $trx->id)
+                    ->update([
+                        'status' => $data['status'],
+                        'paid_at' => isset($data['paid_at']) ? Carbon::createFromTimestamp($data['paid_at']) : null,
+                        'updated_at' => now(),
+                    ]);
+
+                // Jika status PAID, berikan akses kursus dan proses komisi referral
+                if ($data['status'] === 'PAID') {
+                    $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
+                }
+
+                DB::commit();
+                Log::info('Callback processed successfully', [
+                    'reference' => $data['reference'],
                     'status' => $data['status'],
-                    'paid_at' => isset($data['paid_at']) ? Carbon::createFromTimestamp($data['paid_at']) : null,
-                    'updated_at' => now(),
+                    'user_id' => $trx->user_id,
                 ]);
 
-
-            if ($data['status'] === 'PAID') {
-
-                $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
+                return response()->json(['success' => true]);
+            } catch (\Exception $inner) {
+                DB::rollBack();
+                Log::error('Database transaction failed during callback', [
+                    'error' => $inner->getMessage(),
+                    'reference' => $data['reference']
+                ]);
+                return response()->json(['success' => false, 'message' => 'Transaction failed'], 500);
             }
-
-            return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Callback error', ['error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Server error'], 500);
@@ -335,6 +354,7 @@ class PaymentController extends Controller
 
     private function grantCourseAccess($userId, $productid, $status)
     {
+        DB::beginTransaction();
         try {
             $enrollment = DB::table('enrollments')
                 ->where('user_id', $userId)
@@ -393,7 +413,9 @@ class PaymentController extends Controller
                     ]);
                 }
             }
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to grant course access', [
                 'error' => $e->getMessage(),
                 'user_id' => $userId,

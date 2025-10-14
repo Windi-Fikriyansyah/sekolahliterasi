@@ -83,10 +83,16 @@
                                                 'ebook' => 'bg-primary',
                                             ];
                                             $badgeColor = $badgeColors[$type] ?? 'bg-gray-600';
+                                            $typeLabels = [
+                                                'ebook' => 'E-book',
+                                                'kelas_video' => 'Kelas Video',
+                                                'program' => 'Program',
+                                            ];
+                                            $typeLabel = $typeLabels[$type] ?? ucfirst($type);
                                         @endphp
                                         <span
                                             class="px-3 py-1 {{ $badgeColor }} text-white text-xs font-semibold rounded-full">
-                                            {{ ucfirst($item->tipe_produk ?? 'kelas_video') }}
+                                            {{ $typeLabel }}
                                         </span>
                                     </div>
 

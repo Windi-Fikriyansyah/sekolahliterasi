@@ -49,7 +49,17 @@
                             <h3 class="font-semibold text-gray-800 text-sm leading-tight mb-1">
                                 {{ $produk->judul }}
                             </h3>
-                            <p class="text-gray-600 text-xs mb-2">{{ $produk->tipe_produk }}</p>
+                            <p class="text-gray-600 text-xs mb-2">
+                                @if ($produk->tipe_produk === 'ebook')
+                                    E-book
+                                @elseif ($produk->tipe_produk === 'kelas_video')
+                                    Kelas Video
+                                @elseif ($produk->tipe_produk === 'program')
+                                    Program
+                                @else
+                                    {{ ucfirst($produk->tipe_produk) }}
+                                @endif
+                            </p>
                             <p class="text-primary font-bold text-lg">
                                 Rp {{ number_format($produk->harga, 0, ',', '.') }}
                             </p>
