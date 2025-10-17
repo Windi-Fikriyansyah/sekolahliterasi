@@ -236,8 +236,15 @@
 
         /* Show Sidebar Button */
         #show-sidebar-desktop {
+            display: none;
+            /* <== tidak tampil saat pertama kali load */
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #show-sidebar-desktop.visible {
+            display: block;
+            /* akan muncul setelah sidebar ditutup */
         }
 
         #show-sidebar-desktop:hover {
@@ -245,10 +252,13 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
 
-        #show-sidebar-desktop.sidebar-visible {
-            opacity: 0;
+        /* Optimisasi PDF */
+        iframe#pdf-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
             pointer-events: none;
-            transform: scale(0.8) translateX(20px);
+            /* menambah perlindungan */
         }
 
         /* Untuk mobile sidebar */
@@ -270,67 +280,49 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let desktopSidebarVisible = true;
+            const sidebar = document.getElementById('sidebar-materi');
+            const contentArea = document.getElementById('content-area');
+            const showSidebarBtn = document.getElementById('show-sidebar-desktop');
+            const desktopToggleIcon = document.getElementById('desktop-toggle-icon');
 
+            // Fungsi toggle sidebar desktop
             window.toggleSidebarDesktop = function() {
                 desktopSidebarVisible = !desktopSidebarVisible;
-                const sidebar = document.getElementById('sidebar-materi');
-                const contentArea = document.getElementById('content-area');
-                const showSidebarBtn = document.getElementById('show-sidebar-desktop');
-                const desktopToggleIcon = document.getElementById('desktop-toggle-icon');
-
-                if (!sidebar || !contentArea || !showSidebarBtn) {
-                    console.error('Required elements not found');
-                    return;
-                }
 
                 if (desktopSidebarVisible) {
                     // Tampilkan sidebar
                     sidebar.classList.remove('sidebar-hidden-desktop');
                     contentArea.classList.remove('expanded');
-                    showSidebarBtn.classList.add('sidebar-visible');
-
-                    // Update icon di header sidebar
-                    if (desktopToggleIcon) {
-                        desktopToggleIcon.classList.remove('fa-chevron-left');
-                        desktopToggleIcon.classList.add('fa-chevron-right');
-                    }
+                    showSidebarBtn.classList.remove('visible');
                 } else {
                     // Sembunyikan sidebar
                     sidebar.classList.add('sidebar-hidden-desktop');
                     contentArea.classList.add('expanded');
-                    showSidebarBtn.classList.remove('sidebar-visible');
-
-                    // Update icon di header sidebar
-                    if (desktopToggleIcon) {
-                        desktopToggleIcon.classList.remove('fa-chevron-right');
-                        desktopToggleIcon.classList.add('fa-chevron-left');
-                    }
+                    showSidebarBtn.classList.add('visible');
                 }
             };
 
-            // Fungsi toggle sidebar mobile
+            // Fungsi toggle sidebar untuk mobile
             window.toggleSidebar = function() {
-                const sidebar = document.getElementById('sidebar-materi');
                 const overlay = document.getElementById('sidebar-overlay');
-
                 sidebar.classList.toggle('translate-x-full');
                 overlay.classList.toggle('hidden');
             };
 
-            // Fungsi load materi (video/pdf)
+            // Fungsi load materi
             window.loadMateri = function(materiId, jenisMateri, deskripsi, filePath, nomor) {
                 document.querySelectorAll('.materi-item').forEach(item => item.classList.remove('active'));
                 document.querySelector(`[data-materi-id="${materiId}"]`).classList.add('active');
 
                 const viewer = document.getElementById('content-viewer');
                 viewer.innerHTML = `
-                    <div class="flex items-center justify-center h-full">
-                        <div class="text-center">
-                            <div class="loading-spinner mx-auto mb-4"></div>
-                            <p class="text-white">Memuat konten...</p>
-                        </div>
-                    </div>
-                `;
+            <div class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-white">Memuat konten...</p>
+                </div>
+            </div>
+        `;
 
                 if (jenisMateri === 'video') {
                     loadVideo(filePath, viewer);
@@ -338,59 +330,62 @@
                     loadPDF(filePath, viewer);
                 }
 
-                // Auto-close mobile sidebar after selection
-                if (window.innerWidth < 1024) {
-                    toggleSidebar();
-                }
+                if (window.innerWidth < 1024) toggleSidebar();
             };
 
+            // Optimisasi video load
             function loadVideo(filePath, container) {
-                const videoHTML = `
-                    <video controls controlsList="nodownload" oncontextmenu="return false;"
-                        class="w-full h-full bg-black">
-                        <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
-                        Browser Anda tidak mendukung video player.
-                    </video>`;
-                container.innerHTML = videoHTML;
+                container.innerHTML = `
+            <video controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full bg-black" preload="auto">
+                <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
+                Browser Anda tidak mendukung video player.
+            </video>`;
             }
 
+            // Optimisasi PDF load
             function loadPDF(filePath, container) {
                 const pdfURL = `{{ asset('storage') }}/${filePath}`;
                 container.innerHTML = `
-                    <div class="relative w-full h-full">
-                        <iframe
-                            src="${pdfURL}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-fit"
-                            id="pdf-viewer"
-                            loading="lazy"
-                            class="w-full h-full"
-                            onload="protectPDF()">
-                        </iframe>
-                        <div class="pdf-protection"
-                            oncontextmenu="return false;"
-                            onselectstart="return false;"
-                            ondragstart="return false;">
-                        </div>
-                    </div>`;
+            <div class="relative w-full h-full">
+                <iframe
+                    src="${pdfURL}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
+                    id="pdf-viewer"
+                    loading="eager"
+                    class="w-full h-full"
+                    onload="protectPDF()">
+                </iframe>
+                <div class="pdf-protection"
+                    oncontextmenu="return false;"
+                    onselectstart="return false;"
+                    ondragstart="return false;">
+                </div>
+            </div>`;
             }
 
+            // Proteksi PDF
             window.protectPDF = function() {
                 const iframe = document.getElementById('pdf-viewer');
-                if (iframe && iframe.contentWindow) {
-                    try {
-                        iframe.contentWindow.document.addEventListener('contextmenu', e => e.preventDefault());
-                        iframe.contentWindow.document.addEventListener('selectstart', e => e.preventDefault());
-                        iframe.contentWindow.document.addEventListener('copy', e => e.preventDefault());
-                    } catch (e) {
-                        console.log('Cannot access iframe content due to CORS');
-                    }
+                if (!iframe) return;
+                try {
+                    const doc = iframe.contentWindow.document;
+                    ['contextmenu', 'selectstart', 'copy'].forEach(ev => {
+                        doc.addEventListener(ev, e => e.preventDefault());
+                    });
+                } catch (e) {
+                    console.log('CORS: tidak bisa proteksi PDF dalam iframe eksternal');
                 }
             };
 
-            // Nonaktifkan copy / klik kanan di viewer
+            // Disable klik kanan dan copy di viewer utama
             const viewer = document.getElementById('content-viewer');
-            viewer.addEventListener('contextmenu', e => e.preventDefault());
-            viewer.addEventListener('selectstart', e => e.preventDefault());
-            viewer.addEventListener('copy', e => e.preventDefault());
+            ['contextmenu', 'selectstart', 'copy'].forEach(ev => viewer.addEventListener(ev, e => e
+                .preventDefault()));
+
+            // Preconnect PDF agar load cepat
+            const link = document.createElement('link');
+            link.rel = 'preconnect';
+            link.href = '{{ asset('storage') }}';
+            document.head.appendChild(link);
 
             // Auto-load materi pertama
             const firstMateri = document.querySelector('.materi-item');
