@@ -165,27 +165,26 @@
             width: 100%;
             height: 100%;
             overflow-y: auto;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
             background: #525252;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
-        #pdf-container::-webkit-scrollbar {
-            width: 8px;
+        .pdf-page-canvas {
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: white;
         }
 
-        #pdf-container::-webkit-scrollbar-track {
-            background: #2a2a2a;
+        #content-viewer {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
-        #pdf-container::-webkit-scrollbar-thumb {
-            background: #666;
-            border-radius: 4px;
-        }
-
-        #pdf-container::-webkit-scrollbar-thumb:hover {
-            background: #888;
-        }
 
         /* PDF Canvas */
         .pdf-page-canvas {
