@@ -23,31 +23,31 @@ class ProgramController extends Controller
         return view('program', compact('programs'));
     }
 
-    public function landing_page($product_id)
+    public function landing_page()
     {
-        // Ambil data landing page berdasarkan product_id
-        $landing = DB::table('lp_program')
-            ->where('product_id', $product_id)
-            ->where('is_active', 1)
-            ->first();
+        // // Ambil data landing page berdasarkan product_id
+        // $landing = DB::table('lp_program')
+        //     ->where('product_id', $product_id)
+        //     ->where('is_active', 1)
+        //     ->first();
 
-        // Jika data landing tidak ditemukan
-        if (!$landing) {
-            abort(404, 'Halaman tidak ditemukan');
-        }
-        $sections = DB::table('landing_sections_program')
-            ->where('landing_page_id', $landing->id)
-            ->where('is_active', 1)
-            ->orderBy('order', 'asc')
-            ->get();
+        // // Jika data landing tidak ditemukan
+        // if (!$landing) {
+        //     abort(404, 'Halaman tidak ditemukan');
+        // }
+        // $sections = DB::table('landing_sections_program')
+        //     ->where('landing_page_id', $landing->id)
+        //     ->where('is_active', 1)
+        //     ->orderBy('order', 'asc')
+        //     ->get();
 
-        // Decode kolom JSON agar bisa di-loop di Blade
-        foreach ($sections as $section) {
-            $section->content = json_decode($section->content, true);
-            $section->settings = json_decode($section->settings, true);
-        }
+        // // Decode kolom JSON agar bisa di-loop di Blade
+        // foreach ($sections as $section) {
+        //     $section->content = json_decode($section->content, true);
+        //     $section->settings = json_decode($section->settings, true);
+        // }
 
-        // Kirim ke view
-        return view('landing_page.index', compact('landing', 'sections'));
+        // // Kirim ke view
+        return view('landing_page.index');
     }
 }

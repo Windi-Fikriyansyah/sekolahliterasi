@@ -123,14 +123,22 @@
 
                     <form action="{{ route('payment.process', $encryptedCourseId) }}" method="POST" id="checkoutForm">
                         @csrf
-
+                        <div class="mb-6">
+                            <label for="referral_code" class="block text-gray-700 font-semibold mb-2">
+                                Kode Referral (opsional)
+                            </label>
+                            <input type="text" name="referral_code" id="referral_code"
+                                value="{{ old('referral_code', $referralCode ?? '') }}"
+                                placeholder="Masukkan kode referral jika ada"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                             @forelse ($channels as $channel)
                                 <label class="relative flex cursor-pointer">
 
                                     <input type="radio" name="channel" value="{{ $channel['code'] }}" class="sr-only"
                                         required>
-                                    <input type="hidden" name="referral_code" value="{{ $referralCode }}">
+
                                     <div
                                         class="payment-method-card border-2 border-gray-300 rounded-xl p-4 w-full text-center bg-white hover:bg-gray-100 transition-all duration-300">
                                         <div class="flex flex-col items-center space-y-2">

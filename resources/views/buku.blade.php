@@ -39,7 +39,10 @@
                                 class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy" decoding="async">
                             <div class="absolute top-4 right-4">
-                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+                            </div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
                                     {{ $buku->tipe_produk }}</span>
                             </div>
                         </div>
@@ -57,17 +60,17 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($buku->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $buku->id) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
+                                <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                    class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                    title="Tambah ke Keranjang">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
-
-
         </div>
     </section>
 

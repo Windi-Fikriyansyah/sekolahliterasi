@@ -249,18 +249,28 @@
                         <span
                             class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
                     </a>
+                    <a href="{{ route('account.index') }}"
+                        class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Pengaturan
+                        <span
+                            class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="{{ route('history.index') }}"
+                        class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Transaksi
+                        <span
+                            class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="{{ route('pesanan_saya.index') }}"
+                        class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Pesanan Saya
+                        <span
+                            class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
                 @endauth
 
-                <a href="#" class="text-gray-700 hover:text-secondary font-medium relative group">
-                    Testimoni
-                    <span
-                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
-                </a>
-                <a href="#" class="text-gray-700 hover:text-secondary font-medium relative group">
-                    FAQ
-                    <span
-                        class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
-                </a>
+
+
             </nav>
 
             <!-- Tombol Login & Register (Desktop) -->
@@ -350,7 +360,7 @@
                 <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">Kelas Video</a>
                 <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
                 <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
-                <a href="#" class="text-gray-700 hover:text-secondary">Testimoni</a>
+                <a href="{{ route('account.index') }}" class="text-gray-700 hover:text-secondary">Pengaturan</a>
                 <a href="#" class="text-gray-700 hover:text-secondary">FAQ</a>
                 <div class="flex space-x-2 mt-3">
                     <a href="{{ route('login') }}"

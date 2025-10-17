@@ -37,8 +37,11 @@
                                 class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy" decoding="async">
                             <div class="absolute top-4 right-4">
-                                <span
-                                    class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">{{ $ebook->tipe_produk }}</span>
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+                            </div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                    {{ $ebook->tipe_produk }}</span>
                             </div>
                         </div>
 

@@ -68,8 +68,11 @@
                                     </div>
 
                                     {{-- HERO SECTION --}}
+                                    {{-- HERO SECTION --}}
                                     <div class="mb-4">
                                         <h5 class="mb-3">🎯 Hero Section</h5>
+
+                                        {{-- Judul Hero --}}
                                         <div class="row mb-3">
                                             <label class="col-sm-3 col-form-label">Judul Hero *</label>
                                             <div class="col-sm-9">
@@ -78,27 +81,68 @@
                                             </div>
                                         </div>
 
+                                        {{-- Deskripsi 1 --}}
                                         <div class="row mb-3">
-                                            <label class="col-sm-3 col-form-label">Subtitle Hero *</label>
+                                            <label class="col-sm-3 col-form-label">Deskripsi Pertama *</label>
                                             <div class="col-sm-9">
                                                 <textarea name="hero_subtitle" class="form-control" rows="3">{{ $landing->hero_subtitle ?? old('hero_subtitle', 'Wujudkan mimpi Anda menjadi penulis profesional bersama komunitas terbesar di Indonesia') }}</textarea>
                                             </div>
                                         </div>
 
+                                        {{-- Deskripsi 2 --}}
                                         <div class="row mb-3">
-                                            <label class="col-sm-3 col-form-label">Teks Tombol *</label>
+                                            <label class="col-sm-3 col-form-label">Deskripsi Kedua (opsional)</label>
                                             <div class="col-sm-9">
-                                                <input type="text" name="hero_button_text" class="form-control"
-                                                    value="{{ $landing->hero_button_text ?? 'Daftar Sekarang' }}">
+                                                <textarea name="hero_subtitle_2" class="form-control" rows="3">{{ $landing->hero_subtitle_2 ?? old('hero_subtitle_2', 'Bergabunglah bersama ribuan penulis lain yang telah menerbitkan karya terbaik mereka.') }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        {{-- Gambar Hero --}}
+                                        <div class="row mb-3">
+                                            <label class="col-sm-3 col-form-label">Gambar Hero</label>
+                                            <div class="col-sm-9">
+                                                @if (!empty($landing->hero_image))
+                                                    <div class="mb-2">
+                                                        <img src="{{ asset('storage/' . $landing->hero_image) }}"
+                                                            alt="Hero Image" class="img-fluid rounded shadow-sm"
+                                                            style="max-height: 200px;">
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="hero_image" class="form-control">
+                                                <small class="text-muted">Format: JPG, PNG, WEBP | Maks 2MB</small>
+                                            </div>
+                                        </div>
+
+                                        {{-- Logo Header --}}
+                                        <div class="row mb-3">
+                                            <label class="col-sm-3 col-form-label">Logo Header 1</label>
+                                            <div class="col-sm-9">
+                                                @if (!empty($landing->header_logo1))
+                                                    <div class="mb-2">
+                                                        <img src="{{ asset('storage/' . $landing->header_logo1) }}"
+                                                            alt="Logo Header" class="img-thumbnail"
+                                                            style="max-height: 100px;">
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="header_logo1" class="form-control">
+                                                <small class="text-muted">Format: PNG transparan atau JPG | Maks
+                                                    1MB</small>
                                             </div>
                                         </div>
 
                                         <div class="row mb-3">
-                                            <label class="col-sm-3 col-form-label">Link Tombol *</label>
+                                            <label class="col-sm-3 col-form-label">Logo Header 2</label>
                                             <div class="col-sm-9">
-                                                <input type="text" name="hero_button_link" class="form-control"
-                                                    value="{{ $landing->hero_button_link ?? '#daftar' }}">
-                                                <small class="text-muted">Gunakan # atau URL lengkap</small>
+                                                @if (!empty($landing->header_logo2))
+                                                    <div class="mb-2">
+                                                        <img src="{{ asset('storage/' . $landing->header_logo2) }}"
+                                                            alt="Logo Header" class="img-thumbnail"
+                                                            style="max-height: 100px;">
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="header_logo2" class="form-control">
+                                                <small class="text-muted">Format: PNG transparan atau JPG | Maks
+                                                    1MB</small>
                                             </div>
                                         </div>
 
@@ -127,6 +171,7 @@
                                             </div>
                                         </div>
                                     </div>
+
 
                                     {{-- WARNA TEMA --}}
                                     <div class="mb-4">

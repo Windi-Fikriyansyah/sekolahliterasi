@@ -27,6 +27,7 @@ class PaymentController extends Controller
     {
 
 
+
         try {
             $productid = Crypt::decrypt($id);
 
@@ -103,6 +104,7 @@ class PaymentController extends Controller
     {
 
         try {
+
 
             $productid = Crypt::decrypt($encryptedCourseId);
 
@@ -324,6 +326,14 @@ class PaymentController extends Controller
 
                 // Jika status PAID, berikan akses kursus dan proses komisi referral
                 if ($data['status'] === 'PAID') {
+                    if (isset($trx->status_pengiriman)) {
+                        DB::table('transactions')
+                            ->where('id', $trx->id)
+                            ->update([
+                                'status_pengiriman' => 'Diproses',
+                                'updated_at' => now(),
+                            ]);
+                    }
                     $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
                 }
 

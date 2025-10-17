@@ -78,7 +78,7 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($program->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('landing.page', $program->id) }}"
+                                <a href="{{ route('landing.page') }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>

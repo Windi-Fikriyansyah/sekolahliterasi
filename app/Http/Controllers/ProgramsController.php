@@ -141,8 +141,7 @@ class ProgramsController extends Controller
             'slug' => Str::slug($request->input('nama_halaman')),
             'hero_title' => $request->input('hero_title'),
             'hero_subtitle' => $request->input('hero_subtitle'),
-            'hero_button_text' => $request->input('hero_button_text'),
-            'hero_button_link' => $request->input('hero_button_link'),
+            'hero_subtitle_2' => $request->input('hero_subtitle_2'),
             'hero_color_start' => $request->input('hero_color_start'),
             'hero_color_end' => $request->input('hero_color_end'),
             'primary_color' => $request->input('primary_color'),
@@ -153,6 +152,21 @@ class ProgramsController extends Controller
             'updated_at' => now(),
         ];
 
+        // Simpan file gambar jika ada
+        if ($request->hasFile('hero_image')) {
+            $path = $request->file('hero_image')->store('hero', 'public');
+            $data['hero_image'] = $path;
+        }
+
+        if ($request->hasFile('header_logo1')) {
+            $path = $request->file('header_logo1')->store('logos', 'public');
+            $data['header_logo1'] = $path;
+        }
+        if ($request->hasFile('header_logo2')) {
+            $path = $request->file('header_logo2')->store('logos', 'public');
+            $data['header_logo2'] = $path;
+        }
+
         if ($existing) {
             DB::table('lp_program')
                 ->where('id', $existing->id)
@@ -162,6 +176,7 @@ class ProgramsController extends Controller
             DB::table('lp_program')->insert($data);
         }
     }
+
 
     private function updateSections($sectionsData)
     {
@@ -238,33 +253,40 @@ class ProgramsController extends Controller
 
     private function processGalleryContent($sectionId)
     {
-        $content = [];
-        $index = 0;
+        $title = request()->input("sections.{$sectionId}.content.title");
+        $description = request()->input("sections.{$sectionId}.content.description");
 
-        // Looping semua file input
-        while (true) {
-            $fileKey = "sections.{$sectionId}.content.{$index}.image";
-            if (!request()->hasFile($fileKey) && !request()->has($fileKey)) {
-                break;
+        $images = [];
+
+        // 1️⃣ Gambar lama yang dipertahankan
+        $existingImages = request()->input("sections.{$sectionId}.content.images_existing") ?? [];
+        foreach ($existingImages as $existing) {
+            if (!empty($existing)) {
+                $images[] = ['image' => $existing];
             }
-
-            $path = null;
-
-            if (request()->hasFile($fileKey)) {
-                $file = request()->file($fileKey);
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('gallery', $filename, 'public');
-            } else {
-
-                $path = request()->input($fileKey);
-            }
-
-            $content[] = ['image' => $path];
-            $index++;
         }
 
-        return $content;
+        // 2️⃣ Gambar baru yang diupload
+        $imageGroups = request()->file("sections.{$sectionId}.content.images") ?? [];
+        foreach ($imageGroups as $index => $fileGroup) {
+            if (isset($fileGroup['image']) && $fileGroup['image'] instanceof \Illuminate\Http\UploadedFile) {
+                $file = $fileGroup['image'];
+                if ($file->isValid()) {
+                    $filename = time() . '_' . Str::random(8) . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('gallery', $filename, 'public');
+                    $images[] = ['image' => $path];
+                }
+            }
+        }
+
+        return [
+            'title' => $title,
+            'description' => $description,
+            'images' => $images,
+        ];
     }
+
+
 
 
     private function processVideoContent($sectionId)
@@ -293,11 +315,34 @@ class ProgramsController extends Controller
 
     private function processTextContent($sectionId)
     {
-        return [
-            'heading' => request()->input("sections.{$sectionId}.content.heading"),
-            'body' => request()->input("sections.{$sectionId}.content.body")
+        $oldSection = DB::table('landing_sections_program')->where('id', $sectionId)->first();
+        $oldContent = json_decode(optional($oldSection)->content, true) ?? [];
+
+        $content = [
+            'heading' => request()->input("sections.{$sectionId}.content.heading") ?? ($oldContent['heading'] ?? ''),
+            'body' => request()->input("sections.{$sectionId}.content.body") ?? ($oldContent['body'] ?? ''),
+            'images' => $oldContent['images'] ?? [],
         ];
+
+        // Ambil gambar lama yang masih dipertahankan
+        $existing = request()->input("sections.{$sectionId}.content.images_existing") ?? [];
+        $content['images'] = array_values(array_filter($existing));
+
+        // Tambah gambar baru jika diupload
+        if (request()->hasFile("sections.{$sectionId}.content.images")) {
+            foreach (request()->file("sections.{$sectionId}.content.images") as $file) {
+                if ($file->isValid()) {
+                    $filename = time() . '_' . Str::random(8) . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('text_images', $filename, 'public');
+                    $content['images'][] = $path;
+                }
+            }
+        }
+
+        return $content;
     }
+
+
 
     private function processPointsContent($sectionId)
     {

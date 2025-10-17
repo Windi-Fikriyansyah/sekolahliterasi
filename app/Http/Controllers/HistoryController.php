@@ -11,11 +11,11 @@ class HistoryController extends Controller
     public function index()
     {
         $transactions = DB::table('transactions')
-            ->leftJoin('courses', 'transactions.course_id', '=', 'courses.id')
+            ->leftJoin('products', 'transactions.product_id', '=', 'products.id')
             ->where('transactions.user_id', Auth::id())
             ->select(
                 'transactions.*',
-                'courses.title' // Ambil nama course
+                'products.judul'
             )
             ->orderByDesc('transactions.created_at')
             ->get();

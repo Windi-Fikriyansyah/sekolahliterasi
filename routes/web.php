@@ -15,6 +15,7 @@ use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PesananMasukController;
 use App\Http\Controllers\ProdukBukuController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
@@ -63,6 +64,12 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('pesanan_masuk')->name('pesanan_masuk.')->group(function () {
+        Route::get('/', [PesananMasukController::class, 'index'])->name('index');
+        Route::post('/load', [PesananMasukController::class, 'load'])->name('load');
+        Route::post('/kirim/{id}', [PesananMasukController::class, 'kirim'])->name('kirim');
     });
 
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -173,6 +180,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/checkout-buku/kota/{provinsi_id}', [CartController::class, 'getKota']);
         Route::get('/checkout-buku/kecamatan/{city_id}', [CartController::class, 'getKecamatan']);
         Route::post('/checkout-buku/ongkir', [CartController::class, 'getOngkir']);
+        Route::post('/checkout-process', [CartController::class, 'processCheckout'])->name('process');
+        Route::post('/create-payment', [CartController::class, 'createPayment'])->name('createPayment');
 
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
         Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -182,7 +191,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/cart-total', [CartController::class, 'total'])->name('cart.total');
     });
 
+    Route::prefix('pesanan_saya')->name('pesanan_saya.')->group(function () {
+        Route::get('/', [CartController::class, 'pesanan_saya'])->name('index');
 
+        Route::post('/konfirmasi/{id}', [CartController::class, 'confirmReceipt'])->name('confirm');
+    });
 
 
     Route::prefix('kelas')->name('kelas.')->group(function () {
@@ -212,6 +225,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/payment/failed/{id}', [PaymentController::class, 'failed'])->name('payment.failed');
     Route::get('/payment/redirect/{id}', [PaymentController::class, 'redirectAfterPayment'])->name('payment.redirect');
     Route::post('/payment/process/{id}', [PaymentController::class, 'processPayment'])->name('payment.process');
+    Route::get('/payment/redirectbuku/{id}', [CartController::class, 'redirect'])->name('payment.redirect_buku');
+
 
 
     Route::prefix('history')->name('history.')->group(function () {
@@ -234,7 +249,7 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
-Route::get('/landing/{product_id}', [ProgramController::class, 'landing_page'])
+Route::get('/PROGRAM-GURU-INSPIRATOR', [ProgramController::class, 'landing_page'])
     ->name('landing.page');
 
 Route::prefix('produk')->name('produk.')->group(function () {

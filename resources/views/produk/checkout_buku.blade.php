@@ -19,7 +19,7 @@
                             Informasi Pembeli
                         </h2>
 
-                        <form id="checkoutForm" class="space-y-4">
+                        <form id="checkoutForm" class="space-y-4" method="POST" action="{{ route('buku.process') }}">
                             @csrf
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -62,20 +62,27 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                 <!-- Provinsi -->
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Provinsi</label>
-                                    <select id="provinsi"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Provinsi <span class="text-red-500">*</span>
+                                    </label>
+                                    <!-- Provinsi -->
+                                    <select id="provinsi" name="provinsi" class="w-full ...">
                                         <option value="">Pilih Provinsi</option>
                                         @foreach ($provinsi as $p)
-                                            <option value="{{ $p['id'] }}">{{ $p['name'] }}</option>
+                                            <option value="{{ $p['id'] }}" data-name="{{ $p['name'] }}">
+                                                {{ $p['name'] }}
+                                            </option>
                                         @endforeach
                                     </select>
+
                                 </div>
 
                                 <!-- Kota -->
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kota/Kabupaten</label>
-                                    <select id="kota"
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Kota/Kabupaten <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="kota" name="kota"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
                                         <option value="">Pilih Kota</option>
                                     </select>
@@ -83,7 +90,8 @@
 
                                 <!-- Kecamatan -->
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kecamatan</label>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kecamatan <span
+                                            class="text-red-500">*</span></label>
                                     <select id="kecamatan" name="kecamatan"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
                                         <option value="">Pilih Kecamatan</option>
@@ -93,7 +101,8 @@
 
                             <!-- Kurir -->
                             <div class="mt-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Kurir Pengiriman</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Kurir Pengiriman <span
+                                        class="text-red-500">*</span></label>
                                 <select id="kurir" name="kurir"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
                                     <option value="">Pilih Kurir</option>
@@ -105,7 +114,8 @@
 
                             <!-- Layanan & Ongkir -->
                             <div class="mt-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Layanan & Ongkir</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Layanan & Ongkir <span
+                                        class="text-red-500">*</span></label>
                                 <select id="layanan_ongkir" name="layanan_ongkir"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
                                     <option value="">Pilih Layanan</option>
@@ -202,6 +212,13 @@
             <p class="text-gray-700 font-semibold">Memproses pesanan Anda...</p>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-medium z-50 transition-all duration-500">
+    </div>
+
+
 @endsection
 @push('style')
     {{-- ✅ Tambahkan CSS Select2 --}}
@@ -266,7 +283,8 @@
 
                         let html = '<option value="">Pilih Kota</option>';
                         data.forEach(k => {
-                            html += `<option value="${k.id}">${k.name}</option>`;
+                            html +=
+                                `<option value="${k.id}" data-name="${k.name}">${k.name}</option>`;
                         });
                         $('#kota').html(html).trigger('change');
                     })
@@ -298,7 +316,8 @@
                     .then(data => {
                         let html = '<option value="">Pilih Kecamatan</option>';
                         data.forEach(k => {
-                            html += `<option value="${k.id}">${k.name}</option>`;
+                            html +=
+                                `<option value="${k.id}" data-name="${k.name}">${k.name}</option>`;
                         });
                         $('#kecamatan').html(html).trigger('change');
                     })
@@ -366,6 +385,10 @@
         });
     </script>
     <script>
+        const checkoutItems = @json($checkoutItems);
+    </script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
 
             if (checkoutItems.length === 0) {
@@ -408,56 +431,87 @@
 
             renderCheckoutItems();
 
-            // Handle form submission
             document.getElementById('btnPesanSekarang').addEventListener('click', function() {
                 const form = document.getElementById('checkoutForm');
 
-                if (!form.checkValidity()) {
-                    form.reportValidity();
+                // Ambil nama provinsi/kota/kecamatan dari data-name
+                const provinsiSelect = document.getElementById('provinsi');
+                const kotaSelect = document.getElementById('kota');
+                const kecSelect = document.getElementById('kecamatan');
+
+                const provinsiName = provinsiSelect.selectedOptions[0]?.getAttribute('data-name') || '';
+                const kotaName = kotaSelect.selectedOptions[0]?.getAttribute('data-name') || '';
+                const kecamatanName = kecSelect.selectedOptions[0]?.getAttribute('data-name') || '';
+
+                // Tambahkan ke hidden input agar dikirim ke server
+                form.insertAdjacentHTML('beforeend', `
+        <input type="hidden" name="provinsi_nama" value="${provinsiName}">
+        <input type="hidden" name="kota_nama" value="${kotaName}">
+        <input type="hidden" name="kecamatan_nama" value="${kecamatanName}">
+    `);
+                const requiredFields = ['nama_lengkap', 'email', 'no_hp', 'alamat'];
+                const selectFields = ['provinsi', 'kota', 'kecamatan', 'kurir', 'layanan_ongkir'];
+                let valid = true;
+
+                requiredFields.forEach(name => {
+                    const input = form.querySelector(`[name="${name}"]`);
+                    if (input && !input.value.trim()) valid = false;
+                });
+
+                selectFields.forEach(id => {
+                    const select = document.getElementById(id);
+                    if (select && !select.value) valid = false;
+                });
+
+                if (!valid) {
+                    showToast('❌ Lengkapi semua data wajib sebelum melanjutkan!');
                     return;
                 }
 
-                const formData = new FormData(form);
-                formData.append('items', JSON.stringify(checkoutItems));
+                // ✅ Tambahkan catatan ke setiap item
+                const catatan = form.querySelector('[name="catatan"]').value || null;
+                checkoutItems.forEach(item => item.catatan = catatan);
 
-                // Show loading
-                document.getElementById('loadingModal').classList.remove('hidden');
+                // ✅ Buat hidden input untuk items
+                const hiddenItems = document.createElement('input');
+                hiddenItems.type = 'hidden';
+                hiddenItems.name = 'items';
+                hiddenItems.value = JSON.stringify(checkoutItems);
+                form.appendChild(hiddenItems);
 
-                fetch('', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Clear checkout items from localStorage
-                            localStorage.removeItem('checkout_items');
-
-                            // Update cart - remove checked items
-                            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                            const checkoutIds = checkoutItems.map(item => item.id);
-                            cart = cart.filter(item => !checkoutIds.includes(item.id));
-                            localStorage.setItem('cart', JSON.stringify(cart));
-
-                            showToast('✅ ' + data.message, 'success');
-
-                            setTimeout(() => {
-                                window.location.href = data.redirect;
-                            }, 1000);
-                        } else {
-                            showToast('❌ ' + data.message, 'error');
-                            document.getElementById('loadingModal').classList.add('hidden');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('❌ Terjadi kesalahan. Silakan coba lagi.', 'error');
-                        document.getElementById('loadingModal').classList.add('hidden');
-                    });
+                form.submit();
             });
+
+
+
+
         });
+
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+
+            // reset class
+            toast.classList.remove('hidden', 'opacity-0', 'bg-red-500', 'bg-green-500');
+
+            // warna
+            if (type === 'success') {
+                toast.classList.add('bg-green-500');
+            } else {
+                toast.classList.add('bg-red-500');
+            }
+
+            // tampilkan
+            toast.classList.add('opacity-100');
+
+            // hilangkan setelah 3 detik
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 500);
+            }, 3000);
+        }
     </script>
 @endpush
