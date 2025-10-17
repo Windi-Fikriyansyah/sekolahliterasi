@@ -322,85 +322,203 @@
     </section>
 
     <!-- FAQ Section -->
+    <!-- FAQ Section -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">Pertanyaan yang
-                Sering Diajukan
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">
+                Pertanyaan yang Sering Diajukan
             </h2>
 
             <div class="space-y-4">
                 <!-- FAQ Item 1 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Bagaimana cara mendaftar di platform ini?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Bagaimana cara mendaftar di platform ini?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan
-                            atas, lalu mengisi formulir pendaftaran dengan data diri yang valid.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan atas, lalu mengisi
+                                formulir pendaftaran dengan data diri yang valid.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 2 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Apakah tersedia metode pembayaran cicilan?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Apakah tersedia metode pembayaran cicilan?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Ya, kami menyediakan opsi cicilan untuk beberapa E-Course premium.
-                            Anda bisa memilih metode pembayaran yang tersedia saat checkout.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Ya, kami menyediakan opsi cicilan untuk beberapa E-Course premium. Anda bisa memilih metode
+                                pembayaran yang tersedia saat checkout.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 3 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Berapa lama akses ke E-Course yang sudah dibeli?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Berapa lama akses ke E-Course yang sudah dibeli?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Akses ke E-Course yang sudah dibeli adalah seumur hidup. Anda bisa
-                            mengulang materi kapan saja tanpa batas waktu.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Akses ke E-Course yang sudah dibeli adalah seumur hidup. Anda bisa mengulang materi kapan
+                                saja tanpa batas waktu.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 4 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Apakah tersedia sertifikat setelah menyelesaikan
-                            E-Course?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Apakah tersedia sertifikat setelah menyelesaikan E-Course?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Ya, setiap peserta yang menyelesaikan E-Course akan mendapatkan
-                            sertifikat digital yang bisa diunduh dan dibagikan.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Ya, setiap peserta yang menyelesaikan E-Course akan mendapatkan sertifikat digital yang bisa
+                                diunduh dan dibagikan.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 5 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Bagaimana jika saya mengalami kendala teknis?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Bagaimana jika saya mengalami kendala teknis?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Tim support kami siap membantu 24/7 melalui live chat, email, atau
-                            telepon. Jangan ragu untuk menghubungi kami jika mengalami kendala.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Tim support kami siap membantu 24/7 melalui live chat, email, atau telepon. Jangan ragu
+                                untuk menghubungi kami jika mengalami kendala.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
 @endsection
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const icon = question.querySelector('i');
+
+                question.addEventListener('click', function() {
+                    const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+
+                    // Tutup semua FAQ lainnya
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            const otherAnswer = otherItem.querySelector('.faq-answer');
+                            const otherIcon = otherItem.querySelector('.faq-question i');
+                            const otherQuestion = otherItem.querySelector('.faq-question');
+
+                            otherAnswer.style.maxHeight = '0px';
+                            otherIcon.style.transform = 'rotate(0deg)';
+                            otherQuestion.classList.remove('bg-gray-50');
+                            otherItem.classList.remove('ring-2', 'ring-primary/20');
+                        }
+                    });
+
+                    // Toggle FAQ yang diklik
+                    if (isOpen) {
+                        answer.style.maxHeight = '0px';
+                        icon.style.transform = 'rotate(0deg)';
+                        question.classList.remove('bg-gray-50');
+                        item.classList.remove('ring-2', 'ring-primary/20');
+                    } else {
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                        question.classList.add('bg-gray-50');
+                        item.classList.add('ring-2', 'ring-primary/20');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+
+@push('style')
+    <style>
+        /* Animasi FAQ yang lebih smooth */
+        .faq-answer {
+            max-height: 0;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Efek hover yang lebih halus */
+        .faq-item:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Animasi fade in */
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 0.6s ease-out;
+        }
+    </style>
+@endpush

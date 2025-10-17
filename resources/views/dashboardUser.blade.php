@@ -1,44 +1,44 @@
 @extends('layouts.app')
 @section('title', 'Course')
 @section('content')
-    <section class="relative">
-        <div class="slider-container overflow-hidden">
-            <div class="slider-wrapper flex transition-transform duration-500 ease-in-out">
-                <div class="slider-slide min-w-full">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
-                        alt="E-Course 1" class="w-full h-64 md:h-96 object-cover">
+    <section class="relative w-full min-h-screen bg-gradient-to-br from-secondary via-blue-400 to-primary overflow-hidden">
+        <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="text-white space-y-8 animate-fade-in-up">
+                    <h1
+                        class="font-extrabold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] tracking-tight drop-shadow-lg">
+                        Temukan <span class="text-yellow-300">Mimpimu</span><br>
+                        Bersama Kami
+                    </h1>
+                    <p
+                        class="text-sm sm:text-base md:text-lg text-white/90 max-w-md leading-relaxed tracking-wide font-light">
+                        Jelajahi dunia penuh inspirasi dan peluang tak terbatas.<br>
+                        Dapatkan akses ke katalog kami — tempat ide besar menjadi kenyataan.
+                    </p>
+                    <div>
+                        <a href="#"
+                            class="inline-block bg-white text-primary px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                            Mulai Sekarang
+                        </a>
+                    </div>
                 </div>
-                <div class="slider-slide min-w-full">
-                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
-                        alt="E-Course 2" class="w-full h-64 md:h-96 object-cover">
-                </div>
-                <div class="slider-slide min-w-full">
-                    <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
-                        alt="E-Course 3" class="w-full h-64 md:h-96 object-cover">
+
+                <!-- Right Content -->
+                <div class="relative animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="relative z-10 transform hover:scale-105 transition-transform duration-700">
+                        <img src="{{ asset('image/1.png') }}" alt="Dream House"
+                            class="w-full max-w-md mx-auto h-auto object-contain drop-shadow-2xl">
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 w-56 h-56 bg-white/10 rounded-full blur-3xl hidden lg:block">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slider Controls -->
-        <button
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 slider-prev hover:bg-opacity-90 transition-all duration-300 hover:scale-110">
-            <i class="fas fa-chevron-left text-secondary"></i>
-        </button>
-        <button
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-2 slider-next hover:bg-opacity-90 transition-all duration-300 hover:scale-110">
-            <i class="fas fa-chevron-right text-secondary"></i>
-        </button>
 
-        <!-- Slider Indicators -->
-        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <button
-                class="w-3 h-3 bg-white rounded-full slider-indicator active transition-all duration-300 hover:scale-125"></button>
-            <button
-                class="w-3 h-3 bg-white rounded-full slider-indicator transition-all duration-300 hover:scale-125"></button>
-            <button
-                class="w-3 h-3 bg-white rounded-full slider-indicator transition-all duration-300 hover:scale-125"></button>
-        </div>
     </section>
+
 
     <!-- E-Course Terbaru Section -->
     <section class="py-12 bg-gray-50">
@@ -78,7 +78,7 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($program->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $program->id) }}"
+                                <a href="{{ route('landing.page') }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>
@@ -128,7 +128,7 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($kelas->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $kelas->id) }}"
+                                <a href="{{ route('produk.show', Crypt::encrypt($kelas->id)) }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>
@@ -231,10 +231,12 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($buku->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $buku->id) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
+                                <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                    class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                    title="Tambah ke Keranjang">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+
                             </div>
                         </div>
                     </div>
@@ -320,85 +322,203 @@
     </section>
 
     <!-- FAQ Section -->
+    <!-- FAQ Section -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">Pertanyaan yang
-                Sering Diajukan
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">
+                Pertanyaan yang Sering Diajukan
             </h2>
 
             <div class="space-y-4">
                 <!-- FAQ Item 1 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Bagaimana cara mendaftar di platform ini?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Bagaimana cara mendaftar di platform ini?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan
-                            atas, lalu mengisi formulir pendaftaran dengan data diri yang valid.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan atas, lalu mengisi
+                                formulir pendaftaran dengan data diri yang valid.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 2 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Apakah tersedia metode pembayaran cicilan?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Apakah tersedia metode pembayaran cicilan?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Ya, kami menyediakan opsi cicilan untuk beberapa E-Course premium.
-                            Anda bisa memilih metode pembayaran yang tersedia saat checkout.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Ya, kami menyediakan opsi cicilan untuk beberapa E-Course premium. Anda bisa memilih metode
+                                pembayaran yang tersedia saat checkout.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 3 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Berapa lama akses ke E-Course yang sudah dibeli?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Berapa lama akses ke E-Course yang sudah dibeli?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Akses ke E-Course yang sudah dibeli adalah seumur hidup. Anda bisa
-                            mengulang materi kapan saja tanpa batas waktu.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Akses ke E-Course yang sudah dibeli adalah seumur hidup. Anda bisa mengulang materi kapan
+                                saja tanpa batas waktu.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 4 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Apakah tersedia sertifikat setelah menyelesaikan
-                            E-Course?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Apakah tersedia sertifikat setelah menyelesaikan E-Course?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Ya, setiap peserta yang menyelesaikan E-Course akan mendapatkan
-                            sertifikat digital yang bisa diunduh dan dibagikan.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Ya, setiap peserta yang menyelesaikan E-Course akan mendapatkan sertifikat digital yang bisa
+                                diunduh dan dibagikan.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- FAQ Item 5 -->
                 <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
                     <button
-                        class="faq-question w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-all duration-300">
-                        <span class="font-medium text-gray-800">Bagaimana jika saya mengalami kendala teknis?</span>
-                        <i class="fas fa-chevron-down text-secondary transition-transform duration-300"></i>
+                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
+                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                            Bagaimana jika saya mengalami kendala teknis?
+                        </span>
+                        <i
+                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
                     </button>
-                    <div class="faq-answer p-4 bg-white hidden transition-all duration-300">
-                        <p class="text-gray-700">Tim support kami siap membantu 24/7 melalui live chat, email, atau
-                            telepon. Jangan ragu untuk menghubungi kami jika mengalami kendala.</p>
+                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                        <div class="p-5 pt-0 bg-gray-50/50">
+                            <p class="text-gray-700 leading-relaxed">
+                                Tim support kami siap membantu 24/7 melalui live chat, email, atau telepon. Jangan ragu
+                                untuk menghubungi kami jika mengalami kendala.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
 @endsection
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const icon = question.querySelector('i');
+
+                question.addEventListener('click', function() {
+                    const isOpen = answer.style.maxHeight && answer.style.maxHeight !== '0px';
+
+                    // Tutup semua FAQ lainnya
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            const otherAnswer = otherItem.querySelector('.faq-answer');
+                            const otherIcon = otherItem.querySelector('.faq-question i');
+                            const otherQuestion = otherItem.querySelector('.faq-question');
+
+                            otherAnswer.style.maxHeight = '0px';
+                            otherIcon.style.transform = 'rotate(0deg)';
+                            otherQuestion.classList.remove('bg-gray-50');
+                            otherItem.classList.remove('ring-2', 'ring-primary/20');
+                        }
+                    });
+
+                    // Toggle FAQ yang diklik
+                    if (isOpen) {
+                        answer.style.maxHeight = '0px';
+                        icon.style.transform = 'rotate(0deg)';
+                        question.classList.remove('bg-gray-50');
+                        item.classList.remove('ring-2', 'ring-primary/20');
+                    } else {
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                        question.classList.add('bg-gray-50');
+                        item.classList.add('ring-2', 'ring-primary/20');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+
+@push('style')
+    <style>
+        /* Animasi FAQ yang lebih smooth */
+        .faq-answer {
+            max-height: 0;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Efek hover yang lebih halus */
+        .faq-item:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Animasi fade in */
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 0.6s ease-out;
+        }
+    </style>
+@endpush

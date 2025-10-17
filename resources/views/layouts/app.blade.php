@@ -458,14 +458,7 @@
                 <div class="animate-fade-in-up" style="animation-delay: 0.3s;">
                     <h4 class="font-bold text-lg mb-4">Berlangganan Newsletter</h4>
                     <p class="mb-4">Dapatkan informasi terbaru tentang E-Course dan E-Book terbaru.</p>
-                    <form class="flex transform transition-all duration-300 hover:scale-105">
-                        <input type="email" placeholder="Email Anda"
-                            class="px-4 py-2 rounded-l-lg text-gray-800 w-full focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
-                        <button type="submit"
-                            class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition-all duration-300 shine-effect">
-                            Kirim
-                        </button>
-                    </form>
+
                 </div>
             </div>
 
