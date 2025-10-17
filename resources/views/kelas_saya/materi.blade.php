@@ -23,13 +23,21 @@
     <!-- Main Content -->
     <section class="py-8 bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex gap-6 relative">
                     <!-- Main Content Area -->
-                    <div class="lg:col-span-2 space-y-6">
+                    <div id="content-area" class="flex-1 transition-all duration-300">
                         <!-- Video/PDF Viewer -->
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div id="content-viewer" class="w-full bg-black" style="min-height: 500px;">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
+                            <!-- Tombol tampilkan sidebar untuk desktop - Dipindah ke sini -->
+                            <button id="show-sidebar-desktop"
+                                class="absolute top-4 right-4 z-50 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hidden lg:block"
+                                onclick="toggleSidebarDesktop()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+
+                            <div id="content-viewer" class="w-full bg-black relative"
+                                style="height: calc(100vh - 250px); min-height: 600px;">
                                 <div class="flex items-center justify-center h-full text-white p-12 text-center">
                                     <div>
                                         <i class="fas fa-play-circle text-6xl mb-4 opacity-50"></i>
@@ -38,26 +46,32 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Materi Description -->
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Tentang Kelas</h2>
-                            <div class="prose max-w-none text-gray-600">
-                                {!! $produk->deskripsi !!}
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Sidebar - Daftar Materi -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden sticky top-4">
-                            <div class="bg-gradient-to-r from-secondary to-blue-600 text-white p-4">
+                    <div id="sidebar-materi"
+                        class="w-80 transition-all duration-300 lg:relative fixed right-0 top-0 h-full lg:h-auto z-40 transform lg:transform-none lg:translate-x-0"
+                        style="box-shadow: -4px 0 6px rgba(0,0,0,0.1);">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden h-full lg:sticky lg:top-4">
+                            <div
+                                class="bg-gradient-to-r from-secondary to-blue-600 text-white p-4 flex justify-between items-center">
                                 <h3 class="font-bold text-lg">
                                     <i class="fas fa-list-ul mr-2"></i>Daftar Materi
                                 </h3>
+                                <div class="flex items-center gap-2">
+                                    <!-- Toggle Button for Desktop -->
+                                    <button id="toggle-sidebar-desktop" onclick="toggleSidebarDesktop()"
+                                        class="hidden lg:flex text-white hover:text-gray-200 p-1 rounded transition">
+                                        <i class="fas fa-chevron-right" id="desktop-toggle-icon"></i>
+                                    </button>
+                                    <!-- Close Button for Mobile -->
+                                    <button onclick="toggleSidebar()" class="lg:hidden text-white hover:text-gray-200">
+                                        <i class="fas fa-times text-xl"></i>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="max-h-[600px] overflow-y-auto">
+                            <div class="overflow-y-auto" style="max-height: calc(100vh - 200px);">
                                 @if ($materi->isEmpty())
                                     <div class="p-6 text-center text-gray-500">
                                         <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
@@ -68,12 +82,12 @@
                                         @foreach ($materi as $index => $item)
                                             <button
                                                 onclick="loadMateri(
-            {{ $item->id }},
-            '{{ $item->jenis_materi }}',
-            '{{ $item->deskripsi }}',
-            '{{ $item->file_path }}',
-            {{ $index + 1 }}
-        )"
+                                                    {{ $item->id }},
+                                                    '{{ $item->jenis_materi }}',
+                                                    '{{ $item->deskripsi }}',
+                                                    '{{ $item->file_path }}',
+                                                    {{ $index + 1 }}
+                                                )"
                                                 class="materi-item w-full text-left p-4 hover:bg-blue-50 transition-colors duration-200 flex items-start gap-3"
                                                 data-materi-id="{{ $item->id }}">
                                                 <div
@@ -96,11 +110,15 @@
                                                 </div>
                                             </button>
                                         @endforeach
-
                                     </div>
                                 @endif
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Overlay for mobile -->
+                    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"
+                        onclick="toggleSidebar()">
                     </div>
                 </div>
             </div>
@@ -122,10 +140,6 @@
             border-left: 4px solid #0977c2;
         }
 
-        .prose {
-            line-height: 1.75;
-        }
-
         /* Custom scrollbar */
         .overflow-y-auto::-webkit-scrollbar {
             width: 6px;
@@ -144,24 +158,109 @@
             background: #555;
         }
 
-        /* PDF Viewer Container */
+        /* PDF Protection Layer */
+        .pdf-protection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* PDF Viewer */
         #pdf-viewer {
             width: 100%;
             height: 100%;
-            min-height: 500px;
+            border: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         /* Video Player */
         video {
             width: 100%;
-            height: auto;
-            max-height: 500px;
+            height: 100%;
             outline: none;
+            object-fit: contain;
         }
 
-        /* Disable right click on video */
-        video::-webkit-media-controls-panel {
-            display: flex !important;
+        /* Sidebar Animation */
+        #sidebar-materi.sidebar-hidden-desktop {
+            width: 0 !important;
+            opacity: 0;
+            overflow: hidden;
+            margin-right: 0;
+            padding: 0;
+        }
+
+        #content-area.expanded {
+            width: 100%;
+            margin-right: 0;
+        }
+
+        @media (min-width: 1024px) {
+            #sidebar-materi {
+                transition: all 0.3s ease;
+            }
+
+            #content-area {
+                transition: all 0.3s ease;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0977c2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Show Sidebar Button */
+        #show-sidebar-desktop {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #show-sidebar-desktop:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        #show-sidebar-desktop.sidebar-visible {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8) translateX(20px);
+        }
+
+        /* Untuk mobile sidebar */
+        #sidebar-materi.translate-x-full {
+            transform: translateX(100%);
+        }
+
+        /* Pastikan sidebar mobile di atas konten */
+        @media (max-width: 1023px) {
+            #sidebar-materi {
+                z-index: 40;
+            }
         }
     </style>
 @endpush
@@ -169,51 +268,131 @@
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        let currentMateriId = null;
-
-        function loadMateri(materiId, jenisMateri, deskripsi, filePath, nomor) {
-            // Reset active state
-            document.querySelectorAll('.materi-item').forEach(item => item.classList.remove('active'));
-            document.querySelector(`[data-materi-id="${materiId}"]`).classList.add('active');
-
-            const viewer = document.getElementById('content-viewer');
-            currentMateriId = materiId;
-
-            if (jenisMateri === 'video') {
-                loadVideo(filePath, viewer);
-            } else if (jenisMateri === 'pdf') {
-                loadPDF(filePath, viewer);
-            }
-        }
-
-        function loadVideo(filePath, container) {
-            const videoHTML = `
-            <video
-                id="video-player"
-                controls
-                controlsList="nodownload"
-                oncontextmenu="return false;"
-                class="w-full bg-black"
-                style="max-height: 500px;">
-                <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
-                Browser Anda tidak mendukung video player.
-            </video>
-        `;
-            container.innerHTML = videoHTML;
-        }
-
-        function loadPDF(filePath, container) {
-            const pdfURL = `{{ asset('storage') }}/${filePath}`;
-            container.innerHTML = `
-            <iframe
-                src="${pdfURL}#toolbar=0&navpanes=0&scrollbar=1"
-                id="pdf-viewer"
-                style="width: 100%; height: 500px; border: none;">
-            </iframe>
-        `;
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
+            let desktopSidebarVisible = true;
+
+            window.toggleSidebarDesktop = function() {
+                desktopSidebarVisible = !desktopSidebarVisible;
+                const sidebar = document.getElementById('sidebar-materi');
+                const contentArea = document.getElementById('content-area');
+                const showSidebarBtn = document.getElementById('show-sidebar-desktop');
+                const desktopToggleIcon = document.getElementById('desktop-toggle-icon');
+
+                if (!sidebar || !contentArea || !showSidebarBtn) {
+                    console.error('Required elements not found');
+                    return;
+                }
+
+                if (desktopSidebarVisible) {
+                    // Tampilkan sidebar
+                    sidebar.classList.remove('sidebar-hidden-desktop');
+                    contentArea.classList.remove('expanded');
+                    showSidebarBtn.classList.add('sidebar-visible');
+
+                    // Update icon di header sidebar
+                    if (desktopToggleIcon) {
+                        desktopToggleIcon.classList.remove('fa-chevron-left');
+                        desktopToggleIcon.classList.add('fa-chevron-right');
+                    }
+                } else {
+                    // Sembunyikan sidebar
+                    sidebar.classList.add('sidebar-hidden-desktop');
+                    contentArea.classList.add('expanded');
+                    showSidebarBtn.classList.remove('sidebar-visible');
+
+                    // Update icon di header sidebar
+                    if (desktopToggleIcon) {
+                        desktopToggleIcon.classList.remove('fa-chevron-right');
+                        desktopToggleIcon.classList.add('fa-chevron-left');
+                    }
+                }
+            };
+
+            // Fungsi toggle sidebar mobile
+            window.toggleSidebar = function() {
+                const sidebar = document.getElementById('sidebar-materi');
+                const overlay = document.getElementById('sidebar-overlay');
+
+                sidebar.classList.toggle('translate-x-full');
+                overlay.classList.toggle('hidden');
+            };
+
+            // Fungsi load materi (video/pdf)
+            window.loadMateri = function(materiId, jenisMateri, deskripsi, filePath, nomor) {
+                document.querySelectorAll('.materi-item').forEach(item => item.classList.remove('active'));
+                document.querySelector(`[data-materi-id="${materiId}"]`).classList.add('active');
+
+                const viewer = document.getElementById('content-viewer');
+                viewer.innerHTML = `
+                    <div class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <div class="loading-spinner mx-auto mb-4"></div>
+                            <p class="text-white">Memuat konten...</p>
+                        </div>
+                    </div>
+                `;
+
+                if (jenisMateri === 'video') {
+                    loadVideo(filePath, viewer);
+                } else if (jenisMateri === 'pdf') {
+                    loadPDF(filePath, viewer);
+                }
+
+                // Auto-close mobile sidebar after selection
+                if (window.innerWidth < 1024) {
+                    toggleSidebar();
+                }
+            };
+
+            function loadVideo(filePath, container) {
+                const videoHTML = `
+                    <video controls controlsList="nodownload" oncontextmenu="return false;"
+                        class="w-full h-full bg-black">
+                        <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
+                        Browser Anda tidak mendukung video player.
+                    </video>`;
+                container.innerHTML = videoHTML;
+            }
+
+            function loadPDF(filePath, container) {
+                const pdfURL = `{{ asset('storage') }}/${filePath}`;
+                container.innerHTML = `
+                    <div class="relative w-full h-full">
+                        <iframe
+                            src="${pdfURL}#toolbar=0&navpanes=0&scrollbar=1&view=FitH&zoom=page-fit"
+                            id="pdf-viewer"
+                            loading="lazy"
+                            class="w-full h-full"
+                            onload="protectPDF()">
+                        </iframe>
+                        <div class="pdf-protection"
+                            oncontextmenu="return false;"
+                            onselectstart="return false;"
+                            ondragstart="return false;">
+                        </div>
+                    </div>`;
+            }
+
+            window.protectPDF = function() {
+                const iframe = document.getElementById('pdf-viewer');
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        iframe.contentWindow.document.addEventListener('contextmenu', e => e.preventDefault());
+                        iframe.contentWindow.document.addEventListener('selectstart', e => e.preventDefault());
+                        iframe.contentWindow.document.addEventListener('copy', e => e.preventDefault());
+                    } catch (e) {
+                        console.log('Cannot access iframe content due to CORS');
+                    }
+                }
+            };
+
+            // Nonaktifkan copy / klik kanan di viewer
+            const viewer = document.getElementById('content-viewer');
+            viewer.addEventListener('contextmenu', e => e.preventDefault());
+            viewer.addEventListener('selectstart', e => e.preventDefault());
+            viewer.addEventListener('copy', e => e.preventDefault());
+
+            // Auto-load materi pertama
             const firstMateri = document.querySelector('.materi-item');
             if (firstMateri) firstMateri.click();
         });

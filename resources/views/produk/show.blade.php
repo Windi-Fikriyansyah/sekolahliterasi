@@ -127,7 +127,7 @@
                         </button>
                         <button onclick="showTab('manfaat')" id="tab-manfaat"
                             class="tab-button border-b-2 border-transparent text-gray-600 hover:text-gray-800 font-semibold py-4 px-1">
-                            Manfaat
+                            Benefit
                         </button>
                     </nav>
                 </div>
@@ -141,7 +141,7 @@
                 </div>
 
                 <div id="content-manfaat" class="tab-content hidden">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Manfaat yang Anda Dapatkan</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Benefit yang Anda Dapatkan</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @php
                             $manfaatList = json_decode($produk->manfaat, true);

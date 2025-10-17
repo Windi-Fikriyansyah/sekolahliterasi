@@ -127,7 +127,7 @@
                             {{-- Manfaat Produk --}}
                             {{-- Manfaat Produk --}}
                             <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="manfaat">Manfaat Produk</label>
+                                <label class="col-sm-2 col-form-label" for="manfaat">Benefit Produk</label>
                                 <div class="col-sm-10">
                                     <div id="manfaatContainer">
                                         @php
@@ -146,7 +146,7 @@
                                                     &times;
                                                 </button>
                                                 <div class="mb-2">
-                                                    <label class="form-label">Judul Manfaat</label>
+                                                    <label class="form-label">Judul Benefit</label>
                                                     <input type="text" name="manfaat[{{ $index }}][judul]"
                                                         class="form-control" placeholder="Contoh: Konten Berkualitas"
                                                         value="{{ $manfaat['judul'] ?? '' }}">
@@ -161,7 +161,7 @@
                                     </div>
 
                                     <button type="button" id="addManfaat" class="btn btn-sm btn-success mt-2">
-                                        + Tambah Manfaat
+                                        + Tambah Benefit
                                     </button>
 
                                     @error('manfaat')
