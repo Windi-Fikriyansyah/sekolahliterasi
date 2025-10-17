@@ -98,6 +98,52 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script>
+        $(document).on('click', '.copy-btn', function() {
+            const id = $(this).data('id');
+            const url = "{{ route('produk.copy', ':id') }}".replace(':id', id);
+
+            Swal.fire({
+                title: 'Salin Produk?',
+                text: "Produk ini akan diduplikasi dan muncul di baris berikutnya.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Ya, salin!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message
+                                });
+                                $('#produk-table').DataTable().ajax.reload(null,
+                                    false); // Reload tanpa reset paging
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {

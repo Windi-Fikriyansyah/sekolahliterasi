@@ -49,6 +49,7 @@ class ProdukController extends Controller
 
                     $buttons = '<div class="btn-group" role="group">';
                     $buttons .= '<a href="' . route('produk.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
+                    $buttons .= '<button class="btn btn-sm btn-info copy-btn" title="Copy" data-id="' . $row->id . '"><i class="bi bi-files"></i></button>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
 
@@ -60,6 +61,46 @@ class ProdukController extends Controller
             Log::error('Error loading kursus data: ' . $e->getMessage());
             return response()->json([
                 'error' => true,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function copy($id)
+    {
+        try {
+            $produk = DB::table('products')->where('id', $id)->first();
+
+            if (!$produk) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Produk tidak ditemukan'
+                ], 404);
+            }
+
+            // Duplikasi data (tanpa ID, tapi bisa ubah judul biar unik)
+            $newId = DB::table('products')->insertGetId([
+                'judul' => $produk->judul . ' (Copy)',
+                'deskripsi' => $produk->deskripsi,
+                'manfaat' => $produk->manfaat,
+                'harga' => $produk->harga,
+                'tipe_produk' => $produk->tipe_produk,
+                'thumbnail' => $produk->thumbnail,
+                'status' => $produk->status,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk berhasil disalin.',
+                'id_baru' => $newId,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error copy produk: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }

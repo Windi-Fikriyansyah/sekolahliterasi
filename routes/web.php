@@ -90,6 +90,7 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::get('/{id}/edit', [ProdukController::class, 'edit'])->name('edit');
         Route::put('/{id}', [ProdukController::class, 'update'])->name('update');
         Route::delete('/{id}', [ProdukController::class, 'destroy'])->name('destroy');
+        Route::post('/copy/{id}', [ProdukController::class, 'copy'])->name('copy');
     });
 
     Route::prefix('produk_buku')->name('produk_buku.')->group(function () {
