@@ -29,12 +29,14 @@
                     <div id="content-area" class="flex-1 transition-all duration-300">
                         <!-- Video/PDF Viewer -->
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
-                            <!-- Tombol tampilkan sidebar untuk desktop - Dipindah ke sini -->
+                            <!-- Tombol tampilkan sidebar untuk desktop -->
                             <button id="show-sidebar-desktop"
                                 class="absolute top-4 right-4 z-50 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hidden lg:block"
                                 onclick="toggleSidebarDesktop()">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
+
+
 
                             <div id="content-viewer" class="w-full bg-black relative"
                                 style="height: calc(100vh - 250px); min-height: 600px;">
@@ -158,28 +160,39 @@
             background: #555;
         }
 
-        /* PDF Protection Layer */
-        .pdf-protection {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* PDF Container */
+        #pdf-container {
             width: 100%;
             height: 100%;
-            z-index: 10;
-            background: transparent;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background: #525252;
         }
 
-        /* PDF Viewer */
-        #pdf-viewer {
-            width: 100%;
-            height: 100%;
-            border: none;
-            user-select: none;
-            -webkit-user-select: none;
+        #pdf-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #pdf-container::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        #pdf-container::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 4px;
+        }
+
+        #pdf-container::-webkit-scrollbar-thumb:hover {
+            background: #888;
+        }
+
+        /* PDF Canvas */
+        .pdf-page-canvas {
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: white;
         }
 
         /* Video Player */
@@ -237,28 +250,17 @@
         /* Show Sidebar Button */
         #show-sidebar-desktop {
             display: none;
-            /* <== tidak tampil saat pertama kali load */
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         #show-sidebar-desktop.visible {
             display: block;
-            /* akan muncul setelah sidebar ditutup */
         }
 
         #show-sidebar-desktop:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Optimisasi PDF */
-        iframe#pdf-viewer {
-            width: 100%;
-            height: 100%;
-            border: none;
-            pointer-events: none;
-            /* menambah perlindungan */
         }
 
         /* Untuk mobile sidebar */
@@ -272,30 +274,45 @@
                 z-index: 40;
             }
         }
+
+        /* PDF Protection */
+        #pdf-container {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
     </style>
 @endpush
 
 @push('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
+        // Set worker untuk PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.5;
+        let currentPdfUrl = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             let desktopSidebarVisible = true;
             const sidebar = document.getElementById('sidebar-materi');
             const contentArea = document.getElementById('content-area');
             const showSidebarBtn = document.getElementById('show-sidebar-desktop');
-            const desktopToggleIcon = document.getElementById('desktop-toggle-icon');
 
             // Fungsi toggle sidebar desktop
             window.toggleSidebarDesktop = function() {
                 desktopSidebarVisible = !desktopSidebarVisible;
 
                 if (desktopSidebarVisible) {
-                    // Tampilkan sidebar
                     sidebar.classList.remove('sidebar-hidden-desktop');
                     contentArea.classList.remove('expanded');
                     showSidebarBtn.classList.remove('visible');
                 } else {
-                    // Sembunyikan sidebar
                     sidebar.classList.add('sidebar-hidden-desktop');
                     contentArea.classList.add('expanded');
                     showSidebarBtn.classList.add('visible');
@@ -315,14 +332,15 @@
                 document.querySelector(`[data-materi-id="${materiId}"]`).classList.add('active');
 
                 const viewer = document.getElementById('content-viewer');
+
                 viewer.innerHTML = `
-            <div class="flex items-center justify-center h-full">
-                <div class="text-center">
-                    <div class="loading-spinner mx-auto mb-4"></div>
-                    <p class="text-white">Memuat konten...</p>
-                </div>
+        <div class="flex items-center justify-center h-full">
+            <div class="text-center">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p class="text-white">Memuat konten...</p>
             </div>
-        `;
+        </div>
+    `;
 
                 if (jenisMateri === 'video') {
                     loadVideo(filePath, viewer);
@@ -333,59 +351,114 @@
                 if (window.innerWidth < 1024) toggleSidebar();
             };
 
-            // Optimisasi video load
+            // Load PDF tanpa kontrol navigasi
+            function loadPDF(filePath, container) {
+                const pdfUrl = `{{ asset('storage') }}/${filePath}`;
+                container.innerHTML = `
+        <div id="pdf-container" class="w-full h-full overflow-y-auto" oncontextmenu="return false;">
+            <div class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-white">Memuat PDF...</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+                pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                    const pdfContainer = document.getElementById('pdf-container');
+                    pdfContainer.innerHTML = '';
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const pageContainer = document.createElement('div');
+                        pageContainer.className = 'pdf-page-container';
+                        pdfContainer.appendChild(pageContainer);
+
+                        pdf.getPage(i).then(function(page) {
+                            const viewport = page.getViewport({
+                                scale: 1.5
+                            });
+                            const canvas = document.createElement('canvas');
+                            canvas.className = 'pdf-page-canvas';
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            pageContainer.appendChild(canvas);
+
+                            page.render({
+                                canvasContext: context,
+                                viewport: viewport
+                            });
+                        });
+                    }
+                }).catch(() => {
+                    container.innerHTML = `
+            <div class="flex items-center justify-center h-full text-white">
+                <div class="text-center">
+                    <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                    <p>Gagal memuat PDF</p>
+                </div>
+            </div>
+        `;
+                });
+            }
+
+
+            // Load video
             function loadVideo(filePath, container) {
                 container.innerHTML = `
-            <video controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full bg-black" preload="auto">
-                <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
-                Browser Anda tidak mendukung video player.
-            </video>`;
+                    <video controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full bg-black" preload="auto">
+                        <source src="{{ asset('storage') }}/${filePath}" type="video/mp4">
+                        Browser Anda tidak mendukung video player.
+                    </video>`;
             }
 
-            // Optimisasi PDF load
-            function loadPDF(filePath, container) {
-                const pdfURL = `{{ asset('storage') }}/${filePath}`;
-                container.innerHTML = `
-            <div class="relative w-full h-full">
-                <iframe
-                    src="${pdfURL}#toolbar=0&navpanes=0&scrollbar=1&view=FitH"
-                    id="pdf-viewer"
-                    loading="eager"
-                    class="w-full h-full"
-                    onload="protectPDF()">
-                </iframe>
-                <div class="pdf-protection"
-                    oncontextmenu="return false;"
-                    onselectstart="return false;"
-                    ondragstart="return false;">
-                </div>
-            </div>`;
-            }
 
-            // Proteksi PDF
-            window.protectPDF = function() {
-                const iframe = document.getElementById('pdf-viewer');
-                if (!iframe) return;
-                try {
-                    const doc = iframe.contentWindow.document;
-                    ['contextmenu', 'selectstart', 'copy'].forEach(ev => {
-                        doc.addEventListener(ev, e => e.preventDefault());
+            // Fungsi navigasi PDF
+            window.nextPage = function() {
+                if (pageNum >= pdfDoc.numPages) return;
+                pageNum++;
+                scrollToPage(pageNum);
+            };
+
+            window.previousPage = function() {
+                if (pageNum <= 1) return;
+                pageNum--;
+                scrollToPage(pageNum);
+            };
+
+            function scrollToPage(num) {
+                const pageElement = document.getElementById(`page-${num}`);
+                if (pageElement) {
+                    pageElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
                     });
-                } catch (e) {
-                    console.log('CORS: tidak bisa proteksi PDF dalam iframe eksternal');
+                    document.getElementById('page-num').textContent = num;
+                }
+            }
+
+            // Fungsi zoom
+            window.zoomIn = function() {
+                scale += 0.25;
+                if (currentPdfUrl) {
+                    loadPDF(currentPdfUrl.split('/').pop(), document.getElementById('content-viewer'));
                 }
             };
 
-            // Disable klik kanan dan copy di viewer utama
-            const viewer = document.getElementById('content-viewer');
-            ['contextmenu', 'selectstart', 'copy'].forEach(ev => viewer.addEventListener(ev, e => e
-                .preventDefault()));
+            window.zoomOut = function() {
+                if (scale <= 0.5) return;
+                scale -= 0.25;
+                if (currentPdfUrl) {
+                    loadPDF(currentPdfUrl.split('/').pop(), document.getElementById('content-viewer'));
+                }
+            };
 
-            // Preconnect PDF agar load cepat
-            const link = document.createElement('link');
-            link.rel = 'preconnect';
-            link.href = '{{ asset('storage') }}';
-            document.head.appendChild(link);
+            // Proteksi copy dan context menu
+            const viewer = document.getElementById('content-viewer');
+            ['contextmenu', 'selectstart', 'copy'].forEach(ev =>
+                viewer.addEventListener(ev, e => e.preventDefault())
+            );
 
             // Auto-load materi pertama
             const firstMateri = document.querySelector('.materi-item');
