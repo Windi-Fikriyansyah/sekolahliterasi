@@ -463,7 +463,7 @@
             </div>
 
             <div class="border-t border-gray-600 pt-6 text-center animate-fade-in-up">
-                <p>&copy; 2023 EduCourse. All rights reserved.</p>
+                <p>&copy; 2025 Sekolahliterasi.com All rights reserved.</p>
             </div>
         </div>
     </footer>
