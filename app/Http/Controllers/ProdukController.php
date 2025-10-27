@@ -269,6 +269,11 @@ class ProdukController extends Controller
             ->limit(4)
             ->get();
 
+        $landingPage = DB::table('landing_page_sections')->first();
+        $featurespage = DB::table('landing_page_features')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
         $kelasVideo = DB::table('products')
             ->where('tipe_produk', 'kelas_video')
             ->where('status', 'aktif')
@@ -299,7 +304,7 @@ class ProdukController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('welcome', compact('programs', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        return view('welcome', compact('programs', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
     public function course()
     {

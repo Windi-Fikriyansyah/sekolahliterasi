@@ -46,7 +46,7 @@
 
 
     <!-- E-Course Terbaru Section -->
-    <section class="py-12 bg-gray-50">
+    <section id="produk" class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl md:text-3xl font-bold text-secondary">Program Terbaru</h2>
@@ -278,6 +278,113 @@
             </div>
         </div>
     </section>
+
+    <section id="why" class="py-20 bg-primary-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Heading -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">
+                    {{ $landingPage->features_title ?? 'Mengapa Memilih KelasSatu?' }}
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    {{ $landingPage->features_subtitle ?? 'Kami menyediakan pengalaman belajar terbaik dengan fitur-fitur unggulan' }}
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach ($featurespage as $feature)
+                    @if (is_object($feature) && isset($feature->title))
+                        <div
+                            class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-8 text-center hover:-translate-y-1">
+                            <!-- Icon -->
+                            <!-- Icon -->
+                            <div
+                                class="w-16 h-16 mx-auto mb-5 rounded-full flex items-center justify-center
+           bg-gradient-to-br from-primary-100 to-primary-200 text-primary-600 shadow-lg
+           group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 6v12m0-12c-1.2-.8-2.8-1.3-4.5-1.3S4.2 5.2 3 6v12c1.2-.8 2.8-1.3 4.5-1.3S10.8 17.2 12 18m0-12c1.2-.8 2.8-1.3 4.5-1.3S19.8 5.2 21 6v12c-1.2-.8-2.8-1.3-4.5-1.3S13.2 17.2 12 18" />
+                                </svg>
+                            </div>
+
+
+
+                            <!-- Title -->
+                            <h3
+                                class="text-xl font-semibold text-primary-200 mb-3 group-hover:text-primary-100 transition-colors duration-300">
+                                {{ $feature->title }}
+                            </h3>
+
+                            <!-- Description -->
+                            <p class="text-gray-600 leading-relaxed">
+                                {{ $feature->description }}
+                            </p>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gradient-to-r from-secondary via-blue-500 to-blue-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 text-center text-white">
+
+                <div class="group transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl font-extrabold mb-2 drop-shadow-md">
+                        {{ $landingPage->stats_students_count ?? '50,000+' }}
+                    </div>
+                    <div class="text-blue-100 text-lg font-medium tracking-wide">
+                        {{ $landingPage->stats_students_label ?? 'Siswa Aktif' }}
+                    </div>
+                    <div
+                        class="w-12 h-1 bg-white/40 mx-auto mt-3 rounded-full group-hover:w-20 transition-all duration-300">
+                    </div>
+                </div>
+
+                <div class="group transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl font-extrabold mb-2 drop-shadow-md">
+                        {{ $landingPage->stats_courses_count ?? '200+' }}
+                    </div>
+                    <div class="text-blue-100 text-lg font-medium tracking-wide">
+                        {{ $landingPage->stats_courses_label ?? 'Kursus Tersedia' }}
+                    </div>
+                    <div
+                        class="w-12 h-1 bg-white/40 mx-auto mt-3 rounded-full group-hover:w-20 transition-all duration-300">
+                    </div>
+                </div>
+
+                <div class="group transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl font-extrabold mb-2 drop-shadow-md">
+                        {{ $landingPage->stats_satisfaction_count ?? '95%' }}
+                    </div>
+                    <div class="text-blue-100 text-lg font-medium tracking-wide">
+                        {{ $landingPage->stats_satisfaction_label ?? 'Tingkat Kepuasan' }}
+                    </div>
+                    <div
+                        class="w-12 h-1 bg-white/40 mx-auto mt-3 rounded-full group-hover:w-20 transition-all duration-300">
+                    </div>
+                </div>
+
+                <div class="group transform hover:scale-105 transition duration-300">
+                    <div class="text-4xl font-extrabold mb-2 drop-shadow-md">
+                        {{ $landingPage->stats_support_count ?? '24/7' }}
+                    </div>
+                    <div class="text-blue-100 text-lg font-medium tracking-wide">
+                        {{ $landingPage->stats_support_label ?? 'Dukungan' }}
+                    </div>
+                    <div
+                        class="w-12 h-1 bg-white/40 mx-auto mt-3 rounded-full group-hover:w-20 transition-all duration-300">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
 
     <!-- Tentang Kami Section -->
     <section id="tentang-kami" class="py-16 bg-white">

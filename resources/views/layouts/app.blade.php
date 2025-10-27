@@ -444,27 +444,19 @@
 
                 <!-- Quick Links -->
                 <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
-                    <h4 class="font-bold text-lg mb-4">Tautan Cepat</h4>
+                    <h4 class="font-bold text-lg mb-4">Platform</h4>
                     <ul class="space-y-2">
                         <li><a href="/"
                                 class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Beranda</a>
                         </li>
-                        <li><a href="{{ route('tentang-kami') }}"
+                        <li><a href="#tentang-kami"
                                 class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Tentang
                                 Kami</a></li>
-                        <li><a href="{{ route('program') }}"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Program</a>
+                        <li><a href="#produk"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Produk</a>
                         </li>
-                        <li><a href="{{ route('kelasvideo') }}"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kelas
-                                Video</a></li>
-                        <li>
-                            <a href="{{ route('ebook') }}"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">E-Book</a>
-                        </li>
-                        <li><a href="{{ route('buku') }}"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Buku</a>
-                        </li>
+
+
                     </ul>
                 </div>
 
@@ -472,21 +464,14 @@
                 <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Dukungan</h4>
                     <ul class="space-y-2">
-                        <li><a href="#"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Bantuan</a>
+                        <li><a href="#faq"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Pertanyaan
+                                Umum</a>
                         </li>
-                        <li><a href="#"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">FAQ</a>
+                        <li><a href="#testimoni"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Testimoni</a>
                         </li>
-                        <li><a href="#"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kebijakan
-                                Privasi</a></li>
-                        <li><a href="#"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Syarat
-                                & Ketentuan</a></li>
-                        <li><a href="#"
-                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kontak</a>
-                        </li>
+
                     </ul>
                 </div>
 
