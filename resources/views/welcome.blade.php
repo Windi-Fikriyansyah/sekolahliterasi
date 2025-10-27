@@ -3,7 +3,13 @@
 @section('content')
     <section class="relative w-full min-h-screen bg-gradient-to-br from-secondary via-blue-400 to-primary overflow-hidden">
         <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
+            <div
+                class="inline-flex items-center mb-2 px-4 py-2 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
+                <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                <span class="text-white text-sm font-medium">Platform Literasi #1 di Indonesia</span>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
                 <!-- Left Content -->
                 <div class="text-white space-y-8 animate-fade-in-up">
                     <h1
@@ -273,8 +279,51 @@
         </div>
     </section>
 
+    <!-- Tentang Kami Section -->
+    <section id="tentang-kami" class="py-16 bg-white">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-secondary mb-4 animate-fade-in-up">
+                    {{ $content->about_title ?? '' }}
+                </h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    {{ $content->about_paragraph_1 ?? '' }}
+
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <!-- Gambar -->
+                <div class="relative animate-fade-in-up">
+                    <div class="overflow-hidden rounded-2xl shadow-lg">
+                        <img src="{{ asset('storage/' . ($content->about_image ?? 'image/about-us.jpg')) }}"
+                            alt="Tentang Kami"
+                            class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-primary/10 w-48 h-48 rounded-full blur-3xl hidden md:block">
+                    </div>
+                </div>
+
+                <!-- Konten -->
+                <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h3 class="text-2xl font-bold text-gray-800">Misi Kami</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ $content->about_paragraph_2 ?? '' }}
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-gray-800">Visi Kami</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ $content->about_paragraph_3 ?? '' }}
+                    </p>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Testimoni Section -->
-    <section class="py-12 bg-gray-50">
+    <section id="testimoni" class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-4 animate-fade-in-up">
                 {{ $content->testimonial_title ?? 'Apa Kata Mereka' }}
@@ -317,7 +366,7 @@
 
     <!-- FAQ Section -->
     <!-- FAQ Section -->
-    <section class="py-12 bg-white">
+    <section id="faq" class="py-12 bg-white">
         <div class="container mx-auto px-4 max-w-3xl">
             <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-4 animate-fade-in-up">
                 {{ $content->faq_title ?? 'Pertanyaan yang Sering Diajukan' }}

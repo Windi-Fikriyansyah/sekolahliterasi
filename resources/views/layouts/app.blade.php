@@ -86,6 +86,10 @@
         }
     </script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         input[type="checkbox"].accent-primary {
             accent-color: #fba615;
             /* Warna utama */
@@ -240,6 +244,24 @@
                         <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
                     </div>
                 </div>
+                @guest
+                    <a href="#tentang-kami" class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Tentang Kami
+                        <span
+                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#testimoni" class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Testimoni
+                        <span
+                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+
+                    <a href="#faq" class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Pertanyaan Umum
+                        <span
+                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                @endguest
                 @auth
                     <a href="{{ route('kelas.index') }}"
                         class="text-gray-700 hover:text-secondary font-medium relative group">
@@ -417,25 +439,7 @@
                         class="h-14 w-auto object-contain mb-4 transform transition-transform duration-300 hover:scale-105">
 
                     <p class="mb-4">{{ $landingFooter->footer_description ?? '' }}</p>
-                    <div class="flex space-x-4">
 
-                        <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
-                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="{{ $landingFooter->footer_whatsapp }}" target="_blank"
-                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                        <a href="{{ $landingFooter->footer_instagram }}" target="_blank"
-                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="{{ $landingFooter->footer_tiktok }}" target="_blank"
-                            class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                    </div>
                 </div>
 
                 <!-- Quick Links -->
@@ -483,6 +487,35 @@
                         <li><a href="#"
                                 class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Kontak</a>
                         </li>
+                    </ul>
+                </div>
+
+                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h4 class="font-bold text-lg mb-4">Social Media</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Hubungi
+                                Kami</a>
+                        </li>
+                        <div class="flex space-x-4">
+
+                            <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
+                                class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="{{ $landingFooter->footer_whatsapp }}" target="_blank"
+                                class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="{{ $landingFooter->footer_instagram }}" target="_blank"
+                                class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="{{ $landingFooter->footer_tiktok }}" target="_blank"
+                                class="text-white hover:text-primary transform transition-all duration-300 hover:scale-125 hover:-translate-y-1">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </div>
                     </ul>
                 </div>
 

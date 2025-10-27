@@ -69,10 +69,10 @@
                                     <button class="nav-link active" id="hero-tab" data-bs-toggle="tab"
                                         data-bs-target="#hero" type="button" role="tab">Hero Section</button>
                                 </li>
-                                {{-- <li class="nav-item" role="presentation">
+                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about"
                                         type="button" role="tab">Tentang</button>
-                                </li> --}}
+                                </li>
                                 {{-- <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="features-tab" data-bs-toggle="tab"
                                         data-bs-target="#features" type="button" role="tab">Mengapa Memilih</button>
@@ -192,7 +192,7 @@
                                             <div class="col-sm-10">
                                                 <input type="text" name="about_title"
                                                     class="form-control @error('about_title') is-invalid @enderror"
-                                                    value="{{ old('about_title', $landing->about_title ?? 'Selamat Datang di Kelassatu.com') }}" />
+                                                    value="{{ old('about_title', $landing->about_title ?? 'Tentang Kami') }}" />
                                                 @error('about_title')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -200,10 +200,10 @@
                                         </div>
 
                                         <div class="row mb-3">
-                                            <label class="col-sm-2 col-form-label">Paragraf 1</label>
+                                            <label class="col-sm-2 col-form-label">Deskripsi</label>
                                             <div class="col-sm-10">
                                                 <textarea name="about_paragraph_1" rows="4"
-                                                    class="form-control @error('about_paragraph_1') is-invalid @enderror">{{ old('about_paragraph_1', $landing->about_paragraph_1 ?? 'kelassatu.com adalah platform pembelajaran daring...') }}</textarea>
+                                                    class="form-control @error('about_paragraph_1') is-invalid @enderror">{{ old('about_paragraph_1', $landing->about_paragraph_1 ?? 'Kami adalah platform pembelajaran digital yang berkomitmen untuk menghadirkan pengalaman belajar yang interaktif, inspiratif, dan mudah diakses oleh siapa pun, di mana pun.') }}</textarea>
                                                 @error('about_paragraph_1')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -211,10 +211,10 @@
                                         </div>
 
                                         <div class="row mb-3">
-                                            <label class="col-sm-2 col-form-label">Paragraf 2</label>
+                                            <label class="col-sm-2 col-form-label">Misi Kami</label>
                                             <div class="col-sm-10">
-                                                <textarea name="about_paragraph_2" rows="4"
-                                                    class="form-control @error('about_paragraph_2') is-invalid @enderror">{{ old('about_paragraph_2', $landing->about_paragraph_2 ?? 'Di sini, setiap orang memiliki kesempatan...') }}</textarea>
+                                                <textarea name="about_paragraph_2" rows="3"
+                                                    class="form-control @error('about_paragraph_2') is-invalid @enderror">{{ old('about_paragraph_2', $landing->about_paragraph_2 ?? 'Memberdayakan individu dan institusi pendidikan melalui teknologi pembelajaran yang inovatif dan konten berkualitas tinggi agar dapat mengembangkan potensi mereka secara maksimal.') }}</textarea>
                                                 @error('about_paragraph_2')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -222,7 +222,18 @@
                                         </div>
 
                                         <div class="row mb-3">
-                                            <label class="col-sm-2 col-form-label">Logo/Gambar</label>
+                                            <label class="col-sm-2 col-form-label">Visi Kami</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="about_paragraph_3" rows="3"
+                                                    class="form-control @error('about_paragraph_3') is-invalid @enderror">{{ old('about_paragraph_3', $landing->about_paragraph_3 ?? 'Menjadi platform pendidikan digital terdepan di Indonesia yang menginspirasi semangat belajar sepanjang hayat.') }}</textarea>
+                                                @error('about_paragraph_3')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Gambar Tentang Kami</label>
                                             <div class="col-sm-10">
                                                 <input type="file" name="about_image"
                                                     class="form-control image-upload @error('about_image') is-invalid @enderror"
@@ -242,7 +253,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <!-- Features Section Tab -->
                                 <div class="tab-pane fade" id="features" role="tabpanel">
                                     <div class="mt-4">
