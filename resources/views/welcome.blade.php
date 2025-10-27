@@ -279,6 +279,49 @@
         </div>
     </section>
 
+    <section id="tentang-kami" class="py-16 bg-white">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-secondary mb-4 animate-fade-in-up">
+                    {{ $content->about_title ?? '' }}
+                </h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    {{ $content->about_paragraph_1 ?? '' }}
+
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <!-- Gambar -->
+                <div class="relative animate-fade-in-up">
+                    <div class="overflow-hidden rounded-2xl shadow-lg">
+                        <img src="{{ asset('storage/' . ($content->about_image ?? 'image/about-us.jpg')) }}"
+                            alt="Tentang Kami"
+                            class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-primary/10 w-48 h-48 rounded-full blur-3xl hidden md:block">
+                    </div>
+                </div>
+
+                <!-- Konten -->
+                <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h3 class="text-2xl font-bold text-gray-800">Misi Kami</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ $content->about_paragraph_2 ?? '' }}
+                    </p>
+
+                    <h3 class="text-2xl font-bold text-gray-800">Visi Kami</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ $content->about_paragraph_3 ?? '' }}
+                    </p>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
     <section id="why" class="py-20 bg-primary-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Heading -->
@@ -387,47 +430,6 @@
 
 
     <!-- Tentang Kami Section -->
-    <section id="tentang-kami" class="py-16 bg-white">
-        <div class="container mx-auto px-4 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-secondary mb-4 animate-fade-in-up">
-                    {{ $content->about_title ?? '' }}
-                </h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">
-                    {{ $content->about_paragraph_1 ?? '' }}
-
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                <!-- Gambar -->
-                <div class="relative animate-fade-in-up">
-                    <div class="overflow-hidden rounded-2xl shadow-lg">
-                        <img src="{{ asset('storage/' . ($content->about_image ?? 'image/about-us.jpg')) }}"
-                            alt="Tentang Kami"
-                            class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <div class="absolute -bottom-6 -left-6 bg-primary/10 w-48 h-48 rounded-full blur-3xl hidden md:block">
-                    </div>
-                </div>
-
-                <!-- Konten -->
-                <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <h3 class="text-2xl font-bold text-gray-800">Misi Kami</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $content->about_paragraph_2 ?? '' }}
-                    </p>
-
-                    <h3 class="text-2xl font-bold text-gray-800">Visi Kami</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $content->about_paragraph_3 ?? '' }}
-                    </p>
-
-
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Testimoni Section -->
     <section id="testimoni" class="py-12 bg-gray-50">
