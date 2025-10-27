@@ -302,21 +302,23 @@ class ProdukBukuController extends Controller
     }
     public function detail($slug)
     {
-        // Ambil ID dari slug (angka di belakang)
+
+
         $id = (int) substr(strrchr($slug, '-'), 1);
 
-        $course = DB::table('products')
-            ->join('kategori', 'products.id_kategori', '=', 'kategori.id')
-            ->select('products.*', 'kategori.nama_kategori')
+        $bukus = DB::table('products')
+            ->leftJoin('bukus_detail', 'products.id', '=', 'bukus_detail.product_id')
+            ->select('products.*', 'bukus_detail.penulis', 'bukus_detail.isbn', 'bukus_detail.penerbit', 'bukus_detail.tanggal_terbit', 'bukus_detail.jumlah_halaman', 'bukus_detail.berat', 'bukus_detail.jenis_cover', 'bukus_detail.dimensi', 'bukus_detail.bahasa', 'bukus_detail.stok')
             ->where('products.id', $id)
             ->first();
 
-        if (!$course) {
+        if (!$bukus) {
             abort(404);
         }
 
-        return view('produk_buku.detail', compact('course'));
+        return view('produk_buku.pesanan_detail', compact('bukus'));
     }
+
 
     public function checkout($id)
     {

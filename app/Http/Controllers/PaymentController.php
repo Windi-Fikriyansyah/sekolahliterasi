@@ -334,6 +334,35 @@ class PaymentController extends Controller
                                 'updated_at' => now(),
                             ]);
                     }
+
+                    if ($trx->tipe_produk === 'buku') {
+                        $items = DB::table('transaksi_items')
+                            ->where('transaksi_id', $trx->id)
+                            ->get();
+
+                        foreach ($items as $item) {
+                            $stokDetail = DB::table('bukus_detail')
+                                ->where('product_id', $item->product_id)
+                                ->first();
+
+                            if ($stokDetail) {
+                                $stokBaru = max(0, $stokDetail->stok - $item->jumlah);
+
+                                DB::table('bukus_detail')
+                                    ->where('product_id', $item->product_id)
+                                    ->update([
+                                        'stok' => $stokBaru,
+                                        'updated_at' => now(),
+                                    ]);
+
+                                Log::info("Stok buku dikurangi", [
+                                    'product_id' => $item->product_id,
+                                    'stok_lama' => $stokDetail->stok,
+                                    'stok_baru' => $stokBaru,
+                                ]);
+                            }
+                        }
+                    }
                     $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
                 }
 

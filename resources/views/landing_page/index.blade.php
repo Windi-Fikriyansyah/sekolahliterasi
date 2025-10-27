@@ -4,18 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guru Inspirator Literasi 2.0 - Menginspirasi Negeri, Menyalakan Literasi</title>
+    <title>{{ $landing->nama_halaman ?? 'Guru Inspirator Literasi 2.0' }} - Menginspirasi Negeri, Menyalakan Literasi
+    </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         /* Reset dan variabel */
         :root {
-            --primary: #1a56db;
-            --primary-dark: #1e3a8a;
-            --secondary: #059669;
-            --accent: #f59e0b;
+            --primary: {{ $landing->primary_color ?? '#1a56db' }};
+            --primary-dark: {{ $landing->primary_color ?? '#1e3a8a' }};
+            --secondary: {{ $landing->secondary_color ?? '#059669' }};
+            --accent: {{ $landing->accent_color ?? '#f59e0b' }};
             --light: #f8fafc;
-            --dark: #1e293b;
+            --dark: {{ $landing->dark_color ?? '#1e293b' }};
             --gray: #64748b;
             --light-gray: #e2e8f0;
         }
@@ -41,11 +42,22 @@
 
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 80px 0 60px;
             position: relative;
-            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+            background: var(--dark) url('{{ $landing->header_background ? asset('storage/' . $landing->header_background) : asset('image/Picture1.png') }}') center center no-repeat;
+            background-size: contain;
+            background-attachment: fixed;
+            background-color: #000;
+            background-repeat: no-repeat;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                height: 70vh;
+                background-size: contain;
+                background-position: center top;
+            }
         }
 
         .header-top {
@@ -75,43 +87,6 @@
             height: 100%;
             background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMTIwMCA4MDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjEiPjxwYXRoIGQ9Ik0wIDQwMEwxMjAwIDQwMEwxMjAwIDgwMEwwIDgwMFoiLz48L2c+PC9zdmc+');
             opacity: 0.1;
-        }
-
-        .hero-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-image {
-            max-width: 250px;
-            margin: 30px auto 0;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .tagline {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        .intro-text {
-            max-width: 800px;
-            margin: 0 auto 10px;
-            font-size: 1.1rem;
-            line-height: 1.7;
         }
 
         .cta-button {
@@ -145,44 +120,9 @@
                 height: 45px;
             }
 
-            .hero-image {
-                max-width: 180px;
-                margin-top: 20px;
-            }
-
-            .intro-text {
-                font-size: 1rem;
-            }
-
             header {
                 padding-top: 100px;
             }
-        }
-
-
-        #tentang .content-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-
-        #tentang .text {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        #tentang .image {
-            flex: 1;
-            min-width: 300px;
-            text-align: center;
-        }
-
-        #tentang .image img {
-            max-width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* Sections */
@@ -214,7 +154,7 @@
 
         .section-subtitle {
             text-align: center;
-            color: white;
+            color: var(--dark);
             max-width: 700px;
             margin: 0 auto 40px;
             font-size: 1.1rem;
@@ -251,6 +191,83 @@
             font-weight: 600;
             color: var(--dark);
             margin-top: 10px;
+        }
+
+        /* Tentang Program */
+        #tentang {
+            padding: 80px 0;
+        }
+
+        .tentang-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tentang-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tentang-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tentang-text {
+            flex: 1;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        .tentang-text p {
+            margin-bottom: 15px;
+        }
+
+        .tentang-text blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 20px;
+            margin-top: 20px;
+            color: var(--gray);
+            font-style: italic;
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 15px 20px;
+        }
+
+        .tentang-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tentang-image img {
+            width: 100%;
+            max-width: 480px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+        }
+
+        @media (max-width: 992px) {
+            .tentang-content {
+                flex-direction: column;
+            }
+
+            .tentang-image img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .tentang-card {
+                padding: 25px;
+            }
         }
 
         /* Timeline */
@@ -360,12 +377,10 @@
             position: relative;
         }
 
-        .gallery-item::before {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--gray);
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Reward Section */
@@ -483,8 +498,6 @@
             transform: translateY(-3px);
         }
 
-
-
         .copyright {
             text-align: center;
             padding-top: 30px;
@@ -519,6 +532,34 @@
                 padding: 60px 0;
             }
         }
+
+        /* Destination Grid */
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .destination-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .destination-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .destination-label {
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
     </style>
 </head>
 
@@ -526,166 +567,206 @@
     <!-- Header -->
     <header>
         <div class="header-top">
-            <!-- Ganti src sesuai lokasi gambar logo -->
-            <img src="{{ asset('image/Picture2.png') }}" alt="Logo 1">
-            <img src="{{ asset('image/Picture3.png') }}" alt="Logo 2">
-        </div>
+            @if ($landing->header_logo1)
+                <img src="{{ asset('storage/' . $landing->header_logo1) }}" alt="Logo 1">
+            @else
+                <img src="{{ asset('image/Picture2.png') }}" alt="Logo 1">
+            @endif
 
-        <div class="container hero-content">
-            <h1>PROGRAM BERGENGSI NASIONAL<br>GURU INSPIRATOR LITERASI 2.0</h1>
-            <div class="tagline">Menginspirasi Negeri, Menyalakan Literasi Tahun 2025</div>
-            <p class="intro-text">Sebuah Gerakan Nasional bagi Guru yang Siap Menjadi Cahaya Perubahan!</p>
-            <p class="intro-text">Program Sinergi Literasi 2# di Indonesia</p>
-
-            <!-- Gambar Hero -->
-            <img src="{{ asset('image/Picture1.png') }}" alt="Guru Inspirator Literasi" class="hero-image">
+            @if ($landing->header_logo2)
+                <img src="{{ asset('storage/' . $landing->header_logo2) }}" alt="Logo 2">
+            @else
+                <img src="{{ asset('image/Picture3.png') }}" alt="Logo 2">
+            @endif
         </div>
     </header>
 
     <!-- Tentang Program -->
-    <section id="tentang">
+    <section id="tentang" style="background-color: #f8fafc;">
         <div class="container">
             <div class="section-title">
-                <h2>✨ Tentang Program</h2>
+                <h2>{{ $landing->tentang_title ?? '✨ Tentang Program' }}</h2>
             </div>
 
-            <div class="content-wrapper">
-                <div class="text">
-                    <div class="card">
-                        <p>Di tengah derasnya arus teknologi dan perubahan zaman, Indonesia membutuhkan guru-guru luar
-                            biasa,
-                            pendidik yang bukan hanya mengajar, tetapi juga menginspirasi.</p>
-                        <p>Program Guru Inspirator Literasi 2.0 adalah gerakan nasional yang digagas oleh Forum
-                            Indonesia
-                            Menulis, untuk melahirkan agen perubahan pendidikan yang menyalakan semangat literasi,
-                            membangun
-                            karakter bangsa, dan menjadi promotor utama Wisata Literasi Nasional.</p>
-                        <blockquote style="border-left:4px solid var(--accent); padding-left:15px; margin-top:15px;">
-                            “Literasi bukan hanya milik kota besar. Literasi dimulai dari halaman rumah kita
-                            sendiri.”<br>
-                            <strong>- Fakhrul Arrazi, Founder Forum Indonesia Menulis</strong>
-                        </blockquote>
-                    </div>
-                </div>
+            <div class="tentang-card">
+                <div class="tentang-content">
+                    <div class="tentang-text">
+                        @if ($landing->tentang_paragraph1)
+                            <p>{{ $landing->tentang_paragraph1 }}</p>
+                        @endif
 
-                <div class="image">
-                    <img src="{{ asset('image/Picture3.png') }}" alt="Tentang Program Guru Inspirator Literasi">
+                        @if ($landing->tentang_paragraph2)
+                            <p>{!! str_replace(
+                                'Guru Inspirator Literasi 2.0',
+                                '<strong>Guru Inspirator Literasi 2.0</strong>',
+                                str_replace('Forum Indonesia Menulis', '<strong>Forum Indonesia Menulis</strong>', $landing->tentang_paragraph2),
+                            ) !!}</p>
+                        @endif
+
+                        @if ($landing->tentang_quote)
+                            <blockquote>
+                                "{{ $landing->tentang_quote }}"<br>
+                                @if ($landing->tentang_quote_author)
+                                    <strong>{{ $landing->tentang_quote_author }}</strong>
+                                @endif
+                            </blockquote>
+                        @endif
+                    </div>
+                    <div class="tentang-image">
+                        @if ($landing->tentang_image)
+                            <img src="{{ asset('storage/' . $landing->tentang_image) }}"
+                                alt="Tentang Program Guru Inspirator Literasi">
+                        @else
+                            <img src="{{ asset('image/Picture3.png') }}"
+                                alt="Tentang Program Guru Inspirator Literasi">
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- Wisata Literasi Nasional -->
+
     <!-- Wisata Literasi Nasional -->
     <section id="wln" style="background-color: #f8fafc;">
         <div class="container">
             <div class="section-title">
-                <!-- ✅ Dua logo di atas judul -->
+                <!-- Logo WLN -->
                 <div
                     style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 25px;">
-                    <img src="{{ asset('image/Picture6.png') }}" alt="Logo WLN 1" style="height: 80px; width: auto;">
-                    <img src="{{ asset('image/Picture7.png') }}" alt="Logo WLN 2" style="height: 80px; width: auto;">
+                    @if ($landing->wln_logo1)
+                        <img src="{{ asset('storage/' . $landing->wln_logo1) }}" alt="Logo WLN 1"
+                            style="height: 80px; width: auto;">
+                    @else
+                        <img src="{{ asset('image/Picture6.png') }}" alt="Logo WLN 1"
+                            style="height: 80px; width: auto;">
+                    @endif
+
+                    @if ($landing->wln_logo2)
+                        <img src="{{ asset('storage/' . $landing->wln_logo2) }}" alt="Logo WLN 2"
+                            style="height: 80px; width: auto;">
+                    @else
+                        <img src="{{ asset('image/Picture7.png') }}" alt="Logo WLN 2"
+                            style="height: 80px; width: auto;">
+                    @endif
                 </div>
 
-                <h2>WISATA LITERASI NASIONAL & ANUGERAH LITERASI INDONESIA</h2>
-                <p class="section-subtitle">Pesta Raya Literasi Terbesar di Tanah Air</p>
+                <h2>{{ $landing->wln_title ?? 'WISATA LITERASI NASIONAL & ANUGERAH LITERASI INDONESIA' }}</h2>
+                <p class="section-subtitle">{{ $landing->wln_subtitle ?? 'Pesta Raya Literasi Terbesar di Tanah Air' }}
+                </p>
             </div>
 
             <div class="card">
-                <p>Wisata Literasi Nasional (WLN) dan Anugerah Literasi Indonesia (ALI) merupakan ajang prestisius
-                    tahunan yang menjadi magnet bagi ribuan pendidik, pegiat literasi, dan tokoh inspiratif dari seluruh
-                    penjuru negeri. Sebuah perhelatan akbar yang menghadirkan semangat kebangkitan literasi nasional,
-                    membumikan literasi, menggerakkan peradaban bangsa.</p>
-                <p>Dalam satu panggung besar, WLN & ALI menghadirkan rangkaian kegiatan luar biasa: Seminar Literasi
-                    Nasional, Peluncuran Buku, Panggung Apresiasi & Hiburan Inspiratif, hingga puncak acara Anugerah
-                    Literasi Indonesia, sebuah momentum bersejarah untuk mengangkat karya, merayakan prestasi, dan
-                    menyalakan obor literasi bangsa.</p>
-                <p>Anugerah Literasi Indonesia (ALI) merupakan bentuk penghargaan tertinggi bagi para Guru Inspirator,
-                    Tokoh Literasi, dan Pejabat Publik yang telah menunjukkan dedikasi luar biasa dalam menumbuhkan
-                    budaya literasi, menggerakkan ekosistem belajar, dan mendukung kemajuan pendidikan di Indonesia.</p>
-                <p>Penghargaan ini menjadi simbol apresiasi atas kerja nyata mereka yang tanpa lelah menyalakan obor
-                    literasi di berbagai pelosok negeri, menginspirasi, mengedukasi, dan membawa perubahan nyata bagi
-                    generasi bangsa.</p>
-                <p>Melalui ALI, Indonesia memberi penghormatan kepada para pejuang literasi yang telah menjadikan
-                    literasi bukan sekadar gerakan, melainkan napas peradaban dan fondasi kemajuan bangsa.</p>
+                @if ($landing->wln_paragraph1)
+                    <p>{{ $landing->wln_paragraph1 }}</p>
+                @endif
+                @if ($landing->wln_paragraph2)
+                    <p>{{ $landing->wln_paragraph2 }}</p>
+                @endif
+                @if ($landing->wln_paragraph3)
+                    <p>{{ $landing->wln_paragraph3 }}</p>
+                @endif
+                @if ($landing->wln_paragraph4)
+                    <p>{{ $landing->wln_paragraph4 }}</p>
+                @endif
+                @if ($landing->wln_paragraph5)
+                    <p>{{ $landing->wln_paragraph5 }}</p>
+                @endif
             </div>
 
-            <!-- ✅ Tambahan 3 gambar dokumentasi -->
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 40px;">
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture4.png') }}" alt="Dokumentasi WLN 1"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                </div>
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture8.png') }}" alt="Dokumentasi WLN 2"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                </div>
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture9.png') }}" alt="Dokumentasi WLN 3"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                </div>
+            <!-- Gambar Dokumentasi WLN -->
+            <div class="destination-grid">
+                @for ($i = 1; $i <= 3; $i++)
+                    @if ($landing->{"wln_image$i"})
+                        <div class="destination-item">
+                            <img src="{{ asset('storage/' . $landing->{"wln_image$i"}) }}"
+                                alt="Dokumentasi WLN {{ $i }}">
+                        </div>
+                    @else
+                        @if ($i == 1)
+                            <div class="destination-item">
+                                <img src="{{ asset('image/Picture4.png') }}" alt="Dokumentasi WLN 1">
+                            </div>
+                        @elseif($i == 2)
+                            <div class="destination-item">
+                                <img src="{{ asset('image/Picture8.png') }}" alt="Dokumentasi WLN 2">
+                            </div>
+                        @else
+                            <div class="destination-item">
+                                <img src="{{ asset('image/Picture9.png') }}" alt="Dokumentasi WLN 3">
+                            </div>
+                        @endif
+                    @endif
+                @endfor
             </div>
         </div>
     </section>
-
 
     <!-- Jejak Literasi -->
     <section id="jejak">
         <div class="container">
             <div class="section-title">
-                <h2>JEJAK LITERASI</h2>
-                <p class="section-subtitle">WISATA LITERASI NASIONAL (WLN) & ANUGERAH LITERASI INDONESIA (ALI)<br>Sukses
-                    Terselenggara di Berbagai Wilayah Tanah Air</p>
+                <h2>{{ $landing->jejak_title ?? 'JEJAK LITERASI' }}</h2>
+                <p class="section-subtitle">
+                    {{ $landing->jejak_subtitle ?? 'WISATA LITERASI NASIONAL (WLN) & ANUGERAH LITERASI INDONESIA (ALI)<br>Sukses Terselenggara di Berbagai Wilayah Tanah Air' }}
+                </p>
             </div>
-            <p style="text-align: center; margin-bottom: 30px;">Berikut dokumentasi pelaksanaan Wisata Literasi Nasional
-                & Anugerah Literasi Indonesia yang telah sukses terselenggara di berbagai kota di Indonesia. Setiap kota
-                menghadirkan semangat, inspirasi, dan karya literasi yang luar biasa, menjadi bukti nyata bahwa gerakan
-                literasi kini semakin hidup dan meriah di seluruh Nusantara.</p>
+
+            @if ($landing->jejak_description)
+                <p style="text-align: center; margin-bottom: 30px;">{{ $landing->jejak_description }}</p>
+            @endif
 
             <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture5.png') }}" alt="Dokumentasi 1"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture10.png') }}" alt="Dokumentasi 2"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture11.png') }}" alt="Dokumentasi 3"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture12.png') }}" alt="Dokumentasi 4"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture13.png') }}" alt="Dokumentasi 5"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture14.png') }}" alt="Dokumentasi 6"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture15.png') }}" alt="Dokumentasi 6"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture16.png') }}" alt="Dokumentasi 6"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture17.png') }}" alt="Dokumentasi 6"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <div class="gallery-item">
-                    <img src="{{ asset('image/Picture18.png') }}" alt="Dokumentasi 6"
-                        style="width:100%; height:100%; object-fit:cover;">
-                </div>
+                @for ($i = 1; $i <= 10; $i++)
+                    @if ($landing->{"jejak_image$i"})
+                        <div class="gallery-item">
+                            <img src="{{ asset('storage/' . $landing->{"jejak_image$i"}) }}"
+                                alt="Dokumentasi {{ $i }}">
+                        </div>
+                    @else
+                        <!-- Fallback images -->
+                        @if ($i == 1)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture5.png') }}" alt="Dokumentasi 1">
+                            </div>
+                        @elseif($i == 2)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture10.png') }}" alt="Dokumentasi 2">
+                            </div>
+                        @elseif($i == 3)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture11.png') }}" alt="Dokumentasi 3">
+                            </div>
+                        @elseif($i == 4)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture12.png') }}" alt="Dokumentasi 4">
+                            </div>
+                        @elseif($i == 5)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture13.png') }}" alt="Dokumentasi 5">
+                            </div>
+                        @elseif($i == 6)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture14.png') }}" alt="Dokumentasi 6">
+                            </div>
+                        @elseif($i == 7)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture15.png') }}" alt="Dokumentasi 7">
+                            </div>
+                        @elseif($i == 8)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture16.png') }}" alt="Dokumentasi 8">
+                            </div>
+                        @elseif($i == 9)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture17.png') }}" alt="Dokumentasi 9">
+                            </div>
+                        @elseif($i == 10)
+                            <div class="gallery-item">
+                                <img src="{{ asset('image/Picture18.png') }}" alt="Dokumentasi 10">
+                            </div>
+                        @endif
+                    @endif
+                @endfor
             </div>
         </div>
     </section>
@@ -694,190 +775,152 @@
     <section id="reward" class="reward-section">
         <div class="container">
             <div class="section-title">
-                <h2>REWARD & APRESIASI</h2>
-                <p class="section-subtitle">- Pejabat Publik - Tokoh Pendidikan - Guru Inspirator Literasi 2.0 - GIL
-                    Mitra Literasi Nasional</p>
+                <h2>{{ $landing->reward_title ?? 'REWARD & APRESIASI' }}</h2>
+                <p class="section-subtitle">
+                    {{ $landing->reward_subtitle ?? '- Pejabat Publik - Tokoh Pendidikan - Guru Inspirator Literasi 2.0 - GIL Mitra Literasi Nasional' }}
+                </p>
             </div>
 
             <div class="reward-cards">
-                <div class="reward-card">
-                    <h3>🏆 Anugerah Literasi Indonesia</h3>
-                    <h4>A. Kategori: Pejabat Publik</h4>
-                    <p>Anugerah Literasi Indonesia Kategori Pejabat Publik merupakan penghargaan tertinggi bagi para
-                        pemimpin daerah dan tokoh pemerintahan yang menunjukkan komitmen visioner dan aksi nyata dalam
-                        mengembangkan ekosistem literasi serta memajukan pendidikan di Indonesia.</p>
-                </div>
+                @if ($landing->reward_kategori_a)
+                    <div class="reward-card">
+                        <h3>🏆 Anugerah Literasi Indonesia</h3>
+                        <h4>A. Kategori: Pejabat Publik</h4>
+                        <p>{{ $landing->reward_kategori_a }}</p>
+                    </div>
+                @endif
 
-                <div class="reward-card">
-                    <h4>B. Kategori Tokoh Pendidikan</h4>
-                    <p>Anugerah Literasi Indonesia Kategori Tokoh Pendidikan merupakan penghargaan tertinggi bagi para
-                        tokoh berpengaruh, pemimpin lembaga, dan penggerak pendidikan yang telah menunjukkan dedikasi,
-                        inovasi, dan kontribusi nyata dalam menumbuhkan budaya literasi di masyarakat.</p>
-                </div>
+                @if ($landing->reward_kategori_b)
+                    <div class="reward-card">
+                        <h4>B. Kategori Tokoh Pendidikan</h4>
+                        <p>{{ $landing->reward_kategori_b }}</p>
+                    </div>
+                @endif
 
-                <div class="reward-card">
-                    <h4>C. Kategori Guru Inspirator Literasi</h4>
-                    <p>Anugerah Literasi Indonesia Kategori Guru Inspirator Literasi merupakan penghargaan tertinggi
-                        bagi para pendidik dan penggerak literasi yang telah menunjukkan dedikasi, kreativitas, dan
-                        komitmen luar biasa dalam menumbuhkan budaya literasi di lingkungan sekolah dan masyarakat.</p>
-                </div>
+                @if ($landing->reward_kategori_c)
+                    <div class="reward-card">
+                        <h4>C. Kategori Guru Inspirator Literasi</h4>
+                        <p>{{ $landing->reward_kategori_c }}</p>
+                    </div>
+                @endif
             </div>
 
-            <div class="reward-card" style="margin-top: 30px;">
-                <h3>🏆 Anugerah Literasi Indonesia Kategori: GIL Mitra Literasi Nasional</h3>
-                <p>Kategori GIL Mitra Literasi Nasional diberikan kepada guru penggerak literasi yang secara konsisten
-                    mendedikasikan diri setiap tahun untuk memajukan literasi di berbagai wilayah Indonesia. Penghargaan
-                    ini menegaskan peran guru sebagai mitra strategis dalam membangun ekosistem literasi yang
-                    berkelanjutan dan berdampak luas.</p>
-                <p>GIL penerima penghargaan ini adalah sosok yang:</p>
-                <ul>
-                    <li>Aktif menginisiasi dan menggerakkan kegiatan literasi di sekolah maupun masyarakat.</li>
-                    <li>Menjalin kolaborasi erat dengan instansi terkait, seperti Dinas Pendidikan, Dinas Perpustakaan,
-                        hingga sekolah-sekolah mitra.</li>
-                    <li>Berkomitmen tinggi menjaga keberlanjutan program literasi di tingkat lokal maupun nasional.</li>
-                    <li>Menjadi teladan inspiratif bagi rekan guru, siswa, dan komunitas literasi di sekitarnya.</li>
-                    <li>Siap menjadi tim dalam penyelenggaraan event literasi nasional dan Internasional dari Forum
-                        Indonesia Menulis</li>
-                </ul>
-                <p>Reward yang diberikan:</p>
-                <ul>
-                    <li>Gratis mengikuti berbagai event Nasional maupun Internasional yang diselenggarakan oleh Forum
-                        Indonesia Menulis (transport dan akomodasi ditanggung FIM)</li>
-                    <li>Menjadi Pembicara Nasional maupun Internasional Forum Indonesia Menulis di berbagai event</li>
-                    <li>Reward hadiah uang tunai jutaan rupiah</li>
-                </ul>
-            </div>
+            @if ($landing->reward_gil_title)
+                <div class="reward-card" style="margin-top: 30px;">
+                    <h3>{{ $landing->reward_gil_title }}</h3>
+                    @if ($landing->reward_gil_description)
+                        <p>{{ $landing->reward_gil_description }}</p>
+                    @endif
+
+                    @if ($landing->reward_gil_characteristics)
+                        <p>GIL penerima penghargaan ini adalah sosok yang:</p>
+                        <ul>
+                            @foreach (explode("\n", $landing->reward_gil_characteristics) as $point)
+                                @if (trim($point))
+                                    <li>{{ str_replace(['•', '-'], '', trim($point)) }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+
+                    @if ($landing->reward_gil_rewards)
+                        <p>Reward yang diberikan:</p>
+                        <ul>
+                            @foreach (explode("\n", $landing->reward_gil_rewards) as $reward)
+                                @if (trim($reward))
+                                    <li>{{ str_replace(['•', '-'], '', trim($reward)) }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endif
         </div>
     </section>
 
-    <!-- Reward Utama -->
     <!-- Reward Utama -->
     <section id="reward-utama" style="background-color: #ffffff;">
         <div class="container">
             <div class="section-title">
-                <h2>REWARD UTAMA</h2>
+                <h2>{{ $landing->reward_utama_title ?? 'REWARD UTAMA' }}</h2>
                 <p class="section-subtitle" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">
-                    SINGAPURA – MALAYSIA – THAILAND
+                    {{ $landing->reward_utama_subtitle ?? 'SINGAPURA – MALAYSIA – THAILAND' }}
                 </p>
             </div>
 
-            <!-- ✅ Tambahkan gambar destinasi -->
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px;">
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture19.png') }}" alt="Reward Singapura"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                    <div style="padding: 10px; text-align: center; font-weight: 600; color: var(--primary-dark);">
-                        Singapura</div>
-                </div>
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture19.png') }}" alt="Reward Malaysia"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                    <div style="padding: 10px; text-align: center; font-weight: 600; color: var(--primary-dark);">
-                        Malaysia</div>
-                </div>
-                <div
-                    style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                    <img src="{{ asset('image/Picture19.png') }}" alt="Reward Thailand"
-                        style="width: 100%; height: 220px; object-fit: cover;">
-                    <div style="padding: 10px; text-align: center; font-weight: 600; color: var(--primary-dark);">
-                        Thailand</div>
-                </div>
+            <!-- Gambar Destinasi -->
+            <div class="destination-grid">
+                @php
+                    $destinations = ['Singapura', 'Malaysia', 'Thailand'];
+                @endphp
+                @foreach ($destinations as $index => $destination)
+                    <div class="destination-item">
+                        @if ($landing->{'reward_utama_image' . ($index + 1)})
+                            <img src="{{ asset('storage/' . $landing->{'reward_utama_image' . ($index + 1)}) }}"
+                                alt="Reward {{ $destination }}">
+                        @else
+                            <img src="{{ asset('image/Picture19.png') }}" alt="Reward {{ $destination }}">
+                        @endif
+                        <div class="destination-label">{{ $destination }}</div>
+                    </div>
+                @endforeach
             </div>
 
-            <div class="card">
-                <h3>Tour Aksara Internasional</h3>
-                <p style="font-style: italic; margin-bottom: 20px;">Bukan sekadar tour, ini adalah gerbang menuju dunia
-                    literasi global!</p>
-                <p>Tour yang menghadirkan pengalaman luar biasa: perpaduan wisata edukasi, kompetisi, event
-                    internasional, serta eksplorasi budaya, teknologi, dan kreativitas dunia.</p>
-                <p>Mengikuti program ini berarti Anda siap:</p>
-                <ul style="list-style-type: none; margin: 20px 0;">
-                    <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">🚀 <strong>Menjadi duta
-                            literasi Indonesia</strong> di panggung internasional.</li>
-                    <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">🌍 <strong>Menggali
-                            inspirasi</strong>
-                        dari sistem pendidikan, budaya, dan inovasi negara maju.</li>
-                    <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">🏆 <strong>Berkompetisi &
-                            tampil</strong> dalam ajang literasi bergengsi tingkat dunia.</li>
-                    <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">🎭 <strong>Menikmati
-                            wisata
-                            kreatif</strong> yang sarat makna, menggabungkan literasi, seni, dan teknologi modern.</li>
-                </ul>
-                <p>Tour Aksara Internasional bukan hanya perjalanan, melainkan pengalaman berharga yang akan membentuk
-                    generasi berprestasi dengan semangat literasi mendunia.</p>
-            </div>
+            @if ($landing->tour_title)
+                <div class="card">
+                    <h3>{{ $landing->tour_title }}</h3>
+                    @if ($landing->tour_quote)
+                        <p style="font-style: italic; margin-bottom: 20px;">{{ $landing->tour_quote }}</p>
+                    @endif
+                    @if ($landing->tour_description1)
+                        <p>{{ $landing->tour_description1 }}</p>
+                    @endif
+                    @if ($landing->tour_description2)
+                        <p>{{ $landing->tour_description2 }}</p>
+                    @endif
+
+                    @if ($landing->tour_preparation_points)
+                        <p>Mengikuti program ini berarti Anda siap:</p>
+                        <ul style="list-style-type: none; margin: 20px 0;">
+                            @foreach (explode("\n", $landing->tour_preparation_points) as $point)
+                                @if (trim($point))
+                                    <li style="margin-bottom: 10px; padding-left: 25px; position: relative;">
+                                        {!! str_replace(['•', '-'], '', trim($point)) !!}
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    @endif
+
+                    @if ($landing->tour_conclusion)
+                        <p>{{ $landing->tour_conclusion }}</p>
+                    @endif
+                </div>
+            @endif
         </div>
     </section>
-
 
     <!-- Timeline -->
     <section id="timeline" style="background-color: #f8fafc;">
         <div class="container">
             <div class="section-title">
-                <h2>TIMELINE PROGRAM</h2>
-                <p class="section-subtitle">GURU INSPIRATOR LITERASI 2.0<br>"Menginspirasi Negeri, Menyalakan Literasi"
+                <h2>{{ $landing->timeline_title ?? 'TIMELINE PROGRAM' }}</h2>
+                <p class="section-subtitle">
+                    {{ $landing->timeline_subtitle ?? 'GURU INSPIRATOR LITERASI 2.0<br>"Menginspirasi Negeri, Menyalakan Literasi"' }}
                 </p>
             </div>
 
             <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">30 Oktober 2025</div>
-                        <h3>Pengumuman Kandidat GIL 2.0 Terpilih</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">12 November 2025</div>
-                        <h3>Training Of Coach Program GIL 2.0</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">13 November – 31 Desember 2025</div>
-                        <h3>Diseminasi Kandidat GIL 2.0</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">13 November 2025 – Terlaksana WLN</div>
-                        <h3>Pendampingan Kandidat GIL 2.0</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">Sebelum pelaksanaan WLN (13 November 2025 – 15 Juni 2026)</div>
-                        <h3>Pembicara Teacher Writer</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">15 April – 19 Juni 2026</div>
-                        <h3>Seleksi dan Pendampingan GIL Mitra Literasi Nasional</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">20 Juni 2026</div>
-                        <h3>Pengumuman Juara GIL terbaik Nasional</h3>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <div class="timeline-date">25 November 2025 – 20 Juni 2026</div>
-                        <h3>Puncak Acara Wisata Literasi Nasional & Anugerah Literasi Indonesia</h3>
-                    </div>
-                </div>
+                @for ($i = 1; $i <= 8; $i++)
+                    @if ($landing->{"timeline_date$i"} && $landing->{"timeline_event$i"})
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">{{ $landing->{"timeline_date$i"} }}</div>
+                                <h3>{{ $landing->{"timeline_event$i"} }}</h3>
+                            </div>
+                        </div>
+                    @endif
+                @endfor
             </div>
         </div>
     </section>
@@ -886,44 +929,26 @@
     <section id="manfaat">
         <div class="container">
             <div class="section-title">
-                <h2>Apa yang Anda Dapatkan?</h2>
-                <p class="section-subtitle">Menjadi bagian dari GIL 2.0 bukan sekadar mengikuti pelatihan, ini adalah
-                    perjalanan transformasi diri dan bangsa!</p>
+                <h2>{{ $landing->manfaat_title ?? 'Apa yang Anda Dapatkan?' }}</h2>
+                <p class="section-subtitle">
+                    {{ $landing->manfaat_subtitle ?? 'Menjadi bagian dari GIL 2.0 bukan sekadar mengikuti pelatihan, ini adalah perjalanan transformasi diri dan bangsa!' }}
+                </p>
             </div>
 
             <div class="benefits-grid">
-                <div class="benefit-item">
-                    <div class="benefit-icon">📚</div>
-                    <h3>Pelatihan Eksklusif</h3>
-                    <p>Belajar langsung dari mentor nasional dan praktisi literasi berpengalaman.</p>
-                </div>
-
-                <div class="benefit-item">
-                    <div class="benefit-icon">🤝</div>
-                    <h3>Pendampingan Intensif & Jejaring Nasional</h3>
-                    <p>Bersama ratusan guru inspiratif dari berbagai provinsi, membangun ekosistem literasi
-                        berkelanjutan.</p>
-                </div>
-
-                <div class="benefit-item">
-                    <div class="benefit-icon">📄</div>
-                    <h3>E-Sertifikat, Modul Premium, dan Buku Best Seller</h3>
-                    <p>Bonus buku "Kitab Suci Penulis" / "30 Hari Sukses Menulis Buku Best Seller".</p>
-                </div>
-
-                <div class="benefit-item">
-                    <div class="benefit-icon">🏆</div>
-                    <h3>Peluang Berprestasi Nasional</h3>
-                    <p>Berhak mengikuti Wisata Literasi Nasional & Anugerah Literasi Indonesia, ajang bergengsi bagi
-                        pejuang literasi.</p>
-                </div>
-
-                <div class="benefit-item">
-                    <div class="benefit-icon">🎁</div>
-                    <h3>Reward & Penghargaan Eksklusif</h3>
-                    <p>Gratis Tour Aksara Internasional ke Singapura – Malaysia – Thailand, hadiah uang tunai jutaan
-                        rupiah, dan kesempatan tampil sebagai pembicara nasional maupun internasional.</p>
-                </div>
+                @for ($i = 1; $i <= 5; $i++)
+                    @if ($landing->{"manfaat_item_title$i"})
+                        <div class="benefit-item">
+                            @if ($landing->{"manfaat_icon$i"})
+                                <div class="benefit-icon">{{ $landing->{"manfaat_icon$i"} }}</div>
+                            @endif
+                            <h3>{{ $landing->{"manfaat_item_title$i"} }}</h3>
+                            @if ($landing->{"manfaat_item_description$i"})
+                                <p>{{ $landing->{"manfaat_item_description$i"} }}</p>
+                            @endif
+                        </div>
+                    @endif
+                @endfor
             </div>
         </div>
     </section>
@@ -932,52 +957,64 @@
     <section id="mengapa" style="background-color: var(--primary-dark); color: white;">
         <div class="container">
             <div class="section-title">
-                <h2 style="color: white;">💡 Mengapa Harus Bergabung?</h2>
+                <h2 style="color: white;">{{ $landing->mengapa_title ?? '💡 Mengapa Harus Bergabung?' }}</h2>
             </div>
             <div class="card" style="background: rgba(255, 255, 255, 0.1); color: white; border: none;">
-                <p style="text-align: center; font-size: 1.2rem; margin-bottom: 30px;">Karena Anda bukan sekadar guru,
-                    Anda adalah pemantik perubahan yang akan:</p>
-                <ul style="list-style-type: none; text-align: center;">
-                    <li style="margin-bottom: 15px; font-size: 1.1rem;">🔥 Menyalakan semangat literasi di daerah atau
-                        wilayah Indonesia</li>
-                    <li style="margin-bottom: 15px; font-size: 1.1rem;">🔥 Menggerakkan kolaborasi pendidikan berbasis
-                        gotong royong.</li>
-                    <li style="margin-bottom: 15px; font-size: 1.1rem;">🔥 Membangun karakter unggul dan budaya
-                        literasi berkelanjutan.</li>
-                </ul>
-                <div class="quote" style="border-left-color: var(--accent); margin-top: 40px; color: var(--accent);">
-                    "Literasi adalah jantung peradaban. Tanpa literasi, bangsa hanya akan jadi penonton di tengah arus
-                    perubahan."
-                    <div class="quote-author" style="color: var(--light); font-weight: 600; margin-top: 8px;">
-                        Najwa Shihab
-                    </div>
-                </div>
+                @if ($landing->mengapa_opening)
+                    <p style="text-align: center; font-size: 1.2rem; margin-bottom: 30px;">
+                        {{ $landing->mengapa_opening }}</p>
+                @endif
 
+                @if ($landing->mengapa_points)
+                    <ul style="list-style-type: none; text-align: center;">
+                        @foreach (explode("\n", $landing->mengapa_points) as $point)
+                            @if (trim($point))
+                                <li style="margin-bottom: 15px; font-size: 1.1rem;">
+                                    🔥 {!! str_replace(['•', '-'], '', trim($point)) !!}
+                                </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                @endif
+
+                @if ($landing->mengapa_quote)
+                    <div class="quote"
+                        style="border-left-color: var(--accent); margin-top: 40px; color: var(--accent);">
+                        "{{ $landing->mengapa_quote }}"
+                        @if ($landing->mengapa_quote_author)
+                            <div class="quote-author" style="color: var(--light); font-weight: 600; margin-top: 8px;">
+                                {{ $landing->mengapa_quote_author }}
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
     <section id="daftar"
-        style="text-align: center; padding: 100px 0; background: linear-gradient(135deg, var(--secondary), #047857); color: white;">
+        style="text-align: center; padding: 100px 0; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;">
         <div class="container">
-            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Menuju Indonesia Kiblat Literasi Dunia</h2>
-            <p style="max-width: 800px; margin: 0 auto 30px; font-size: 1.2rem;">Bersama Guru Inspirator Literasi 2.0,
-                kita menapaki jalan menuju Indonesia yang beradab, berdaya saing, dan berbudaya literasi. Mari buktikan
-                bahwa perubahan besar berawal dari guru yang bergerak dan menginspirasi!</p>
+            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">
+                {{ $landing->cta_main_title ?? 'Menuju Indonesia Kiblat Literasi Dunia' }}</h2>
+            <p style="max-width: 800px; margin: 0 auto 30px; font-size: 1.2rem;">
+                {{ $landing->cta_main_description ?? 'Bersama Guru Inspirator Literasi 2.0, kita menapaki jalan menuju Indonesia yang beradab, berdaya saing, dan berbudaya literasi.' }}
+            </p>
 
-            <h3 style="font-size: 1.8rem; margin: 40px 0 20px;">Siap Jadi Pelita Literasi Bangsa?</h3>
-            <p style="font-size: 1.3rem; margin-bottom: 30px; font-weight: 600;">Sekaranglah waktunya!</p>
-            <p style="margin-bottom: 40px;">Bergabunglah bersama ribuan guru penggerak literasi dari seluruh
-                Indonesia.<br>Daftar sekarang dan jadilah bagian dari sejarah gerakan literasi nasional!</p>
+            <h3 style="font-size: 1.8rem; margin: 40px 0 20px;">
+                {{ $landing->cta_subtitle ?? 'Siap Jadi Pelita Literasi Bangsa?' }}</h3>
+            <p style="font-size: 1.3rem; margin-bottom: 30px; font-weight: 600;">
+                {{ $landing->cta_call_text ?? 'Sekaranglah waktunya!' }}</p>
 
-            <a href="#" class="cta-button" style="font-size: 1.3rem; padding: 18px 40px;">👉 DAFTAR
-                SEKARANG</a>
+            <a href="javascript:void(0);" onclick="openModal()" class="cta-button"
+                style="font-size: 1.3rem; padding: 18px 40px;">{{ $landing->cta_button_text ?? '👉 DAFTAR SEKARANG' }}</a>
 
-            <div style="margin-top: 40px;">
-                <p style="font-weight: 600; margin-bottom: 10px;">📅 Pendaftaran Kandidat Terbuka hingga 30 Oktober
-                    2025</p>
-            </div>
+            @if ($landing->cta_registration_info)
+                <div style="margin-top: 40px;">
+                    <p style="font-weight: 600; margin-bottom: 10px;">{{ $landing->cta_registration_info }}</p>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -993,23 +1030,32 @@
 
                 <div class="footer-column">
                     <h3>Kontak Kami</h3>
-                    <p>📱 WhatsApp: 0812-1000-5026</p>
-                    <p>📧 Email: fimi.ndonesiamenulis@gmail.com</p>
+                    @if ($landing->footer_whatsapp)
+                        <p>📱 WhatsApp: {{ $landing->footer_whatsapp }}</p>
+                    @endif
+                    @if ($landing->footer_contact)
+                        <p>📧 Email: {{ $landing->footer_contact }}</p>
+                    @endif
                     <div class="social-links">
-                        <a href="https://www.instagram.com/forumindonesiamenulis" target="_blank" class="social-link"
-                            aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@forumindonesiamenulis" target="_blank" class="social-link"
-                            aria-label="YouTube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://www.facebook.com/forumindonesiamenulis" target="_blank" class="social-link"
-                            aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
+                        @if ($landing->footer_instagram)
+                            <a href="{{ $landing->footer_instagram }}" target="_blank" class="social-link"
+                                aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        @endif
+                        @if ($landing->footer_youtube)
+                            <a href="{{ $landing->footer_youtube }}" target="_blank" class="social-link"
+                                aria-label="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        @endif
+                        @if ($landing->footer_facebook)
+                            <a href="{{ $landing->footer_facebook }}" target="_blank" class="social-link"
+                                aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        @endif
                     </div>
-
                 </div>
 
                 <div class="footer-column">
@@ -1023,10 +1069,102 @@
             </div>
 
             <div class="copyright">
-                &copy; 2025 Forum Indonesia Menulis. All Rights Reserved.
+                {{ $landing->footer_text ?? '© 2025 Forum Indonesia Menulis. All Rights Reserved.' }}
             </div>
         </div>
     </footer>
+
+    <!-- Modal Pendaftaran -->
+    <div id="modalDaftar"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div
+            style="background:white; max-width:750px; width:90%; padding:30px; border-radius:15px; overflow-y:auto; max-height:90vh; position:relative;">
+            <button onclick="closeModal()"
+                style="position:absolute; top:10px; right:15px; font-size:20px; background:none; border:none; cursor:pointer; color:#555;">&times;</button>
+
+            @if ($landing->modal_title)
+                <h2 style="text-align:center; color:#1a56db; font-size:1.5rem; margin-bottom:10px;">
+                    {{ $landing->modal_title }}</h2>
+            @endif
+
+            @if ($landing->modal_warning)
+                <p style="text-align:center; font-weight:bold; color:#d32f2f; margin-bottom:20px;">
+                    {{ $landing->modal_warning }}</p>
+            @endif
+
+            @if ($landing->modal_subtitle)
+                <h3 style="text-align:center; color:#059669; margin-bottom:10px;">{{ $landing->modal_subtitle }}</h3>
+            @endif
+
+            @if ($landing->modal_period)
+                <p style="text-align:center; margin-bottom:20px;">{{ $landing->modal_period }}</p>
+            @endif
+
+            @if ($landing->modal_instructions)
+                <p style="margin-bottom:15px;">{{ $landing->modal_instructions }}</p>
+            @endif
+
+            @if ($landing->modal_instruction_points)
+                <ol style="margin-left:20px; margin-bottom:20px;">
+                    @foreach (explode("\n", $landing->modal_instruction_points) as $point)
+                        @if (trim($point))
+                            <li>{!! trim($point) !!}</li>
+                        @endif
+                    @endforeach
+                </ol>
+            @endif
+
+            @if ($landing->modal_facilities)
+                <ul style="margin-left:20px; margin-bottom:20px;">
+                    @foreach (explode("\n", $landing->modal_facilities) as $facility)
+                        @if (trim($facility))
+                            <li>{!! str_replace(['•', '-'], '', trim($facility)) !!}</li>
+                        @endif
+                    @endforeach
+                </ul>
+            @endif
+
+            @if ($landing->modal_note)
+                <p style="font-weight:bold; margin-top:15px;">{{ $landing->modal_note }}</p>
+            @endif
+
+            @if ($landing->modal_transfer_info)
+                <p>{{ $landing->modal_transfer_info }}</p>
+            @endif
+
+            @if ($landing->modal_closing1)
+                <p style="margin-top:25px;">{{ $landing->modal_closing1 }}</p>
+            @endif
+
+            @if ($landing->modal_closing2)
+                <p><b>{{ $landing->modal_closing2 }}</b></p>
+            @endif
+
+            @php
+                $slug =
+                    \Illuminate\Support\Str::slug($product->judul) .
+                    '--' .
+                    \Illuminate\Support\Facades\Crypt::encryptString($product->id);
+            @endphp
+
+            <div style="text-align:center; margin-top:30px;">
+                <a href="{{ route('landing_page.pendaftaran', ['slug' => $slug]) }}"
+                    style="display:inline-block; background:#1a56db; color:white; padding:12px 30px; border-radius:8px; text-decoration:none; font-weight:600;">
+                    Lanjut ke Halaman Pendaftaran →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('modalDaftar').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modalDaftar').style.display = 'none';
+        }
+    </script>
 </body>
 
 </html>

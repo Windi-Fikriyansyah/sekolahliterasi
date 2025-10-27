@@ -65,7 +65,7 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a href="" class="menu-link">
+                <a href="{{ route('materi_program.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-category"></i>
                     <div data-i18n="Notifications">Data Program</div>
                 </a>
@@ -86,6 +86,12 @@
 
     <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Pengaturan Web</span>
+    </li>
+    <li class="menu-item">
+        <a href="{{ route('landing.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Atur Website Utama</div>
+        </a>
     </li>
     <li class="menu-item">
         <a href="{{ route('lp_programs.index') }}" class="menu-link">

@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function tentang()
+    {
+
+        return view('tentang_kami');
+    }
     public function dashboardOwner(Request $request)
     {
         // Hitung jumlah siswa
@@ -52,12 +57,24 @@ class DashboardController extends Controller
             ->get();
 
         $bukus = DB::table('products')
-            ->where('tipe_produk', 'buku')
-            ->where('status', 'aktif')
-            ->orderBy('created_at', 'desc')
+            ->join('bukus_detail', 'bukus_detail.product_id', '=', 'products.id')
+            ->where('products.tipe_produk', 'buku')
+            ->where('products.status', 'aktif')
+            ->where('bukus_detail.stok', '>', 0) // stok dari tabel bukus_detail
+            ->orderBy('products.created_at', 'desc')
+            ->select('products.*', 'bukus_detail.stok') // ambil juga stok-nya
             ->limit(4)
             ->get();
+        $content = DB::table('landing_page_sections')->first();
+        $testimonials = DB::table('landing_page_testimonials')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+        $faqs = DB::table('landing_page_faqs')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
 
-        return view('dashboardUser', compact('programs', 'kelasVideo', 'ebooks', 'bukus'));
+        return view('dashboardUser', compact('programs', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
 }

@@ -60,11 +60,17 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($buku->harga, 0, ',', '.') }}
                                 </div>
-                                <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
-                                    class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
-                                    title="Tambah ke Keranjang">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('buku.detail', Str::slug($buku->judul) . '-' . $buku->id) }}"
+                                        class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
+                                        Detail
+                                    </a>
+                                    <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                        class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                        title="Tambah ke Keranjang">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
 
                             </div>
                         </div>

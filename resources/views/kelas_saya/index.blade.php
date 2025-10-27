@@ -99,7 +99,7 @@
                                     <!-- Overlay -->
                                     <div
                                         class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                                        <a href="{{ route('kelas.show', $item->id) }}"
+                                        <a href="{{ route('kelas.show', ['slug' => Str::slug($item->judul), 'encryptedId' => Crypt::encryptString($item->id)]) }}"
                                             class="opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300 px-6 py-3 bg-white text-secondary font-semibold rounded-lg shine-effect">
                                             <i class="fas fa-play-circle mr-2"></i>Mulai Belajar
                                         </a>
@@ -130,10 +130,11 @@
                                     </div>
 
                                     <!-- Action Button -->
-                                    <a href="{{ route('kelas.show', $item->id) }}"
+                                    <a href="{{ route('kelas.show', ['slug' => Str::slug($item->judul), 'encryptedId' => Crypt::encryptString($item->id)]) }}"
                                         class="block w-full text-center px-6 py-3 bg-gradient-to-r from-secondary to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 shine-effect">
                                         <i class="fas fa-arrow-right mr-2"></i>Akses Sekarang
                                     </a>
+
                                 </div>
                             </div>
                         @endforeach

@@ -16,11 +16,11 @@ use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\ContentRangeUploadHandler;
 use Illuminate\Http\UploadedFile;
 
-class MateriController extends Controller
+class MateriProgramController extends Controller
 {
     public function index()
     {
-        return view('materi.index');
+        return view('materi_program.index');
     }
 
     public function load(Request $request)
@@ -38,7 +38,7 @@ class MateriController extends Controller
                     'm.created_at',
                     'm.updated_at'
                 ])
-                ->whereIn('p.tipe_produk', ['ebook', 'kelas_video'])
+                ->where('p.tipe_produk', 'program')
                 ->orderBy('m.created_at', 'desc');
 
             return DataTables::of($kursus)
@@ -47,13 +47,13 @@ class MateriController extends Controller
                     $query->whereRaw("LOWER(p.judul) like ?", ["%" . strtolower($keyword) . "%"]);
                 })
                 ->addColumn('action', function ($row) {
-                    $deleteUrl = route('materi.destroy', $row->id);
+                    $deleteUrl = route('materi_program.destroy', $row->id);
 
                     // Encrypt ID untuk link edit
                     $encryptedId = Crypt::encrypt($row->id);
 
                     $buttons = '<div class="btn-group" role="group">';
-                    $buttons .= '<a href="' . route('materi.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
+                    $buttons .= '<a href="' . route('materi_program.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
 
@@ -75,10 +75,10 @@ class MateriController extends Controller
 
         $products = DB::table('products')
             ->select('products.*')
-            ->whereIn('tipe_produk', ['ebook', 'kelas_video'])
+            ->whereIn('tipe_produk', ['program'])
             ->get();
 
-        return view('materi.create', compact('products'));
+        return view('materi_program.create', compact('products'));
     }
 
     public function edit($id)
@@ -86,21 +86,21 @@ class MateriController extends Controller
         try {
             $decryptedId = Crypt::decrypt($id);
         } catch (\Exception $e) {
-            return redirect()->route('materi.index')->with('error', 'ID tidak valid');
+            return redirect()->route('materi_program.index')->with('error', 'ID tidak valid');
         }
 
         $materi = DB::table('materi')->where('id', $decryptedId)->first();
 
         if (!$materi) {
-            return redirect()->route('materi.index')->with('error', 'Materi tidak ditemukan');
+            return redirect()->route('materi_program.index')->with('error', 'Materi tidak ditemukan');
         }
 
         $products = DB::table('products')
             ->select('products.*')
-            ->whereIn('tipe_produk', ['ebook', 'kelas_video'])
+            ->whereIn('tipe_produk', ['program'])
             ->get();
 
-        return view('materi.create', compact('products', 'materi'));
+        return view('materi_program.create', compact('products', 'materi'));
     }
 
     /**
@@ -202,6 +202,7 @@ class MateriController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'jenis_materi' => 'required|in:pdf,video',
+            'tipe_pdf'     => 'nullable|in:1,2',
             'deskripsi' => 'nullable|string',
             'pdf_file' => 'nullable|string',
             'video_file' => 'nullable|string',
@@ -222,13 +223,14 @@ class MateriController extends Controller
             DB::table('materi')->insert([
                 'product_id'   => $request->product_id,
                 'jenis_materi' => $request->jenis_materi,
+                'tipe_pdf'     => $request->jenis_materi === 'pdf' ? $request->tipe_pdf : null,
                 'deskripsi'    => $request->deskripsi,
                 'file_path'    => $filePath,
                 'created_at'   => now(),
                 'updated_at'   => now(),
             ]);
 
-            return redirect()->route('materi.index')->with('success', 'Materi berhasil disimpan!');
+            return redirect()->route('materi_program.index')->with('success', 'Materi berhasil disimpan!');
         } catch (\Exception $e) {
             \Log::error('Store materi error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
@@ -240,6 +242,7 @@ class MateriController extends Controller
         $request->validate([
             'product_id'   => 'required|exists:products,id',
             'jenis_materi' => 'required|in:pdf,video',
+            'tipe_pdf'     => 'nullable|in:1,2',
             'deskripsi'    => 'nullable|string',
             'pdf_file'     => 'nullable|string',
             'video_file'   => 'nullable|string',
@@ -279,12 +282,13 @@ class MateriController extends Controller
             DB::table('materi')->where('id', $id)->update([
                 'product_id'   => $request->product_id,
                 'jenis_materi' => $request->jenis_materi,
+                'tipe_pdf'     => $request->jenis_materi === 'pdf' ? $request->tipe_pdf : null,
                 'deskripsi'    => $request->deskripsi,
                 'file_path'    => $newFilePath,
                 'updated_at'   => now(),
             ]);
 
-            return redirect()->route('materi.index')->with('success', 'Materi berhasil diperbarui!');
+            return redirect()->route('materi_program.index')->with('success', 'Materi berhasil diperbarui!');
         } catch (\Exception $e) {
             Log::error('Update materi error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();

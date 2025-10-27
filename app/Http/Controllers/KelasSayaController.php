@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class KelasSayaController extends Controller
 {
@@ -26,8 +28,14 @@ class KelasSayaController extends Controller
         return view('kelas_saya.index', compact('produk', 'ebooks', 'kelas', 'programs'));
     }
 
-    public function show($id)
+    public function show($slug, $encryptedId)
     {
+        try {
+            $id = Crypt::decryptString($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'URL tidak valid.');
+        }
+
         // Verifikasi akses user
         $enrollment = DB::table('enrollments')
             ->where('user_id', Auth::id())

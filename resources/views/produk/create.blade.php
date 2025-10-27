@@ -142,19 +142,23 @@
                                         @foreach ($manfaatList as $index => $manfaat)
                                             <div class="manfaat-item border rounded p-3 mb-3 bg-light position-relative">
                                                 <button type="button"
-                                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 removeManfaat">
-                                                    &times;
-                                                </button>
+                                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 removeManfaat">&times;</button>
+
                                                 <div class="mb-2">
                                                     <label class="form-label">Judul Benefit</label>
                                                     <input type="text" name="manfaat[{{ $index }}][judul]"
                                                         class="form-control" placeholder="Contoh: Konten Berkualitas"
                                                         value="{{ $manfaat['judul'] ?? '' }}">
                                                 </div>
+
                                                 <div>
                                                     <label class="form-label">Deskripsi</label>
-                                                    <textarea name="manfaat[{{ $index }}][deskripsi]" class="form-control"
-                                                        placeholder="Contoh: Materi lengkap dan mudah dipahami">{{ $manfaat['deskripsi'] ?? '' }}</textarea>
+                                                    <div id="quillManfaat_{{ $index }}"
+                                                        class="quill-manfaat-editor" style="height: 150px;">
+                                                        {!! $manfaat['deskripsi'] ?? '' !!}
+                                                    </div>
+                                                    <input type="hidden" name="manfaat[{{ $index }}][deskripsi]"
+                                                        id="inputManfaat_{{ $index }}">
                                                 </div>
                                             </div>
                                         @endforeach
@@ -169,6 +173,7 @@
                                     @enderror
                                 </div>
                             </div>
+
 
 
                             {{-- Tombol Submit --}}
@@ -239,12 +244,7 @@
                 }
             });
 
-            // ✅ Saat form disubmit, kirim isi Quill ke textarea
-            const form = document.getElementById("produkForm");
-            form.addEventListener("submit", function() {
-                const deskripsi = document.getElementById("deskripsi");
-                deskripsi.value = quill.root.innerHTML.trim();
-            });
+
 
             // Format harga
             const hargaDisplay = document.getElementById('harga_display');
@@ -255,44 +255,111 @@
                 e.target.value = angka ? 'Rp ' + new Intl.NumberFormat('id-ID').format(angka) : '';
             });
 
-
-            // ✅ Tambah Manfaat Dinamis
-            // ✅ Tambah dan Hapus Manfaat Dinamis
+            const manfaatEditors = {};
+            document.querySelectorAll('.quill-manfaat-editor').forEach((el, i) => {
+                manfaatEditors[i] = new Quill(el, {
+                    theme: "snow",
+                    modules: {
+                        toolbar: [
+                            [{
+                                'font': []
+                            }, {
+                                'size': []
+                            }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{
+                                'color': []
+                            }, {
+                                'background': []
+                            }],
+                            [{
+                                'script': 'super'
+                            }, {
+                                'script': 'sub'
+                            }],
+                            [{
+                                'header': [1, 2, 3, 4, 5, 6, false]
+                            }, 'blockquote', 'code-block'],
+                            [{
+                                'list': 'ordered'
+                            }, {
+                                'list': 'bullet'
+                            }, {
+                                'indent': '-1'
+                            }, {
+                                'indent': '+1'
+                            }],
+                            ['direction', {
+                                'align': []
+                            }],
+                            ['link', 'image', 'video'],
+                            ['clean']
+                        ]
+                    }
+                });
+            });
             const manfaatContainer = document.getElementById('manfaatContainer');
             const addManfaatBtn = document.getElementById('addManfaat');
 
-            // Fungsi membuat item manfaat baru
             function createManfaatItem(index) {
                 const div = document.createElement('div');
                 div.classList.add('manfaat-item', 'border', 'rounded', 'p-3', 'mb-3', 'bg-light',
                     'position-relative');
                 div.innerHTML = `
-        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 removeManfaat">
-            &times;
-        </button>
-        <div class="mb-2">
-            <label class="form-label">Judul Manfaat</label>
-            <input type="text" name="manfaat[${index}][judul]" class="form-control" placeholder="Contoh: Akses Selamanya">
-        </div>
-        <div>
-            <label class="form-label">Deskripsi</label>
-            <textarea name="manfaat[${index}][deskripsi]" class="form-control" placeholder="Contoh: Baca kapan saja tanpa batas waktu"></textarea>
-        </div>
-    `;
-                return div;
+            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 removeManfaat">&times;</button>
+            <div class="mb-2">
+                <label class="form-label">Judul Benefit</label>
+                <input type="text" name="manfaat[${index}][judul]" class="form-control" placeholder="Contoh: Akses Selamanya">
+            </div>
+            <div>
+                <label class="form-label">Deskripsi</label>
+                <div id="quillManfaat_${index}" class="quill-manfaat-editor" style="height: 150px;"></div>
+                <input type="hidden" name="manfaat[${index}][deskripsi]" id="inputManfaat_${index}">
+            </div>
+        `;
+                manfaatContainer.appendChild(div);
+
+                // Inisialisasi Quill baru
+                manfaatEditors[index] = new Quill(`#quillManfaat_${index}`, {
+                    theme: "snow",
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            [{
+                                list: 'ordered'
+                            }, {
+                                list: 'bullet'
+                            }],
+                            ['clean']
+                        ]
+                    }
+                });
             }
 
-            // Event: tambah manfaat
             addManfaatBtn.addEventListener('click', () => {
                 const index = manfaatContainer.querySelectorAll('.manfaat-item').length;
-                manfaatContainer.appendChild(createManfaatItem(index));
+                createManfaatItem(index);
             });
 
-            // Event: hapus manfaat
             manfaatContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('removeManfaat')) {
                     e.target.closest('.manfaat-item').remove();
                 }
+            });
+
+            // === Submit form ===
+            const form = document.getElementById("produkForm");
+            form.addEventListener("submit", function() {
+                // Simpan deskripsi utama
+                document.getElementById("deskripsi").value = quill.root.innerHTML.trim();
+
+                // Simpan deskripsi tiap manfaat
+                Object.keys(manfaatEditors).forEach(i => {
+                    const inputHidden = document.getElementById(`inputManfaat_${i}`);
+                    if (inputHidden) {
+                        inputHidden.value = manfaatEditors[i].root.innerHTML.trim();
+                    }
+                });
             });
 
 

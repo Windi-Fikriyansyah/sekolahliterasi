@@ -8,18 +8,17 @@
                 <div class="text-white space-y-8 animate-fade-in-up">
                     <h1
                         class="font-extrabold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] tracking-tight drop-shadow-lg">
-                        Temukan <span class="text-yellow-300">Mimpimu</span><br>
-                        Bersama Kami
+                        {{ $content->hero_title ?? 'Judul Default' }} <br><span
+                            class="text-yellow-300">{{ $content->hero_subtitle ?? '' }}</span>
                     </h1>
                     <p
                         class="text-sm sm:text-base md:text-lg text-white/90 max-w-md leading-relaxed tracking-wide font-light">
-                        Jelajahi dunia penuh inspirasi dan peluang tak terbatas.<br>
-                        Dapatkan akses ke katalog kami — tempat ide besar menjadi kenyataan.
+                        {{ $content->hero_description ?? '' }}
                     </p>
                     <div>
                         <a href="#"
                             class="inline-block bg-white text-primary px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                            Mulai Sekarang
+                            {{ $content->hero_btn_primary ?? '' }}
                         </a>
                     </div>
                 </div>
@@ -60,8 +59,12 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $program->tipe_produk }}</span>
+                                @if ($program->tipe_produk === 'program')
+                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                        Program
+                                    </span>
+                                @endif
+
                             </div>
                         </div>
 
@@ -74,14 +77,22 @@
 
                             </p>
 
+                            @php
+                                $slug =
+                                    \Illuminate\Support\Str::slug($program->judul) .
+                                    '--' .
+                                    \Illuminate\Support\Facades\Crypt::encryptString($program->id);
+                            @endphp
+
                             <div class="flex justify-between items-center">
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($program->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('landing.page') }}"
+                                <a href="{{ route('landing.page', ['slug' => $slug]) }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -110,8 +121,11 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $kelas->tipe_produk }}</span>
+                                @if ($kelas->tipe_produk === 'kelas_video')
+                                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        Kelas Video
+                                    </span>
+                                @endif
                             </div>
                         </div>
 
@@ -161,8 +175,12 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $ebook->tipe_produk }}</span>
+                                @if ($ebook->tipe_produk === 'ebook')
+                                    <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        E-Book
+                                    </span>
+                                @endif
+
                             </div>
                         </div>
 
@@ -213,8 +231,12 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $buku->tipe_produk }}</span>
+                                @if ($buku->tipe_produk === 'buku')
+                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                        Buku
+                                    </span>
+                                @endif
+
                             </div>
                         </div>
 
@@ -231,11 +253,17 @@
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($buku->harga, 0, ',', '.') }}
                                 </div>
-                                <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
-                                    class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
-                                    title="Tambah ke Keranjang">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('buku.detail', Str::slug($buku->judul) . '-' . $buku->id) }}"
+                                        class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
+                                        Detail
+                                    </a>
+                                    <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                        class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                        title="Tambah ke Keranjang">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
 
                             </div>
                         </div>
@@ -248,194 +276,85 @@
     <!-- Testimoni Section -->
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">Apa Kata Mereka?
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-4 animate-fade-in-up">
+                {{ $content->testimonial_title ?? 'Apa Kata Mereka' }}
             </h2>
+            <p class="text-gray-600 text-center mb-12">
+                {{ $content->testimonial_subtitle ?? '' }}
+            </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div
-                    class="testimonial-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1">
-                    <div class="flex items-center mb-4">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User"
-                            class="w-12 h-12 rounded-full object-cover transition-transform duration-300 hover:scale-110">
-                        <div class="ml-4">
-                            <h4 class="font-bold text-gray-800">Sarah Wijaya</h4>
-                            <p class="text-gray-600 text-sm">Web Developer</p>
+                @forelse ($testimonials as $testimonial)
+                    <div
+                        class="testimonial-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1">
+                        <div class="flex items-center mb-4">
+                            {{-- Avatar default pakai https://ui-avatars.com --}}
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($testimonial->name) }}&background=0D8ABC&color=fff"
+                                alt="{{ $testimonial->name }}"
+                                class="w-12 h-12 rounded-full object-cover transition-transform duration-300 hover:scale-110">
+                            <div class="ml-4">
+                                <h4 class="font-bold text-gray-800">{{ $testimonial->name }}</h4>
+                                <p class="text-gray-600 text-sm">{{ $testimonial->role }}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-4">{{ $testimonial->content }}</p>
+                        <div class="text-yellow-500">
+                            {{-- Dummy 5 bintang --}}
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="text-gray-700 mb-4">"E-Course Web Development sangat membantu karir saya. Materinya
-                        lengkap dan mudah dipahami."</p>
-                    <div class="text-yellow-500">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Testimonial 2 -->
-                <div
-                    class="testimonial-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1">
-                    <div class="flex items-center mb-4">
-                        <img src="https://randomuser.me/api/portraits/men/54.jpg" alt="User"
-                            class="w-12 h-12 rounded-full object-cover transition-transform duration-300 hover:scale-110">
-                        <div class="ml-4">
-                            <h4 class="font-bold text-gray-800">Budi Santoso</h4>
-                            <p class="text-gray-600 text-sm">Data Analyst</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 mb-4">"E-Book tentang Data Science sangat informatif. Saya bisa langsung
-                        menerapkan ilmunya di pekerjaan."</p>
-                    <div class="text-yellow-500">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                </div>
-
-                <!-- Testimonial 3 -->
-                <div
-                    class="testimonial-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1">
-                    <div class="flex items-center mb-4">
-                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User"
-                            class="w-12 h-12 rounded-full object-cover transition-transform duration-300 hover:scale-110">
-                        <div class="ml-4">
-                            <h4 class="font-bold text-gray-800">Dewi Lestari</h4>
-                            <p class="text-gray-600 text-sm">UI/UX Designer</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 mb-4">"Platform ini sangat user-friendly. Saya bisa belajar kapan saja dan
-                        di mana saja."</p>
-                    <div class="text-yellow-500">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
+                @empty
+                    <p class="col-span-3 text-center text-gray-500">Belum ada testimoni.</p>
+                @endforelse
             </div>
         </div>
     </section>
+
 
     <!-- FAQ Section -->
     <!-- FAQ Section -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4 max-w-3xl">
-            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-12 animate-fade-in-up">
-                Pertanyaan yang Sering Diajukan
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary text-center mb-4 animate-fade-in-up">
+                {{ $content->faq_title ?? 'Pertanyaan yang Sering Diajukan' }}
             </h2>
+            <p class="text-gray-600 text-center mb-12">
+                {{ $content->faq_subtitle ?? '' }}
+            </p>
 
             <div class="space-y-4">
-                <!-- FAQ Item 1 -->
-                <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                    <button
-                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
-                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
-                            Bagaimana cara mendaftar di platform ini?
-                        </span>
-                        <i
-                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
-                    </button>
-                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
-                        <div class="p-5 pt-0 bg-gray-50/50">
-                            <p class="text-gray-700 leading-relaxed">
-                                Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan atas, lalu mengisi
-                                formulir pendaftaran dengan data diri yang valid.
-                            </p>
+                @forelse ($faqs as $index => $faq)
+                    <div
+                        class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+                        <button
+                            class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group"
+                            onclick="toggleFaq(this)">
+                            <span
+                                class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
+                                {{ $faq->question }}
+                            </span>
+                            <i
+                                class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
+                        </button>
+                        <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                            <div class="p-5 pt-0 bg-gray-50/50">
+                                <p class="text-gray-700 leading-relaxed">
+                                    {{ $faq->answer }}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- FAQ Item 2 -->
-                <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                    <button
-                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
-                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
-                            Apakah tersedia metode pembayaran cicilan?
-                        </span>
-                        <i
-                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
-                    </button>
-                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
-                        <div class="p-5 pt-0 bg-gray-50/50">
-                            <p class="text-gray-700 leading-relaxed">
-                                Ya, kami menyediakan opsi cicilan untuk beberapa E-Course premium. Anda bisa memilih metode
-                                pembayaran yang tersedia saat checkout.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FAQ Item 3 -->
-                <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                    <button
-                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
-                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
-                            Berapa lama akses ke E-Course yang sudah dibeli?
-                        </span>
-                        <i
-                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
-                    </button>
-                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
-                        <div class="p-5 pt-0 bg-gray-50/50">
-                            <p class="text-gray-700 leading-relaxed">
-                                Akses ke E-Course yang sudah dibeli adalah seumur hidup. Anda bisa mengulang materi kapan
-                                saja tanpa batas waktu.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FAQ Item 4 -->
-                <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                    <button
-                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
-                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
-                            Apakah tersedia sertifikat setelah menyelesaikan E-Course?
-                        </span>
-                        <i
-                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
-                    </button>
-                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
-                        <div class="p-5 pt-0 bg-gray-50/50">
-                            <p class="text-gray-700 leading-relaxed">
-                                Ya, setiap peserta yang menyelesaikan E-Course akan mendapatkan sertifikat digital yang bisa
-                                diunduh dan dibagikan.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FAQ Item 5 -->
-                <div
-                    class="faq-item border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/30">
-                    <button
-                        class="faq-question w-full text-left p-5 bg-white hover:bg-gray-50 flex justify-between items-center transition-all duration-300 group">
-                        <span class="font-semibold text-gray-800 group-hover:text-primary transition-colors duration-300">
-                            Bagaimana jika saya mengalami kendala teknis?
-                        </span>
-                        <i
-                            class="fas fa-chevron-down text-primary transition-transform duration-300 transform group-hover:scale-110"></i>
-                    </button>
-                    <div class="faq-answer overflow-hidden transition-all duration-500 ease-in-out max-h-0">
-                        <div class="p-5 pt-0 bg-gray-50/50">
-                            <p class="text-gray-700 leading-relaxed">
-                                Tim support kami siap membantu 24/7 melalui live chat, email, atau telepon. Jangan ragu
-                                untuk menghubungi kami jika mengalami kendala.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                @empty
+                    <p class="text-center text-gray-500">Belum ada pertanyaan yang ditambahkan.</p>
+                @endforelse
             </div>
         </div>
+
+
     </section>
 @endsection
 @push('js')

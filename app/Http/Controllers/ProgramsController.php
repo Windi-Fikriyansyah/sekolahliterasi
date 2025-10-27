@@ -17,7 +17,6 @@ use Pion\Laravel\ChunkUpload\Handler\ContentRangeUploadHandler;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
-
 class ProgramsController extends Controller
 {
     public function index()
@@ -36,8 +35,6 @@ class ProgramsController extends Controller
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
-
-                // tampilkan gambar
                 ->addColumn('gambar', function ($row) {
                     if ($row->thumbnail) {
                         $url = asset('storage/' . $row->thumbnail);
@@ -45,11 +42,8 @@ class ProgramsController extends Controller
                     }
                     return '<span class="text-muted">Tidak ada</span>';
                 })
-
-                // kolom aksi
                 ->addColumn('action', function ($row) {
                     $encryptedId = Crypt::encrypt($row->id);
-
                     return '
                     <div class="btn-group" role="group">
                         <a href="' . route('lp_programs.atur', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Atur Landing Page">
@@ -57,7 +51,6 @@ class ProgramsController extends Controller
                         </a>
                     </div>';
                 })
-
                 ->rawColumns(['gambar', 'action'])
                 ->make(true);
         } catch (\Exception $e) {
@@ -69,28 +62,34 @@ class ProgramsController extends Controller
         }
     }
 
-
-
     public function atur($encryptedId)
     {
         try {
-            // Dekripsi ID dari tombol DataTables
             $id = Crypt::decrypt($encryptedId);
-
-            // Ambil data program dari tabel products
             $program = DB::table('products')->where('id', $id)->first();
 
             if (!$program) {
                 abort(404, 'Program tidak ditemukan');
             }
 
-            // Cek apakah sudah ada landing page untuk program ini
-            $landing = DB::table('lp_program')->where('product_id', $id)->first();
+            $landing = DB::table('lp_programs')->where('product_id', $id)->first();
+
+            // Jika belum ada landing page, buat record baru
+            if (!$landing) {
+                $landingId = DB::table('lp_programs')->insertGetId([
+                    'product_id' => $id,
+                    'nama_halaman' => $program->judul ?? 'Landing Page Program',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                $landing = DB::table('lp_programs')->where('id', $landingId)->first();
+            }
+
             $sections = DB::table('landing_sections_program')
-                ->where('landing_page_id', optional($landing)->id)
+                ->where('landing_page_id', $landing->id)
                 ->orderBy('order', 'asc')
                 ->get();
-            // Kirim data ke view
+
             return view('lp_programs.atur', compact('program', 'landing', 'sections'));
         } catch (\Exception $e) {
             Log::error('Error saat membuka halaman atur landing page: ' . $e->getMessage());
@@ -98,366 +97,209 @@ class ProgramsController extends Controller
         }
     }
 
-    public function updateAll(Request $request, $id)
+    public function updateAll(Request $request, $programId)
     {
-
         try {
             DB::beginTransaction();
 
-            $productId = $request->input('product_id');
+            // Cari atau buat landing page
+            $landing = DB::table('lp_programs')->where('product_id', $programId)->first();
 
-            // Update atau buat data landing page utama
-            $this->updateLandingPage($request, $productId);
+            $landingData = [
+                'nama_halaman' => $request->nama_halaman,
+                'primary_color' => $request->primary_color,
+                'secondary_color' => $request->secondary_color,
+                'accent_color' => $request->accent_color,
+                'dark_color' => $request->dark_color,
+                'footer_text' => $request->footer_text,
+                'footer_whatsapp' => $request->footer_whatsapp,
+                'footer_contact' => $request->footer_contact,
+                'footer_instagram' => $request->footer_instagram,
+                'footer_youtube' => $request->footer_youtube,
+                'footer_facebook' => $request->footer_facebook,
+                'tentang_title' => $request->tentang_title,
+                'tentang_paragraph1' => $request->tentang_paragraph1,
+                'tentang_paragraph2' => $request->tentang_paragraph2,
+                'tentang_quote' => $request->tentang_quote,
+                'tentang_quote_author' => $request->tentang_quote_author,
+                'wln_title' => $request->wln_title,
+                'wln_subtitle' => $request->wln_subtitle,
+                'wln_paragraph1' => $request->wln_paragraph1,
+                'wln_paragraph2' => $request->wln_paragraph2,
+                'wln_paragraph3' => $request->wln_paragraph3,
+                'wln_paragraph4' => $request->wln_paragraph4,
+                'wln_paragraph5' => $request->wln_paragraph5,
+                'jejak_title' => $request->jejak_title,
+                'jejak_subtitle' => $request->jejak_subtitle,
+                'jejak_description' => $request->jejak_description,
+                'reward_title' => $request->reward_title,
+                'reward_subtitle' => $request->reward_subtitle,
+                'reward_kategori_a' => $request->reward_kategori_a,
+                'reward_kategori_b' => $request->reward_kategori_b,
+                'reward_kategori_c' => $request->reward_kategori_c,
+                'reward_gil_title' => $request->reward_gil_title,
+                'reward_gil_description' => $request->reward_gil_description,
+                'reward_gil_characteristics' => $request->reward_gil_characteristics,
+                'reward_gil_rewards' => $request->reward_gil_rewards,
+                'reward_utama_title' => $request->reward_utama_title,
+                'reward_utama_subtitle' => $request->reward_utama_subtitle,
+                'tour_title' => $request->tour_title,
+                'tour_quote' => $request->tour_quote,
+                'tour_description1' => $request->tour_description1,
+                'tour_description2' => $request->tour_description2,
+                'tour_preparation_points' => $request->tour_preparation_points,
+                'tour_conclusion' => $request->tour_conclusion,
+                'timeline_title' => $request->timeline_title,
+                'timeline_subtitle' => $request->timeline_subtitle,
+                'manfaat_title' => $request->manfaat_title,
+                'manfaat_subtitle' => $request->manfaat_subtitle,
+                'mengapa_title' => $request->mengapa_title,
+                'mengapa_opening' => $request->mengapa_opening,
+                'mengapa_points' => $request->mengapa_points,
+                'mengapa_quote' => $request->mengapa_quote,
+                'mengapa_quote_author' => $request->mengapa_quote_author,
+                'cta_main_title' => $request->cta_main_title,
+                'cta_main_description' => $request->cta_main_description,
+                'cta_subtitle' => $request->cta_subtitle,
+                'cta_call_text' => $request->cta_call_text,
+                'cta_button_text' => $request->cta_button_text,
+                'cta_registration_info' => $request->cta_registration_info,
+                'modal_title' => $request->modal_title,
+                'modal_warning' => $request->modal_warning,
+                'modal_subtitle' => $request->modal_subtitle,
+                'modal_period' => $request->modal_period,
+                'modal_instructions' => $request->modal_instructions,
+                'modal_instruction_points' => $request->modal_instruction_points,
+                'modal_facilities' => $request->modal_facilities,
+                'modal_note' => $request->modal_note,
+                'modal_transfer_info' => $request->modal_transfer_info,
+                'modal_closing1' => $request->modal_closing1,
+                'modal_closing2' => $request->modal_closing2,
+                'updated_at' => now()
+            ];
 
-            // Update semua sections
+            // Handle file uploads untuk header
+            if ($request->hasFile('header_background')) {
+                $landingData['header_background'] = $this->uploadFile($request->file('header_background'), 'landing/headers');
+            }
+            if ($request->hasFile('header_logo1')) {
+                $landingData['header_logo1'] = $this->uploadFile($request->file('header_logo1'), 'landing/logos');
+            }
+            if ($request->hasFile('header_logo2')) {
+                $landingData['header_logo2'] = $this->uploadFile($request->file('header_logo2'), 'landing/logos');
+            }
+
+            // Handle file uploads untuk tentang program
+            if ($request->hasFile('tentang_image')) {
+                $landingData['tentang_image'] = $this->uploadFile($request->file('tentang_image'), 'landing/tentang');
+            }
+
+            // Handle file uploads untuk WLN
+            if ($request->hasFile('wln_logo1')) {
+                $landingData['wln_logo1'] = $this->uploadFile($request->file('wln_logo1'), 'landing/wln');
+            }
+            if ($request->hasFile('wln_logo2')) {
+                $landingData['wln_logo2'] = $this->uploadFile($request->file('wln_logo2'), 'landing/wln');
+            }
+            for ($i = 1; $i <= 3; $i++) {
+                if ($request->hasFile("wln_image$i")) {
+                    $landingData["wln_image$i"] = $this->uploadFile($request->file("wln_image$i"), 'landing/wln');
+                }
+            }
+
+            // Handle file uploads untuk jejak literasi
+            for ($i = 1; $i <= 10; $i++) {
+                if ($request->hasFile("jejak_image$i")) {
+                    $landingData["jejak_image$i"] = $this->uploadFile($request->file("jejak_image$i"), 'landing/jejak');
+                }
+            }
+
+            // Handle file uploads untuk reward utama
+            for ($i = 1; $i <= 3; $i++) {
+                if ($request->hasFile("reward_utama_image$i")) {
+                    $landingData["reward_utama_image$i"] = $this->uploadFile($request->file("reward_utama_image$i"), 'landing/reward');
+                }
+            }
+
+            // Handle timeline dates dan events
+            for ($i = 1; $i <= 8; $i++) {
+                $landingData["timeline_date$i"] = $request->input("timeline_date$i");
+                $landingData["timeline_event$i"] = $request->input("timeline_event$i");
+            }
+
+            // Handle manfaat items
+            for ($i = 1; $i <= 5; $i++) {
+                $landingData["manfaat_icon$i"] = $request->input("manfaat_icon$i");
+                $landingData["manfaat_item_title$i"] = $request->input("manfaat_item_title$i");
+                $landingData["manfaat_item_description$i"] = $request->input("manfaat_item_description$i");
+            }
+
+            if ($landing) {
+                // Update existing
+                DB::table('lp_programs')->where('id', $landing->id)->update($landingData);
+            } else {
+                // Create new
+                $landingData['product_id'] = $programId;
+                $landingData['created_at'] = now();
+                DB::table('lp_programs')->insert($landingData);
+            }
+
+            // Handle sections dinamis
             if ($request->has('sections')) {
-                $this->updateSections($request->input('sections'));
+                foreach ($request->sections as $sectionId => $sectionData) {
+                    DB::table('landing_sections_program')
+                        ->where('id', $sectionId)
+                        ->update([
+                            'section_type' => $sectionData['section_type'],
+                            'section_title' => $sectionData['section_title'],
+                            'order' => $sectionData['order'] ?? 0,
+                            'updated_at' => now()
+                        ]);
+                }
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Semua data berhasil disimpan.'
+                'message' => 'Landing page berhasil disimpan!'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Gagal menyimpan semua data landing page: ' . $e->getMessage());
+            Log::error('Error saving landing page: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan: ' . $e->getMessage()
+                'message' => 'Gagal menyimpan landing page: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    private function updateLandingPage($request, $productId)
-    {
-        $existing = DB::table('lp_program')->where('product_id', $productId)->first();
-
-        $data = [
-            'product_id' => $productId,
-            'nama_halaman' => $request->input('nama_halaman'),
-            'slug' => Str::slug($request->input('nama_halaman')),
-            'hero_title' => $request->input('hero_title'),
-            'hero_subtitle' => $request->input('hero_subtitle'),
-            'hero_subtitle_2' => $request->input('hero_subtitle_2'),
-            'hero_color_start' => $request->input('hero_color_start'),
-            'hero_color_end' => $request->input('hero_color_end'),
-            'primary_color' => $request->input('primary_color'),
-            'secondary_color' => $request->input('secondary_color'),
-            'footer_text' => $request->input('footer_text'),
-            'footer_contact' => $request->input('footer_contact'),
-            'footer_phone' => $request->input('footer_phone'),
-            'updated_at' => now(),
-        ];
-
-        // Simpan file gambar jika ada
-        if ($request->hasFile('hero_image')) {
-            $path = $request->file('hero_image')->store('hero', 'public');
-            $data['hero_image'] = $path;
-        }
-
-        if ($request->hasFile('header_logo1')) {
-            $path = $request->file('header_logo1')->store('logos', 'public');
-            $data['header_logo1'] = $path;
-        }
-        if ($request->hasFile('header_logo2')) {
-            $path = $request->file('header_logo2')->store('logos', 'public');
-            $data['header_logo2'] = $path;
-        }
-
-        if ($existing) {
-            DB::table('lp_program')
-                ->where('id', $existing->id)
-                ->update($data);
-        } else {
-            $data['created_at'] = now();
-            DB::table('lp_program')->insert($data);
-        }
-    }
-
-
-    private function updateSections($sectionsData)
-    {
-        foreach ($sectionsData as $sectionId => $sectionData) {
-            $section = DB::table('landing_sections_program')->where('id', $sectionId)->first();
-
-            if (!$section) {
-                continue;
-            }
-
-            $updateData = [
-                'section_type' => $sectionData['section_type'],
-                'section_title' => $sectionData['section_title'],
-                'order' => $sectionData['order'] ?? 0,
-                'updated_at' => now(),
-            ];
-
-            // Process content based on section type
-            $content = $this->processSectionContent($sectionData['section_type'], $sectionId);
-            if ($content !== null) {
-                $updateData['content'] = json_encode($content, JSON_UNESCAPED_UNICODE);
-            }
-
-            DB::table('landing_sections_program')
-                ->where('id', $sectionId)
-                ->update($updateData);
-        }
-    }
-
-    private function processSectionContent($sectionType, $sectionId)
-    {
-        $content = [];
-
-        switch ($sectionType) {
-            case 'info_cards':
-                $content = $this->processInfoCardsContent($sectionId);
-                break;
-            case 'gallery':
-                $content = $this->processGalleryContent($sectionId);
-                break;
-            case 'video':
-                $content = $this->processVideoContent($sectionId);
-                break;
-            case 'form':
-                $content = $this->processFormContent($sectionId);
-                break;
-            case 'text':
-                $content = $this->processTextContent($sectionId);
-                break;
-            case 'points':
-                $content = $this->processPointsContent($sectionId);
-                break;
-        }
-
-        return $content;
-    }
-
-    private function processInfoCardsContent($sectionId)
-    {
-        $content = [];
-        $index = 0;
-
-        while (request()->has("sections.{$sectionId}.content.{$index}.icon")) {
-            $content[] = [
-                'icon' => request()->input("sections.{$sectionId}.content.{$index}.icon"),
-                'title' => request()->input("sections.{$sectionId}.content.{$index}.title"),
-                'description' => request()->input("sections.{$sectionId}.content.{$index}.description"),
-            ];
-            $index++;
-        }
-
-        return $content;
-    }
-
-    private function processGalleryContent($sectionId)
-    {
-        $title = request()->input("sections.{$sectionId}.content.title");
-        $description = request()->input("sections.{$sectionId}.content.description");
-
-        $images = [];
-
-        // 1️⃣ Gambar lama yang dipertahankan
-        $existingImages = request()->input("sections.{$sectionId}.content.images_existing") ?? [];
-        foreach ($existingImages as $existing) {
-            if (!empty($existing)) {
-                $images[] = ['image' => $existing];
-            }
-        }
-
-        // 2️⃣ Gambar baru yang diupload
-        $imageGroups = request()->file("sections.{$sectionId}.content.images") ?? [];
-        foreach ($imageGroups as $index => $fileGroup) {
-            if (isset($fileGroup['image']) && $fileGroup['image'] instanceof \Illuminate\Http\UploadedFile) {
-                $file = $fileGroup['image'];
-                if ($file->isValid()) {
-                    $filename = time() . '_' . Str::random(8) . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('gallery', $filename, 'public');
-                    $images[] = ['image' => $path];
-                }
-            }
-        }
-
-        return [
-            'title' => $title,
-            'description' => $description,
-            'images' => $images,
-        ];
-    }
-
-
-
-
-    private function processVideoContent($sectionId)
-    {
-        return [
-            'video_url' => request()->input("sections.{$sectionId}.content.video_url")
-        ];
-    }
-
-    private function processFormContent($sectionId)
-    {
-        $content = [];
-        $index = 0;
-
-        while (request()->has("sections.{$sectionId}.content.{$index}.name")) {
-            $content[] = [
-                'name' => request()->input("sections.{$sectionId}.content.{$index}.name"),
-                'placeholder' => request()->input("sections.{$sectionId}.content.{$index}.placeholder"),
-                'type' => request()->input("sections.{$sectionId}.content.{$index}.type"),
-            ];
-            $index++;
-        }
-
-        return $content;
-    }
-
-    private function processTextContent($sectionId)
-    {
-        $oldSection = DB::table('landing_sections_program')->where('id', $sectionId)->first();
-        $oldContent = json_decode(optional($oldSection)->content, true) ?? [];
-
-        $content = [
-            'heading' => request()->input("sections.{$sectionId}.content.heading") ?? ($oldContent['heading'] ?? ''),
-            'body' => request()->input("sections.{$sectionId}.content.body") ?? ($oldContent['body'] ?? ''),
-            'images' => $oldContent['images'] ?? [],
-        ];
-
-        // Ambil gambar lama yang masih dipertahankan
-        $existing = request()->input("sections.{$sectionId}.content.images_existing") ?? [];
-        $content['images'] = array_values(array_filter($existing));
-
-        // Tambah gambar baru jika diupload
-        if (request()->hasFile("sections.{$sectionId}.content.images")) {
-            foreach (request()->file("sections.{$sectionId}.content.images") as $file) {
-                if ($file->isValid()) {
-                    $filename = time() . '_' . Str::random(8) . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('text_images', $filename, 'public');
-                    $content['images'][] = $path;
-                }
-            }
-        }
-
-        return $content;
-    }
-
-
-
-    private function processPointsContent($sectionId)
-    {
-        $content = [];
-        $index = 0;
-
-        while (request()->has("sections.{$sectionId}.content.{$index}.text")) {
-            $content[] = [
-                'text' => request()->input("sections.{$sectionId}.content.{$index}.text"),
-            ];
-            $index++;
-        }
-
-        return $content;
-    }
-
-
-    public function create($landing_page_id)
-    {
-        $landing = DB::table('lp_program')->find($landing_page_id);
-        if (!$landing) {
-            abort(404, 'Landing page tidak ditemukan');
-        }
-
-        $types = ['info_cards', 'gallery', 'video', 'form', 'text', 'points'];
-
-        return view('lp_programs.sections.create', compact('landing', 'types'));
-    }
-
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'landing_page_id' => 'required|integer',
-            'section_type' => 'required|string|max:100',
-            'section_title' => 'nullable|string|max:255',
-            'order' => 'nullable|integer',
-        ]);
-
-
-        DB::table('landing_sections_program')->insert([
-            'landing_page_id' => $data['landing_page_id'],
-            'section_type' => $data['section_type'],
-            'section_title' => $data['section_title'],
-            'order' => $data['order'] ?? 0,
-            'content' => json_encode([], JSON_UNESCAPED_UNICODE),
-            'is_active' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $landing = DB::table('lp_program')->where('id', $data['landing_page_id'])->first();
-
-        if (!$landing) {
-            return redirect()->back()->with('error', 'Landing page tidak ditemukan.');
-        }
-
-        // Redirect ke halaman atur dengan product_id terenkripsi
-        return redirect()
-            ->route('lp_programs.atur', Crypt::encrypt($landing->product_id))
-            ->with('success', '✅ Section baru berhasil ditambahkan.');
-    }
-
-    public function deleteSection($id)
+    public function deleteSection($sectionId)
     {
         try {
-            $deleted = DB::table('landing_sections_program')->where('id', $id)->delete();
-
-            if ($deleted) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Section berhasil dihapus.'
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Section tidak ditemukan.'
-                ], 404);
-            }
-        } catch (\Exception $e) {
-            Log::error('Gagal hapus section: ' . $e->getMessage());
+            DB::table('landing_sections_program')->where('id', $sectionId)->delete();
 
             return response()->json([
+                'success' => true,
+                'message' => 'Section berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error deleting section: ' . $e->getMessage());
+            return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menghapus section.'
+                'message' => 'Gagal menghapus section: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    public function updateSection(Request $request, $id)
+    private function uploadFile($file, $folder = 'landing')
     {
-        try {
-            $section = DB::table('landing_sections_program')->where('id', $id)->first();
+        if (!$file) return null;
 
-            if (!$section) {
-                return redirect()->back()->with('error', 'Section tidak ditemukan.');
-            }
+        $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs($folder, $filename, 'public');
 
-            $data = [
-                'section_type' => $request->input('section_type'),
-                'section_title' => $request->input('section_title'),
-                'order' => $request->input('order') ?? 0,
-                'updated_at' => now(),
-            ];
-
-            // Jika tipe section diganti, kosongkan konten agar tidak bentrok
-            if ($section->section_type !== $request->input('section_type')) {
-                $data['content'] = json_encode([], JSON_UNESCAPED_UNICODE);
-            }
-
-            DB::table('landing_sections_program')->where('id', $id)->update($data);
-
-            return redirect()->back()->with('success', '✅ Section berhasil diperbarui.');
-        } catch (\Exception $e) {
-            Log::error('Gagal update section: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat update section.');
-        }
+        return $path;
     }
 }

@@ -35,9 +35,23 @@
                         <img src="{{ asset('storage/' . $produk->thumbnail) }}" alt="{{ $produk->judul }}"
                             class="w-full h-auto max-h-96 object-contain">
                         <div class="absolute top-4 right-4">
-                            <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                                {{ $produk->tipe_produk }}
-                            </span>
+                            @if ($produk->tipe_produk === 'kelas_video')
+                                <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    Kelas Video
+                                </span>
+                            @elseif ($produk->tipe_produk === 'ebook')
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    E-Book
+                                </span>
+                            @elseif ($produk->tipe_produk === 'program')
+                                <span class="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    Program
+                                </span>
+                            @else
+                                <span class="bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                    {{ ucfirst($produk->tipe_produk) }}
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -161,7 +175,7 @@
                                             {{ ucfirst($item['judul']) }}
                                         </h4>
                                         <p class="text-gray-600 text-sm">
-                                            {{ $item['deskripsi'] }}
+                                            {!! $item['deskripsi'] !!}
                                         </p>
                                     </div>
                                 </div>

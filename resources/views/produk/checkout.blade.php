@@ -1,4 +1,9 @@
-@extends('layouts.app')
+@php
+    $layout = $produk->tipe_produk === 'program' ? 'layouts.blank' : 'layouts.app';
+@endphp
+
+@extends($layout)
+
 
 @section('title', 'Checkout - ' . $produk->judul)
 
@@ -14,9 +19,30 @@
                     <li>
                         <div class="flex items-center">
                             <span class="mx-2 text-gray-400">/</span>
-                            <a href="{{ route('ebook') }}" class="text-gray-600 hover:text-primary">Ebook</a>
+                            @php
+                                switch ($produk->tipe_produk) {
+                                    case 'ebook':
+                                        $route = route('ebook');
+                                        $label = 'E-Book';
+                                        break;
+                                    case 'kelas_video':
+                                        $route = route('kelasvideo');
+                                        $label = 'Kelas Video';
+                                        break;
+                                    case 'program':
+                                        $route = route('program');
+                                        $label = 'Program';
+                                        break;
+                                    default:
+                                        $route = route('home');
+                                        $label = ucfirst($produk->tipe_produk);
+                                        break;
+                                }
+                            @endphp
+                            <a href="{{ $route }}" class="text-gray-600 hover:text-primary">{{ $label }}</a>
                         </div>
                     </li>
+
                     <li>
                         <div class="flex items-center">
                             <span class="mx-2 text-gray-400">/</span>

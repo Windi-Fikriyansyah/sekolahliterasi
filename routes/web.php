@@ -11,8 +11,10 @@ use App\Http\Controllers\KategoriBukuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KelasSayaController;
 use App\Http\Controllers\KursusController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\MateriController;
+use App\Http\Controllers\MateriProgramController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PesananMasukController;
@@ -36,6 +38,7 @@ Route::get('/program', [ProgramController::class, 'index'])->name('program');
 Route::get('/E-book', [EbookController::class, 'index'])->name('ebook');
 Route::get('/Buku', [BukuController::class, 'index'])->name('buku');
 Route::get('/Kelas-Video', [KelasVideoController::class, 'index'])->name('kelasvideo');
+Route::get('/Tentang-Kami', [DashboardController::class, 'tentang'])->name('tentang-kami');
 
 
 
@@ -64,6 +67,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('landing')->name('landing.')->group(function () {
+        Route::get('/', [LandingController::class, 'index'])->name('index');
+        Route::post('/', [LandingController::class, 'store'])->name('store');
+        Route::put('/{id}', [LandingController::class, 'update'])->name('update');
+        Route::post('/delete-how-to-join-step', [LandingController::class, 'deleteHowToJoinStep'])->name('delete.how_to_join_step');
     });
 
     Route::prefix('pesanan_masuk')->name('pesanan_masuk.')->group(function () {
@@ -141,6 +151,20 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::delete('/materi/delete-pdf-chunk', [MateriController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
     });
 
+    Route::prefix('materi_program')->name('materi_program.')->group(function () {
+        Route::get('/', [MateriProgramController::class, 'index'])->name('index');
+        Route::post('/load', [MateriProgramController::class, 'load'])->name('load');
+        Route::get('/create', [MateriProgramController::class, 'create'])->name('create');
+        Route::post('/', [MateriProgramController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [MateriProgramController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [MateriProgramController::class, 'update'])->name('update');
+        Route::delete('/{id}', [MateriProgramController::class, 'destroy'])->name('destroy');
+        Route::post('/upload-video-chunk', [MateriProgramController::class, 'uploadVideoChunk'])->name('upload-video-chunk');
+        Route::delete('/delete-video-chunk', [MateriProgramController::class, 'deleteVideoChunk'])->name('delete-video-chunk');
+        Route::post('/materi/upload-pdf-chunk', [MateriProgramController::class, 'uploadPdfChunk'])->name('upload-pdf-chunk');
+        Route::delete('/materi/delete-pdf-chunk', [MateriProgramController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
+    });
+
     Route::prefix('lp_programs')->name('lp_programs.')->group(function () {
         Route::get('/', [ProgramsController::class, 'index'])->name('index');
         Route::post('/load', [ProgramsController::class, 'load'])->name('load');
@@ -169,6 +193,8 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
 Route::group(['middleware' => 'auth'], function () {
 
+    Route::get('/pendaftaran/{slug}', [ProgramController::class, 'daftar'])->name('landing_page.pendaftaran');
+    Route::post('/pendaftaran', [ProgramController::class, 'store'])->name('pendaftaran.store');
 
     Route::prefix('produk')->name('produk.')->group(function () {
         Route::get('/checkout/{id}', [PaymentController::class, 'createPayment'])->name('checkout');
@@ -190,6 +216,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/cart/{id}/toggle', [CartController::class, 'toggleCheck'])->name('cart.toggleCheck');
         Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
         Route::get('/cart-total', [CartController::class, 'total'])->name('cart.total');
+
+        Route::get('/{slug}', [ProdukBukuController::class, 'detail'])
+            ->name('detail');
     });
 
     Route::prefix('pesanan_saya')->name('pesanan_saya.')->group(function () {
@@ -201,7 +230,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::prefix('kelas')->name('kelas.')->group(function () {
         Route::get('/', [KelasSayaController::class, 'index'])->name('index');
-        Route::get('/{id}', [KelasSayaController::class, 'show'])->name('show');
+        Route::get('/{slug}/{encryptedId}', [KelasSayaController::class, 'show'])->name('show');
         Route::get('/stream-video/{id}', [KelasSayaController::class, 'streamVideo'])->name('stream-video');
     });
 
@@ -250,8 +279,7 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
-Route::get('/PROGRAM-GURU-INSPIRATOR', [ProgramController::class, 'landing_page'])
-    ->name('landing.page');
+Route::get('/landing/{slug}', [ProgramController::class, 'landing_page'])->name('landing.page');
 
 Route::prefix('produk')->name('produk.')->group(function () {
     Route::get('/{id}', [ProdukController::class, 'show'])->name('show');

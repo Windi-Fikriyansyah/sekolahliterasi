@@ -262,7 +262,6 @@ class CartController extends Controller
                 'signature'      => $signature,
             ];
 
-            // Kirim request ke Tripay
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type'  => 'application/json',

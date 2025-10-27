@@ -143,6 +143,7 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
 
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
@@ -152,7 +153,7 @@ class ProdukController extends Controller
             'status' => 'required|in:aktif,nonaktif',
             'manfaat' => 'nullable|array',
             'manfaat.*.judul' => 'nullable|string|max:255',
-            'manfaat.*.deskripsi' => 'nullable|string|max:500',
+            'manfaat.*.deskripsi' => 'nullable|string',
         ]);
 
         try {
@@ -203,6 +204,7 @@ class ProdukController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
@@ -212,7 +214,7 @@ class ProdukController extends Controller
             'status' => 'required|in:aktif,nonaktif',
             'manfaat' => 'nullable|array',
             'manfaat.*.judul' => 'nullable|string|max:255',
-            'manfaat.*.deskripsi' => 'nullable|string|max:500',
+            'manfaat.*.deskripsi' => 'nullable|string',
         ]);
 
         try {
@@ -259,6 +261,7 @@ class ProdukController extends Controller
 
     public function kursus()
     {
+        $content = DB::table('landing_page_sections')->first();
         $programs = DB::table('products')
             ->where('tipe_produk', 'program')
             ->where('status', 'aktif')
@@ -287,7 +290,16 @@ class ProdukController extends Controller
             ->limit(4)
             ->get();
 
-        return view('welcome', compact('programs', 'kelasVideo', 'ebooks', 'bukus'));
+        $testimonials = DB::table('landing_page_testimonials')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+        $faqs = DB::table('landing_page_faqs')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        return view('welcome', compact('programs', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
     public function course()
     {
