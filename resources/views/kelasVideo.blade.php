@@ -42,8 +42,11 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $kelas->tipe_produk }}</span>
+                                @if ($kelas->tipe_produk === 'kelas_video')
+                                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        Kelas Video
+                                    </span>
+                                @endif
                             </div>
                         </div>
 

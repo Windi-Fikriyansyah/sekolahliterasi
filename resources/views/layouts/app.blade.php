@@ -265,6 +265,12 @@
                         <span
                             class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
                     </a>
+                    <a href="{{ route('pembayaran_program_sekolah.index') }}"
+                        class="text-gray-700 hover:text-secondary font-medium relative group">
+                        Pembayaran Program
+                        <span
+                            class="absolute bottom-0 left-0 w-0.5 bg-secondary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
                 @endauth
 
 

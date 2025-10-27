@@ -42,8 +42,12 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $buku->tipe_produk }}</span>
+                                @if ($buku->tipe_produk === 'buku')
+                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                        Buku
+                                    </span>
+                                @endif
+
                             </div>
                         </div>
 

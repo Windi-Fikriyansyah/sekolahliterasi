@@ -39,10 +39,16 @@
                                 class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy" decoding="async">
                             <div class="absolute top-4 right-4">
-                                <span
-                                    class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">{{ $program->tipe_produk }}</span>
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
+                            <div class="absolute bottom-4 left-4">
+                                @if ($program->tipe_produk === 'program')
+                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                        Program
+                                    </span>
+                                @endif
 
+                            </div>
                         </div>
 
                         <div class="p-6">
@@ -54,14 +60,22 @@
 
                             </p>
 
+                            @php
+                                $slug =
+                                    \Illuminate\Support\Str::slug($program->judul) .
+                                    '--' .
+                                    \Illuminate\Support\Facades\Crypt::encryptString($program->id);
+                            @endphp
+
                             <div class="flex justify-between items-center">
                                 <div class="text-lg font-bold text-primary">
                                     Rp {{ number_format($program->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', $program->id) }}"
+                                <a href="{{ route('landing.page', ['slug' => $slug]) }}"
                                     class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                     Lihat Detail
                                 </a>
+
                             </div>
                         </div>
                     </div>

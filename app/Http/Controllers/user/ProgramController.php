@@ -24,6 +24,26 @@ class ProgramController extends Controller
         return view('program', compact('programs'));
     }
 
+    public function pembayaran()
+    {
+        $programs = DB::table('pendaftaran_program')
+            ->join('products', 'pendaftaran_program.id_product', '=', 'products.id')
+            ->select(
+                'pendaftaran_program.*',
+                'products.id as product_id',
+                'products.judul',
+                'products.jenis_program',
+                'products.status as status_program'
+            )
+            ->where('products.jenis_program', 'sekolah')
+            ->where('products.status', 'aktif')
+            ->where('pendaftaran_program.user_id', Auth::id())
+            ->orderBy('pendaftaran_program.created_at', 'desc')
+            ->get();
+
+        return view('pembayaran_program', compact('programs'));
+    }
+
     public function daftar($slug)
     {
         try {
@@ -37,6 +57,21 @@ class ProgramController extends Controller
         }
         $product = DB::table('products')->where('id', $product_id)->first();
         return view('landing_page.daftar', compact('product'));
+    }
+
+    public function daftarProgram($slug)
+    {
+        try {
+
+            [$judulSlug, $encryptedId] = explode('--', $slug);
+
+            // Dekripsi ID
+            $product_id = Crypt::decryptString($encryptedId);
+        } catch (\Exception $e) {
+            abort(404, 'Link tidak valid');
+        }
+        $product = DB::table('products')->where('id', $product_id)->first();
+        return view('landing_page.daftar_program', compact('product'));
     }
 
 
@@ -107,5 +142,59 @@ class ProgramController extends Controller
 
         // Redirect ke halaman pemilihan channel pembayaran
         return redirect()->route('payment.index', $encryptedId);
+    }
+
+    public function storesekolah(Request $request)
+    {
+        // Validasi input sesuai form
+        $validated = $request->validate([
+            'nama_sekolah' => 'required|string|max:255',
+            'npsn' => 'nullable|string|max:50',
+            'kategori' => 'required|string|max:100',
+            'alamat' => 'required|string|max:500',
+            'kota' => 'required|string|max:100',
+            'provinsi' => 'required|string|max:100',
+            'kepala' => 'required|string|max:255',
+            'hp_kepala' => 'required|string|max:20',
+            'koordinator' => 'required|string|max:255',
+            'wa_koordinator' => 'required|string|max:20',
+            'total_siswa' => 'required|integer|min:1',
+            'jumlah_siswa_daftar' => 'required|integer|min:1',
+            'jumlah_guru_daftar' => 'required|integer|min:0',
+            'kategori_karya' => 'required|array|min:1',
+            'kategori_karya.*' => 'string|max:100',
+            'sumber_biaya' => 'required|string|max:255',
+            'testimoni' => 'nullable|string|max:1000',
+            'fasilitator' => 'nullable|string|max:255',
+        ]);
+
+        // Simpan ke database
+        DB::table('pendaftaran_program')->insert([
+            'user_id' => Auth::id(),
+            'id_product' => $request->id_product,
+            'nama_sekolah' => $validated['nama_sekolah'],
+            'npsn' => $validated['npsn'] ?? null,
+            'kategori' => $validated['kategori'],
+            'alamat' => $validated['alamat'],
+            'kota' => $validated['kota'],
+            'provinsi' => $validated['provinsi'],
+            'kepala' => $validated['kepala'],
+            'hp_kepala' => $validated['hp_kepala'],
+            'koordinator' => $validated['koordinator'],
+            'wa_koordinator' => $validated['wa_koordinator'],
+            'total_siswa' => $validated['total_siswa'],
+            'jumlah_siswa_daftar' => $validated['jumlah_siswa_daftar'],
+            'jumlah_guru_daftar' => $validated['jumlah_guru_daftar'],
+            'kategori_karya' => implode(', ', $validated['kategori_karya']), // array -> string
+            'sumber_biaya' => $validated['sumber_biaya'],
+            'testimoni' => $validated['testimoni'] ?? null,
+            'fasilitator' => $validated['fasilitator'] ?? null,
+            'status_pendaftaran' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('pembayaran_program_sekolah.index')
+            ->with('success', 'Pendaftaran berhasil!');
     }
 }

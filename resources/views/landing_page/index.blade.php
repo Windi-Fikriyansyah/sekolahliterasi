@@ -1145,14 +1145,21 @@
                     \Illuminate\Support\Str::slug($product->judul) .
                     '--' .
                     \Illuminate\Support\Facades\Crypt::encryptString($product->id);
+
+                // Tentukan route berdasarkan jenis program
+                $routePendaftaran =
+                    $product->jenis_program === 'sekolah'
+                        ? route('landing_page.pendaftaran_program', ['slug' => $slug])
+                        : route('landing_page.pendaftaran', ['slug' => $slug]);
             @endphp
 
             <div style="text-align:center; margin-top:30px;">
-                <a href="{{ route('landing_page.pendaftaran', ['slug' => $slug]) }}"
+                <a href="{{ $routePendaftaran }}"
                     style="display:inline-block; background:#1a56db; color:white; padding:12px 30px; border-radius:8px; text-decoration:none; font-weight:600;">
                     Lanjut ke Halaman Pendaftaran →
                 </a>
             </div>
+
         </div>
     </div>
 

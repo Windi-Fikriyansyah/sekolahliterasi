@@ -40,8 +40,12 @@
                                 <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                             </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                    {{ $ebook->tipe_produk }}</span>
+                                @if ($ebook->tipe_produk === 'ebook')
+                                    <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        E-Book
+                                    </span>
+                                @endif
+
                             </div>
                         </div>
 

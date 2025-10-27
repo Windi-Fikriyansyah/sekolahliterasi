@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriBukuController;
@@ -193,8 +194,11 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
 Route::group(['middleware' => 'auth'], function () {
 
+    Route::get('/pembayaran-program', [ProgramController::class, 'pembayaran'])->name('pembayaran_program_sekolah.index');
     Route::get('/pendaftaran/{slug}', [ProgramController::class, 'daftar'])->name('landing_page.pendaftaran');
+    Route::get('/pendaftaran-program/{slug}', [ProgramController::class, 'daftarProgram'])->name('landing_page.pendaftaran_program');
     Route::post('/pendaftaran', [ProgramController::class, 'store'])->name('pendaftaran.store');
+    Route::post('/pendaftaran-program', [ProgramController::class, 'storesekolah'])->name('pendaftaranSekolah.store');
 
     Route::prefix('produk')->name('produk.')->group(function () {
         Route::get('/checkout/{id}', [PaymentController::class, 'createPayment'])->name('checkout');
@@ -229,6 +233,13 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     Route::prefix('kelas')->name('kelas.')->group(function () {
+        Route::get('/certificate/download', [CertificateController::class, 'download'])
+            ->name('certificate.download');
+
+
+        Route::get('/certificate/preview', [CertificateController::class, 'preview'])
+            ->name('certificate.preview');
+
         Route::get('/', [KelasSayaController::class, 'index'])->name('index');
         Route::get('/{slug}/{encryptedId}', [KelasSayaController::class, 'show'])->name('show');
         Route::get('/stream-video/{id}', [KelasSayaController::class, 'streamVideo'])->name('stream-video');

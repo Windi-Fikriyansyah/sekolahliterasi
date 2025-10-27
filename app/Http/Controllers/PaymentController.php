@@ -324,6 +324,8 @@ class PaymentController extends Controller
                         'updated_at' => now(),
                     ]);
 
+                $produk = DB::table('products')->where('id', $trx->product_id)->first();
+
                 // Jika status PAID, berikan akses kursus dan proses komisi referral
                 if ($data['status'] === 'PAID') {
                     if (isset($trx->status_pengiriman)) {
@@ -362,6 +364,21 @@ class PaymentController extends Controller
                                 ]);
                             }
                         }
+                    }
+
+                    if ($produk && $produk->tipe_produk === 'program' && $produk->jenis_program === 'sekolah') {
+                        DB::table('pendaftaran_program')
+                            ->where('user_id', $trx->user_id)
+                            ->where('id_product', $trx->product_id)
+                            ->update([
+                                'status_pendaftaran' => 'paid',
+                                'updated_at' => now(),
+                            ]);
+
+                        Log::info("Status pendaftaran program sekolah diupdate menjadi PAID", [
+                            'user_id' => $trx->user_id,
+                            'product_id' => $trx->product_id,
+                        ]);
                     }
                     $this->grantCourseAccess($trx->user_id, $trx->product_id, 'PAID');
                 }

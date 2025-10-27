@@ -504,20 +504,54 @@
     <section class="bg-gradient-to-r from-secondary to-blue-600 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="max-w-6xl mx-auto">
+                <!-- Tombol kembali -->
                 <a href="{{ route('kelas.index') }}"
                     class="inline-flex items-center text-white hover:text-blue-100 mb-4 transition">
                     <i class="fas fa-arrow-left mr-2"></i> Kembali ke Kelas Saya
                 </a>
-                <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ $produk->judul }}</h1>
-                <div class="flex items-center gap-4 text-blue-100">
-                    <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm">
-                        {{ ucfirst($produk->tipe_produk) }}
-                    </span>
-                    <span><i class="fas fa-book-open mr-2"></i>{{ $materi->count() }} Materi</span>
+
+                <!-- Judul dan Tombol Download sejajar -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ $produk->judul }}</h1>
+                        <div class="flex items-center gap-4 text-blue-100">
+                            <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm">
+                                {{ ucfirst($produk->tipe_produk) }}
+                            </span>
+                            <span><i class="fas fa-book-open mr-2"></i>{{ $materi->count() }} Materi</span>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Download Sertifikat -->
+                    <div class="relative mt-4 md:mt-0">
+                        <button id="dropdownButton"
+                            class="inline-flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-download mr-2"></i> Download Sertifikat
+                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div id="dropdownMenu"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <a href="{{ route('kelas.certificate.download', ['course' => $produk->id, 'format' => 'pdf']) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fa-solid fa-file-pdf mr-2 text-red-500"></i> Download PDF
+                            </a>
+                            <a href="{{ route('kelas.certificate.download', ['course' => $produk->id, 'format' => 'image']) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fa-solid fa-image mr-2 text-blue-500"></i> Download Gambar
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- Main Content -->
     <section class="py-8 bg-gray-50 min-h-screen">
@@ -618,6 +652,29 @@
     <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownButton = document.getElementById('dropdownButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            if (dropdownButton && dropdownMenu) {
+                dropdownButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.classList.toggle('hidden');
+                });
+
+                // Tutup jika klik di luar
+                document.addEventListener('click', (e) => {
+                    if (!dropdownMenu.classList.contains('hidden') &&
+                        !dropdownButton.contains(e.target) &&
+                        !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const sidebar = document.getElementById('sidebar-materi');
             const contentArea = document.getElementById('content-area');
@@ -715,11 +772,11 @@
                             </span>
 
                             ${tipe_pdf == 1 ? `
-                                    <a href="${url}" download
-                                       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                        <i class="fa-solid fa-download mr-2"></i> Download PDF
-                                    </a>
-                                    ` : ``}
+                                                                            <a href="${url}" download
+                                                                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                                                <i class="fa-solid fa-download mr-2"></i> Download PDF
+                                                                            </a>
+                                                                            ` : ``}
                         </div>
                         <div id="pdf-container" class="p-4"></div>
                     </div>`;
