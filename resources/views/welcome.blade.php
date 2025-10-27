@@ -279,43 +279,46 @@
         </div>
     </section>
 
-    <section id="tentang-kami" class="py-16 bg-white">
-        <div class="container mx-auto px-4 lg:px-8">
+    <section id="tentang-kami" class="py-16 bg-[#0977c2] text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-blue-900/10"></div>
+        <div class="container mx-auto px-4 lg:px-8 relative z-10">
             <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-secondary mb-4 animate-fade-in-up">
-                    {{ $content->about_title ?? '' }}
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white drop-shadow-md mb-4 animate-fade-in-up">
+                    {{ $content->about_title ?? 'Tentang Kami' }}
                 </h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">
-                    {{ $content->about_paragraph_1 ?? '' }}
-
+                <p class="text-white/90 max-w-2xl mx-auto leading-relaxed text-lg">
+                    {{ $content->about_paragraph_1 ?? 'Kami berkomitmen menghadirkan pengalaman belajar yang menyenangkan dan inspiratif bagi semua orang.' }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                 <!-- Gambar -->
                 <div class="relative animate-fade-in-up">
-                    <div class="overflow-hidden rounded-2xl shadow-lg">
+                    <div class="overflow-hidden rounded-2xl shadow-2xl ring-4 ring-white/10">
                         <img src="{{ asset('storage/' . ($content->about_image ?? 'image/about-us.jpg')) }}"
                             alt="Tentang Kami"
                             class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
                     </div>
-                    <div class="absolute -bottom-6 -left-6 bg-primary/10 w-48 h-48 rounded-full blur-3xl hidden md:block">
+                    <div class="absolute -bottom-6 -left-6 bg-white/10 w-48 h-48 rounded-full blur-3xl hidden md:block">
                     </div>
                 </div>
 
                 <!-- Konten -->
                 <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <h3 class="text-2xl font-bold text-gray-800">Misi Kami</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $content->about_paragraph_2 ?? '' }}
+                    <h3 class="text-2xl font-bold text-yellow-300 drop-shadow-sm">Misi Kami</h3>
+                    <p class="text-white/90 leading-relaxed text-base">
+                        {{ $content->about_paragraph_2 ?? 'Menyebarkan semangat literasi dengan cara yang mudah diakses dan menyenangkan.' }}
                     </p>
 
-                    <h3 class="text-2xl font-bold text-gray-800">Visi Kami</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ $content->about_paragraph_3 ?? '' }}
+                    <h3 class="text-2xl font-bold text-yellow-300 drop-shadow-sm">Visi Kami</h3>
+                    <p class="text-white/90 leading-relaxed text-base">
+                        {{ $content->about_paragraph_3 ?? 'Menjadi platform literasi digital terbaik di Indonesia.' }}
                     </p>
 
-
+                    <a href="#program"
+                        class="inline-block mt-4 bg-white text-[#0977c2] font-semibold px-6 py-3 rounded-full shadow-md hover:bg-gray-100 hover:scale-105 transition-transform duration-300">
+                        Jelajahi Program Kami
+                    </a>
                 </div>
             </div>
         </div>
