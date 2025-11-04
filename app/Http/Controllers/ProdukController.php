@@ -34,6 +34,7 @@ class ProdukController extends Controller
                     'thumbnail',
                     'harga',
                     'tipe_produk',
+                    'jenis_program',
                     'status',
                     'created_at',
                     'updated_at'
@@ -43,6 +44,24 @@ class ProdukController extends Controller
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
+                ->addColumn('link', function ($row) {
+                    if ($row->tipe_produk === 'program') {
+                        $slug = Str::slug($row->judul) . '--' . Crypt::encryptString($row->id);
+                        $url = $row->jenis_program === 'sekolah'
+                            ? route('landing_page.pendaftaran_program', ['slug' => $slug])
+                            : route('landing_page.pendaftaran', ['slug' => $slug]);
+
+                        return '
+                        <div class="d-flex align-items-center">
+                            <a href="' . $url . '" target="_blank" class="text-primary text-decoration-underline me-2">Buka</a>
+                            <button class="btn btn-sm btn-outline-secondary copy-link-btn" data-link="' . $url . '" title="Salin Link">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    ';
+                    }
+                    return '-';
+                })
                 ->addColumn('action', function ($row) {
                     $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('produk.destroy', $row->id);
@@ -51,11 +70,20 @@ class ProdukController extends Controller
                     $buttons .= '<a href="' . route('produk.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-info copy-btn" title="Copy" data-id="' . $row->id . '"><i class="bi bi-files"></i></button>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
+                    if (trim($row->tipe_produk) === 'program' && trim($row->jenis_program) === 'sekolah') {
+                        $uploadUrl = route('produk.upload_file', $row->id);
+                        $buttons .= '<a href="' . $uploadUrl . '"
+                    class="btn btn-sm btn-success ms-1"
+                    title="Upload File">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                </a>';
+                    }
+
                     $buttons .= '</div>';
 
                     return $buttons;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['link', 'action'])
                 ->make(true);
         } catch (\Exception $e) {
             Log::error('Error loading kursus data: ' . $e->getMessage());
@@ -63,6 +91,180 @@ class ProdukController extends Controller
                 'error' => true,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+
+    public function uploadfile($id)
+    {
+        try {
+            $productId = is_numeric($id) ? $id : Crypt::decrypt($id);
+            $produk = DB::table('products')->where('id', $productId)->first();
+
+            if (!$produk) {
+                return redirect()->route('produk.index')->with('error', 'Produk tidak ditemukan.');
+            }
+
+            // Hanya program sekolah
+            if ($produk->tipe_produk !== 'program' || $produk->jenis_program !== 'sekolah') {
+                return redirect()->route('produk.index')->with('error', 'Upload PDF hanya untuk program sekolah.');
+            }
+
+            // Ambil file yang sudah ada
+            $materi = DB::table('file_download_program')
+                ->where('product_id', $productId)
+                ->get();
+
+            return view('produk.upload_file', compact('produk', 'materi'));
+        } catch (\Exception $e) {
+            Log::error('Error membuka halaman upload PDF: ' . $e->getMessage());
+            return redirect()->route('produk.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+    public function uploadPdfChunk(Request $request)
+    {
+        try {
+            Log::info('Upload start', ['keys' => array_keys($request->allFiles())]);
+
+            $files = $request->file('file') ?? $request->file('pdf_file');
+
+            if (!$files) {
+                return response()->json(['status' => false, 'message' => 'No file received'], 400);
+            }
+
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            $uploaded = [];
+
+            foreach ($files as $file) {
+                if (!$file->isValid()) continue;
+
+                // Validasi: boleh PDF atau gambar
+                $request->validate([
+                    'file' => 'mimetypes:application/pdf,image/jpeg,image/png,image/jpg|max:102400',
+                ]);
+
+                $extension = $file->getClientOriginalExtension();
+                $mime = $file->getMimeType();
+
+                // Tentukan folder penyimpanan berdasarkan tipe file
+                $folder = str_contains($mime, 'pdf') ? 'pdfs_program' : 'images_program';
+
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
+                    . '_' . time() . '.' . $extension;
+
+                $path = $file->storeAs($folder, $filename, 'public');
+
+                $uploaded[] = [
+                    'path' => $path,
+                    'url' => Storage::url($path),
+                    'filename' => $filename,
+                    'type' => str_contains($mime, 'pdf') ? 'pdf' : 'image'
+                ];
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'File(s) uploaded successfully',
+                'files' => $uploaded,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => implode(', ', $e->validator->errors()->all())
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Upload failed: ' . $e->getMessage());
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function deletePdfChunk(Request $request)
+    {
+        try {
+            $filePath = trim($request->getContent());
+            if ($filePath && Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+                return response()->json(['status' => true, 'message' => 'File deleted successfully']);
+            }
+            return response()->json(['status' => false, 'message' => 'File not found']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function store_file(Request $request)
+    {
+
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'judul.*' => 'required|string|max:255',
+            ]);
+
+            $productId = $request->input('product_id');
+            $judulList = $request->input('judul', []);
+            $idMateriList = $request->input('id_materi', []);
+            $uploadedPaths = $request->input('uploaded_paths', []);
+
+            $existingIds = DB::table('file_download_program')
+                ->where('product_id', $productId)
+                ->pluck('id')
+                ->toArray();
+
+            $processedIds = [];
+
+            foreach ($judulList as $index => $judul) {
+                $idMateri = $idMateriList[$index] ?? null;
+                $path = $uploadedPaths[$index] ?? null;
+
+                $fileType = null;
+                if (!empty($uploadedPaths[$index])) {
+                    $fileType = str_ends_with($uploadedPaths[$index], '.pdf') ? 'pdf' : 'image';
+                }
+                if ($idMateri) {
+                    // Update data lama
+                    $existing = DB::table('file_download_program')->find($idMateri);
+                    if ($existing) {
+                        DB::table('file_download_program')
+                            ->where('id', $idMateri)
+                            ->update([
+                                'judul' => $judul,
+                                'file_path' => $path ?: $existing->file_path,
+                                'file_type' => $fileType ?? $existing->file_type,
+                                'updated_at' => now(),
+                            ]);
+                        $processedIds[] = $idMateri;
+                    }
+                } else {
+                    // Insert baru
+                    $newId = DB::table('file_download_program')->insertGetId([
+                        'product_id' => $productId,
+                        'judul' => $judul,
+                        'file_path' => $path,
+                        'file_type' => $fileType ?? 'pdf',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $processedIds[] = $newId;
+                }
+            }
+
+            // Hapus data yang tidak ada lagi
+            $toDelete = array_diff($existingIds, $processedIds);
+            if (!empty($toDelete)) {
+                DB::table('file_download_program')->whereIn('id', $toDelete)->delete();
+            }
+
+            return redirect()->route('produk.index')
+                ->with('success', 'Materi berhasil disimpan dan diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Error saat menyimpan file materi: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -178,6 +380,7 @@ class ProdukController extends Controller
                 'harga' => $request->harga,
                 'tipe_produk' => $request->tipe_produk,
                 'thumbnail' => $thumbnailPath,
+                'jenis_program' => $request->jenis_program ?? null,
                 'status' => $request->status,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -229,6 +432,7 @@ class ProdukController extends Controller
                 'manfaat' => json_encode($request->manfaat ?? []),
                 'harga' => $request->harga,
                 'tipe_produk' => $request->tipe_produk,
+                'jenis_program' => $request->jenis_program ?? null,
                 'status' => $request->status,
                 'updated_at' => now(),
             ];

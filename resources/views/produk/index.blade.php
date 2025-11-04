@@ -9,7 +9,7 @@
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('owner.dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">produk</li>
                     </ol>
                 </nav>
@@ -45,6 +45,7 @@
                                 <th>Judul</th>
                                 <th>Harga</th>
                                 <th>Tipe Produk</th>
+                                <th>Link</th>
                                 <th>Status</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -199,6 +200,12 @@
                         name: 'tipe_produk'
                     },
                     {
+                        data: 'link',
+                        name: 'link',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'status',
                         name: 'status',
                         render: function(data, type, row) {
@@ -259,6 +266,27 @@
                     }
                 });
             });
+        });
+
+        $(document).on('click', '.copy-link-btn', function() {
+            const link = $(this).data('link');
+            navigator.clipboard.writeText(link)
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Link disalin!',
+                        text: link,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal menyalin link!',
+                        text: 'Coba lagi.',
+                    });
+                });
         });
     </script>
 @endpush

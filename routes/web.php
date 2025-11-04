@@ -102,6 +102,10 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::put('/{id}', [ProdukController::class, 'update'])->name('update');
         Route::delete('/{id}', [ProdukController::class, 'destroy'])->name('destroy');
         Route::post('/copy/{id}', [ProdukController::class, 'copy'])->name('copy');
+        Route::get('/upload-file/{id}', [ProdukController::class, 'uploadfile'])->name('upload_file');
+        Route::post('/store-file', [ProdukController::class, 'store_file'])->name('store_file');
+        Route::post('/upload-pdf-chunk', [ProdukController::class, 'uploadPdfChunk'])->name('upload-pdf-chunk');
+        Route::delete('/delete-pdf-chunk', [ProdukController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
     });
 
     Route::prefix('produk_buku')->name('produk_buku.')->group(function () {
@@ -168,17 +172,17 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
     Route::prefix('lp_programs')->name('lp_programs.')->group(function () {
         Route::get('/', [ProgramsController::class, 'index'])->name('index');
+        Route::get('/create/{id_product?}', [ProgramsController::class, 'create'])->name('create');
+        Route::get('/edit/{id}', [ProgramsController::class, 'edit'])->name('edit');
+        Route::delete('/destroy/{id}', [ProgramsController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [ProgramsController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [ProgramsController::class, 'show'])->name('show');
         Route::post('/load', [ProgramsController::class, 'load'])->name('load');
         Route::get('/atur/{id}', [ProgramsController::class, 'atur'])->name('atur');
-        Route::post('/update/{id}', [ProgramsController::class, 'updateAtur'])->name('updateAtur');
-        Route::get('/{landing_page_id}/create', [ProgramsController::class, 'create'])
-            ->name('create');
+        Route::put('/update/{id}', [ProgramsController::class, 'update'])->name('update');
+
         Route::post('/store', [ProgramsController::class, 'store'])
             ->name('store');
-
-        Route::delete('/section/{id}', [ProgramsController::class, 'deleteSection'])->name('deleteSection');
-        Route::put('/section/{id}/update', [ProgramsController::class, 'updateSection'])->name('updateSection');
-        Route::put('/update-all/{id}', [ProgramsController::class, 'updateAll'])->name('updateAll');
     });
 
     Route::prefix('withdraw')->name('withdraw.')->group(function () {
@@ -199,6 +203,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/pendaftaran-program/{slug}', [ProgramController::class, 'daftarProgram'])->name('landing_page.pendaftaran_program');
     Route::post('/pendaftaran', [ProgramController::class, 'store'])->name('pendaftaran.store');
     Route::post('/pendaftaran-program', [ProgramController::class, 'storesekolah'])->name('pendaftaranSekolah.store');
+    Route::get('/api/provinsi', [ProgramController::class, 'getProvinsi']);
+    Route::get('/api/kota/{kode}', [ProgramController::class, 'getKota']);
 
     Route::prefix('produk')->name('produk.')->group(function () {
         Route::get('/checkout/{id}', [PaymentController::class, 'createPayment'])->name('checkout');

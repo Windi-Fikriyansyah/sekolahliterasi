@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Http;
 
 class ProgramController extends Controller
 {
@@ -39,10 +40,17 @@ class ProgramController extends Controller
             ->where('products.status', 'aktif')
             ->where('pendaftaran_program.user_id', Auth::id())
             ->orderBy('pendaftaran_program.created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($program) {
+                $program->files = DB::table('file_download_program')
+                    ->where('product_id', $program->product_id)
+                    ->get();
+                return $program;
+            });
 
         return view('pembayaran_program', compact('programs'));
     }
+
 
     public function daftar($slug)
     {
@@ -56,7 +64,20 @@ class ProgramController extends Controller
             abort(404, 'Link tidak valid');
         }
         $product = DB::table('products')->where('id', $product_id)->first();
+
         return view('landing_page.daftar', compact('product'));
+    }
+
+    public function getProvinsi()
+    {
+        $response = Http::get('https://wilayah.id/api/provinces.json');
+        return response()->json($response->json());
+    }
+
+    public function getKota($kode)
+    {
+        $response = Http::get("https://wilayah.id/api/regencies/{$kode}.json");
+        return response()->json($response->json());
     }
 
     public function daftarProgram($slug)
@@ -94,7 +115,7 @@ class ProgramController extends Controller
         }
 
         // Ambil landing page sesuai product_id
-        $landing = DB::table('lp_programs')->where('product_id', $product_id)->first();
+        $landing = DB::table('pages')->where('id_product', $product_id)->first();
         if (!$landing) {
             abort(404, 'Landing page tidak ditemukan untuk produk ini');
         }

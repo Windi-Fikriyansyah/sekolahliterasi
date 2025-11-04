@@ -32,8 +32,8 @@ class AuthenticatedSessionController extends Controller
 
         return match ($role) {
             'user' => redirect('/home'),
-            'admin' => redirect('/dashboard'),
-            'owner' => redirect('/dashboard'),
+            'admin' => redirect('/dashboard-admin'),
+            'owner' => redirect('/dashboard-owner'),
         };
     }
 

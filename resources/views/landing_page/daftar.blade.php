@@ -7,6 +7,7 @@
     <title>Pendaftaran</title>
     <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -58,6 +59,125 @@
             opacity: 0;
             transform: translateY(-10px);
         }
+
+        /* Custom Select2 Styling - Modern Look */
+        .select2-container--default .select2-selection--single {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            height: 42px;
+            padding: 0.5rem 0.75rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .dark .select2-container--default .select2-selection--single {
+            background-color: #1f2937;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+
+        .select2-container--default .select2-selection--single:hover {
+            border-color: #1173d4;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #1173d4;
+            box-shadow: 0 0 0 3px rgba(17, 115, 212, 0.1);
+            outline: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #111827;
+            line-height: 26px;
+            padding-left: 0;
+        }
+
+        .dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #f3f4f6;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #6b7280;
+        }
+
+        .dark .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #9ca3af;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+            right: 8px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #6b7280 transparent transparent transparent;
+            border-width: 6px 5px 0 5px;
+            margin-left: -5px;
+            margin-top: -3px;
+        }
+
+        /* Dropdown styling */
+        .select2-container--default .select2-results__option {
+            padding: 0.75rem 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s ease;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #1173d4;
+            color: white;
+        }
+
+        .select2-dropdown {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .dark .select2-dropdown {
+            background-color: #1f2937;
+            border-color: #4b5563;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-family: 'Inter', sans-serif;
+            margin: 0.5rem;
+            width: calc(100% - 1rem);
+        }
+
+        .dark .select2-search--dropdown .select2-search__field {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #e5e7eb;
+        }
+
+        .dark .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #374151;
+            color: #f3f4f6;
+        }
+
+        .dark .select2-container--default .select2-results__option {
+            color: #f3f4f6;
+        }
+
+        /* Width fix */
+        .select2-container {
+            width: 100% !important;
+        }
+
+        /* Loading state */
+        .select2-container--default .select2-results__option--disabled {
+            color: #9ca3af;
+        }
     </style>
     <style>
         body {
@@ -97,18 +217,21 @@
                     </label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <label class="block space-y-2">
-                            <span class="text-sm font-medium">Kabupaten/Kota</span>
-                            <input
-                                class="form-input w-full rounded-lg bg-input-bg-light dark:bg-input-bg-dark border-border-light dark:border-border-dark focus:ring-primary focus:border-primary placeholder:text-subtext-light dark:placeholder:text-subtext-dark"
-                                placeholder="Pilih kabupaten atau kota" name="kota" type="text" />
-                        </label>
-                        <label class="block space-y-2">
                             <span class="text-sm font-medium">Provinsi</span>
-                            <input
-                                class="form-input w-full rounded-lg bg-input-bg-light dark:bg-input-bg-dark border-border-light dark:border-border-dark focus:ring-primary focus:border-primary placeholder:text-subtext-light dark:placeholder:text-subtext-dark"
-                                placeholder="Pilih provinsi" name="provinsi" type="text" />
+                            <select id="provinsi" name="provinsi" class="select2-provinsi w-full" required>
+                                <option value="">Pilih provinsi</option>
+                            </select>
+                        </label>
+
+                        <label class="block space-y-2">
+                            <span class="text-sm font-medium">Kabupaten/Kota</span>
+                            <select id="kota" name="kota" class="select2-kota w-full" required>
+                                <option value="">Pilih kabupaten/kota</option>
+                            </select>
                         </label>
                     </div>
+
+
                     <label class="block space-y-2">
                         <span class="text-sm font-medium">No WhatsApp</span>
                         <input
@@ -179,6 +302,109 @@
 
     <div id="toast-container" class="fixed top-4 right-4 space-y-3 z-50"></div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const provinsiSelect = document.getElementById("provinsi");
+            const kotaSelect = document.getElementById("kota");
+
+            // Initialize Select2 dengan konfigurasi modern
+            $('.select2-provinsi').select2({
+                placeholder: 'Pilih provinsi',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Provinsi tidak ditemukan";
+                    },
+                    searching: function() {
+                        return "Mencari...";
+                    }
+                }
+            });
+
+            $('.select2-kota').select2({
+                placeholder: 'Pilih kabupaten/kota',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Kota tidak ditemukan";
+                    },
+                    searching: function() {
+                        return "Mencari...";
+                    }
+                }
+            });
+
+            // --- Ambil daftar provinsi dari Laravel proxy ---
+            try {
+                const response = await fetch("/api/provinsi");
+                const data = await response.json();
+
+                // Clear dan tambahkan placeholder
+                $(provinsiSelect).empty().append('<option value="">Pilih provinsi</option>');
+
+                data.data.forEach(prov => {
+                    const option = new Option(prov.name, prov.name, false, false);
+                    option.dataset.code = prov.code;
+                    $(provinsiSelect).append(option);
+                });
+
+                // Trigger change untuk update Select2
+                $(provinsiSelect).trigger('change');
+            } catch (err) {
+                console.error("Gagal memuat provinsi:", err);
+                showToast('error', 'Gagal memuat data provinsi');
+            }
+
+            // --- Saat provinsi dipilih (menggunakan Select2 event) ---
+            $(provinsiSelect).on('select2:select', async function(e) {
+                const selectedOption = e.params.data.element;
+                const provinceCode = selectedOption.dataset.code;
+
+                // Reset kota
+                $(kotaSelect).empty().append('<option value="">Pilih kabupaten/kota</option>')
+                    .trigger('change');
+
+                if (!provinceCode) return;
+
+                // Tampilkan loading
+                $(kotaSelect).prop('disabled', true);
+                $(kotaSelect).empty().append('<option value="">Memuat data...</option>').trigger(
+                    'change');
+
+                try {
+                    const response = await fetch(`/api/kota/${provinceCode}`);
+                    const data = await response.json();
+
+                    // Clear dan tambahkan placeholder
+                    $(kotaSelect).empty().append('<option value="">Pilih kabupaten/kota</option>');
+
+                    data.data.forEach(city => {
+                        const option = new Option(city.name, city.name, false, false);
+                        $(kotaSelect).append(option);
+                    });
+
+                    // Trigger change dan enable
+                    $(kotaSelect).trigger('change');
+                    $(kotaSelect).prop('disabled', false);
+                } catch (err) {
+                    console.error("Gagal memuat kota:", err);
+                    showToast('error', 'Gagal memuat data kota');
+                    $(kotaSelect).prop('disabled', false);
+                }
+            });
+
+            // Handle clear selection
+            $(provinsiSelect).on('select2:clear', function() {
+                $(kotaSelect).empty().append('<option value="">Pilih kabupaten/kota</option>').trigger(
+                    'change');
+            });
+        });
+    </script>
+
 
     <script>
         function previewImage(event) {
@@ -191,7 +417,7 @@
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
-                    placeholder.classList.add('hidden'); // sembunyikan ikon upload
+                    placeholder.classList.add('hidden');
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -215,9 +441,7 @@
         `;
             toastContainer.appendChild(toast);
 
-            // animasi muncul
             setTimeout(() => toast.classList.add('show'), 100);
-            // otomatis hilang
             setTimeout(() => {
                 toast.classList.add('hide');
                 setTimeout(() => toast.remove(), 500);

@@ -55,6 +55,27 @@
                                 </div>
                             </div>
 
+                            {{-- Jenis Program (hanya muncul jika tipe_produk = program) --}}
+                            <div class="row mb-3" id="jenis_program_group" style="display: none;">
+                                <label class="col-sm-2 col-form-label" for="jenis_program">Jenis Program</label>
+                                <div class="col-sm-10">
+                                    <select id="jenis_program" name="jenis_program"
+                                        class="form-control @error('jenis_program') is-invalid @enderror">
+                                        <option value="">-- Pilih Jenis Program --</option>
+                                        <option value="sekolah"
+                                            {{ old('jenis_program', $produk->jenis_program ?? '') == 'sekolah' ? 'selected' : '' }}>
+                                            Sekolah</option>
+                                        <option value="pribadi"
+                                            {{ old('jenis_program', $produk->jenis_program ?? '') == 'pribadi' ? 'selected' : '' }}>
+                                            Pribadi</option>
+                                    </select>
+                                    @error('jenis_program')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+
                             {{-- Deskripsi --}}
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="deskripsi">Deskripsi</label>
@@ -364,5 +385,22 @@
 
 
         });
+
+        // Tampilkan input "Jenis Program" jika tipe produk = program
+        const tipeProduk = document.getElementById("tipe_produk");
+        const jenisProgramGroup = document.getElementById("jenis_program_group");
+
+        function toggleJenisProgram() {
+            if (tipeProduk.value === "program") {
+                jenisProgramGroup.style.display = "flex";
+            } else {
+                jenisProgramGroup.style.display = "none";
+                document.getElementById("jenis_program").value = "";
+            }
+        }
+
+        // Jalankan saat halaman dimuat dan saat berubah
+        toggleJenisProgram();
+        tipeProduk.addEventListener("change", toggleJenisProgram);
     </script>
 @endpush
