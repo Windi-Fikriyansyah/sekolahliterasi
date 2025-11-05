@@ -373,8 +373,16 @@ class ProdukController extends Controller
                 $thumbnailPath = $path;
             }
 
+
+            $slugBase = Str::slug($request->judul);
+            $slug = $slugBase;
+            $count = DB::table('products')->where('slug', $slugBase)->count();
+            if ($count > 0) {
+                $slug = "{$slugBase}-{$count}";
+            }
             DB::table('products')->insert([
                 'judul' => $request->judul,
+                'slug' => $slug,
                 'deskripsi' => $request->deskripsi,
                 'manfaat' => json_encode($request->manfaat ?? []),
                 'harga' => $request->harga,

@@ -42,6 +42,7 @@ class DashboardController extends Controller
             ->limit(4)
             ->get();
 
+        $landingPage = DB::table('landing_page_sections')->first();
         $kelasVideo = DB::table('products')
             ->where('tipe_produk', 'kelas_video')
             ->where('status', 'aktif')
@@ -75,6 +76,6 @@ class DashboardController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('dashboardUser', compact('programs', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        return view('dashboardUser', compact('programs', 'landingPage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
 }

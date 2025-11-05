@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -39,10 +40,12 @@ class Product extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            if (empty($model->slug) && !empty($model->judul)) {
-                $model->slug = \Str::slug($model->judul);
-            }
+        static::creating(function ($product) {
+            $product->slug = Str::slug($product->judul);
+        });
+
+        static::updating(function ($product) {
+            $product->slug = Str::slug($product->judul);
         });
     }
 }

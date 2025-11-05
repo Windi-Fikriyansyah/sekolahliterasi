@@ -96,26 +96,18 @@ class ProgramController extends Controller
     }
 
 
+
+
+
     public function landing_page($slug)
     {
-        try {
-            // Pisahkan bagian judul dan ID terenkripsi
-            [$judulSlug, $encryptedId] = explode('--', $slug);
-
-            // Dekripsi ID
-            $product_id = Crypt::decryptString($encryptedId);
-        } catch (\Exception $e) {
-            abort(404, 'Link tidak valid');
-        }
-
-        // Ambil data produk berdasarkan ID
-        $product = DB::table('products')->where('id', $product_id)->first();
+        $product = DB::table('products')->where('slug', $slug)->first();
         if (!$product) {
             abort(404, 'Produk tidak ditemukan');
         }
 
-        // Ambil landing page sesuai product_id
-        $landing = DB::table('pages')->where('id_product', $product_id)->first();
+
+        $landing = DB::table('pages')->where('id_product', $product->id)->first();
         if (!$landing) {
             abort(404, 'Landing page tidak ditemukan untuk produk ini');
         }
