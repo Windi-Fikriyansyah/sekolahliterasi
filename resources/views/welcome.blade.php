@@ -49,7 +49,7 @@
     <section id="produk" class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">Program Terbaru</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_program }}</h2>
                 <a href="{{ route('program') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
             </div>
 
@@ -111,7 +111,7 @@
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">Kelas Video Terbaru</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_kelas }}</h2>
                 <a href="{{ route('kelasvideo') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
             </div>
 
@@ -165,7 +165,7 @@
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">Ebook Terbaru</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_ebook }}</h2>
                 <a href="{{ route('ebook') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
             </div>
 
@@ -221,7 +221,7 @@
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">Buku Terbaru</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_buku }}</h2>
                 <a href="{{ route('buku') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
             </div>
 
