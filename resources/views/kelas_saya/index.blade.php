@@ -616,6 +616,12 @@
         </div>
     </section>
 
+    <footer class="bg-secondary text-white pt-6 pb-6">
+
+        <div class=" text-center animate-fade-in-up">
+            <p>{{ $landingFooter->footer_copyright ?? '' }}</p>
+        </div>
+    </footer>
     <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
