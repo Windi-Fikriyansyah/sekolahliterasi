@@ -280,7 +280,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
+                                        {{-- <div class="row mb-3">
                                             <label class="col-sm-2 col-form-label">Misi Kami</label>
                                             <div class="col-sm-10">
                                                 <textarea name="about_paragraph_2" rows="3"
@@ -300,7 +300,7 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                         <div class="row mb-3">
                                             <label class="col-sm-2 col-form-label">Gambar Tentang Kami</label>
