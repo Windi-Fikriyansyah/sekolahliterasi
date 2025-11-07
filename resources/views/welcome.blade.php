@@ -283,6 +283,53 @@
         </div>
     </section>
 
+
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_mitra }}</h2>
+            </div>
+
+            <!-- Grid 2 kolom -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                @foreach ($mitras as $mitra)
+                    <div
+                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+
+                        <!-- Gambar Mitra (tampil full tanpa terpotong) -->
+                        <div class="w-full bg-gray-100 flex justify-center items-center">
+                            <img src="{{ asset('storage/' . $mitra->thumbnail) }}" alt="{{ $mitra->judul }}"
+                                class="max-w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                                loading="lazy" decoding="async">
+                        </div>
+
+                        <!-- Konten -->
+                        <div class="p-6 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
+                                    {{ $mitra->judul }}
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    {!! Str::limit(strip_tags($mitra->deskripsi), 120) !!}
+                                </p>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <a href="{{ route('kemitraan', ['slug' => $mitra->slug]) }}" target="_blank"
+                                    class="bg-secondary text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
+                                    Detail
+                                </a>
+
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+
+
     <section id="tentang-kami" class="py-16 bg-[#0977c2] text-white relative overflow-hidden">
         <div class="absolute inset-0 bg-blue-900/10"></div>
         <div class="container mx-auto px-4 lg:px-8 relative z-10">

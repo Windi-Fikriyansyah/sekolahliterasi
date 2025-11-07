@@ -75,7 +75,13 @@ class DashboardController extends Controller
             ->where('landing_page_id', $content->id ?? 1)
             ->orderBy('order', 'asc')
             ->get();
+        $mitras = DB::table('products')
+            ->where('tipe_produk', 'mitra')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
 
-        return view('dashboardUser', compact('programs', 'landingPage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        return view('dashboardUser', compact('programs', 'mitras', 'landingPage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
 }

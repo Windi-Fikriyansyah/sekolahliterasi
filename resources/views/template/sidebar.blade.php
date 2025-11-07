@@ -96,7 +96,14 @@
     <li class="menu-item">
         <a href="{{ route('lp_programs.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-book"></i>
-            <div data-i18n="Account Settings">Atur Landing Page</div>
+            <div data-i18n="Account Settings">Atur Landing Page Program</div>
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('lp_mitra.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Atur Landing Page Mitra</div>
         </a>
     </li>
     <li class="menu-header small text-uppercase">

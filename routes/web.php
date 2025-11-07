@@ -16,6 +16,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\MateriProgramController;
+use App\Http\Controllers\MitraController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PesananMasukController;
@@ -38,6 +39,7 @@ Route::get('/', [ProdukController::class, 'kursus'])->name('home');
 Route::get('/program', [ProgramController::class, 'index'])->name('program');
 Route::get('/E-book', [EbookController::class, 'index'])->name('ebook');
 Route::get('/Buku', [BukuController::class, 'index'])->name('buku');
+Route::get('/Kumpulan-Kemitraan', [MitraController::class, 'halaman_mitra'])->name('kumpulan.kemitraan');
 Route::get('/Kelas-Video', [KelasVideoController::class, 'index'])->name('kelasvideo');
 Route::get('/Tentang-Kami', [DashboardController::class, 'tentang'])->name('tentang-kami');
 
@@ -185,6 +187,12 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
             ->name('store');
     });
 
+    Route::prefix('lp_mitra')->name('lp_mitra.')->group(function () {
+        Route::get('/', [MitraController::class, 'index'])->name('index');
+        Route::post('/load', [MitraController::class, 'load'])->name('load');
+        Route::post('/upload-pdf', [MitraController::class, 'uploadPdf'])->name('upload_pdf');
+    });
+
     Route::prefix('withdraw')->name('withdraw.')->group(function () {
         Route::get('/', [WithdrawController::class, 'index'])->name('index');
         Route::post('/load', [WithdrawController::class, 'load'])->name('load');
@@ -297,6 +305,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 Route::get('/landing/{slug}', [ProgramController::class, 'landing_page'])->name('landing.page');
+Route::get('/kemitraan/{slug}', [MitraController::class, 'landing_page'])->name('kemitraan');
 
 Route::prefix('produk')->name('produk.')->group(function () {
     Route::get('/{id}', [ProdukController::class, 'show'])->name('show');

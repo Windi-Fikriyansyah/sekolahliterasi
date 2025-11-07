@@ -39,7 +39,7 @@ class ProdukController extends Controller
                     'created_at',
                     'updated_at'
                 ])
-                ->whereIn('tipe_produk', ['ebook', 'kelas_video', 'program'])
+                ->whereIn('tipe_produk', ['ebook', 'kelas_video', 'program', 'mitra'])
                 ->orderBy('created_at', 'desc');
 
             return DataTables::of($kursus)
@@ -349,9 +349,11 @@ class ProdukController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program',
+            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program,mitra',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'harga' => 'required|numeric|min:0',
+            'harga' => $request->tipe_produk === 'mitra'
+                ? 'nullable|numeric|min:0'
+                : 'required|numeric|min:0',
             'status' => 'required|in:aktif,nonaktif',
             'manfaat' => 'nullable|array',
             'manfaat.*.judul' => 'nullable|string|max:255',
@@ -419,9 +421,11 @@ class ProdukController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program',
+            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program,mitra',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'harga' => 'required|numeric|min:0',
+            'harga' => $request->tipe_produk === 'mitra'
+                ? 'nullable|numeric|min:0'
+                : 'required|numeric|min:0',
             'status' => 'required|in:aktif,nonaktif',
             'manfaat' => 'nullable|array',
             'manfaat.*.judul' => 'nullable|string|max:255',
@@ -506,6 +510,12 @@ class ProdukController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(4)
             ->get();
+        $mitras = DB::table('products')
+            ->where('tipe_produk', 'mitra')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
 
         $testimonials = DB::table('landing_page_testimonials')
             ->where('landing_page_id', $content->id ?? 1)
@@ -516,7 +526,7 @@ class ProdukController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('welcome', compact('programs', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        return view('welcome', compact('programs', 'mitras', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
     public function course()
     {

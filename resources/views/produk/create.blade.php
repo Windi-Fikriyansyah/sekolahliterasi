@@ -48,6 +48,10 @@
                                         <option value="program"
                                             {{ old('tipe_produk', $produk->tipe_produk ?? '') == 'program' ? 'selected' : '' }}>
                                             Program</option>
+
+                                        <option value="mitra"
+                                            {{ old('tipe_produk', $produk->tipe_produk ?? '') == 'mitra' ? 'selected' : '' }}>
+                                            Kemitraan</option>
                                     </select>
                                     @error('tipe_produk')
                                         <div class="invalid-feedback">{{ $message }}</div>

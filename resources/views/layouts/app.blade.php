@@ -242,6 +242,9 @@
                         <a href="{{ route('ebook') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">E-Book</a>
                         <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
+                        <a href="{{ route('kumpulan.kemitraan') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kemitraan</a>
+
                     </div>
                 </div>
                 @guest
@@ -396,6 +399,8 @@
                             Video</a>
                         <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
                         <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
+                        <a href="{{ route('kumpulan.kemitraan') }}"
+                            class="text-gray-700 hover:text-secondary">Kemitraan</a>
                     </div>
                 </div>
 
