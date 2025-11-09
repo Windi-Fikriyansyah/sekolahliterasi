@@ -4,8 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>{{ $mitra->judul }}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <title>PDF Viewer</title>
+    <!-- Update ke versi terbaru -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         :root {
@@ -19,7 +20,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            background: #fff;
+            background: #f3f4f6;
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial;
             overflow-x: hidden;
         }
@@ -31,15 +32,28 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
+            background: #f3f4f6;
+            padding: 20px 0 100px 0;
+            gap: 10px;
+        }
+
+        .page-wrapper {
             background: white;
-            padding: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            max-width: 100%;
         }
 
         canvas {
             display: block;
-            width: 100%;
+            width: 100% !important;
             height: auto !important;
-            object-fit: contain;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px;
         }
 
         /* Tombol WhatsApp fixed bawah */
@@ -82,13 +96,17 @@
                 width: 100%;
                 border-radius: 0;
             }
+
+            .pdf-container {
+                padding: 10px 0 80px 0;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="pdf-container" id="pdfContainer">
-        <p style="text-align:center; color:#6b7280;">Memuat konten...</p>
+        <div class="loading">Memuat konten...</div>
     </div>
 
     <!-- Tombol WhatsApp bawah -->
@@ -101,41 +119,87 @@
     </a>
 
     <script>
-        const pdfUrl = @json($pdfUrl);
-        const waNumber = @json($whatsapp);
+        // Setup PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Ganti dengan URL PDF Anda
+        const pdfUrl = "{{ $pdfUrl }}";
+        const waNumber = "628123456789"; // Ganti dengan nomor WA
         const msg = encodeURIComponent("Halo, saya tertarik dengan informasi ini.");
         document.getElementById("waBtn").href = `https://wa.me/${waNumber.replace(/[^0-9]/g,"")}?text=${msg}`;
 
         const pdfContainer = document.getElementById("pdfContainer");
 
-        pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+        // Konfigurasi loading task dengan options tambahan
+        const loadingTask = pdfjsLib.getDocument({
+            url: pdfUrl,
+            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+            cMapPacked: true,
+            isEvalSupported: false,
+            useSystemFonts: true
+        });
+
+        loadingTask.promise.then(pdf => {
             pdfContainer.innerHTML = '';
+
+            // Render semua halaman
+            const renderPromises = [];
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                pdf.getPage(pageNum).then(page => {
-                    const viewport = page.getViewport({
-                        scale: 1.5
-                    });
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    const ratio = window.devicePixelRatio || 1;
+                renderPromises.push(
+                    pdf.getPage(pageNum).then(page => {
+                        // Scale lebih tinggi untuk kualitas lebih baik
+                        const scale = 2.0;
+                        const viewport = page.getViewport({
+                            scale: scale
+                        });
 
-                    canvas.width = viewport.width * ratio;
-                    canvas.height = viewport.height * ratio;
-                    canvas.style.width = "100%";
-                    canvas.style.height = "auto";
-                    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+                        const pageWrapper = document.createElement('div');
+                        pageWrapper.className = 'page-wrapper';
 
-                    const renderContext = {
-                        canvasContext: context,
-                        viewport
-                    };
-                    page.render(renderContext);
-                    pdfContainer.appendChild(canvas);
-                });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d', {
+                            alpha: false,
+                            willReadFrequently: false
+                        });
+
+                        // High DPI rendering
+                        const dpr = window.devicePixelRatio || 1;
+                        const bsr = context.webkitBackingStorePixelRatio ||
+                            context.mozBackingStorePixelRatio ||
+                            context.msBackingStorePixelRatio ||
+                            context.oBackingStorePixelRatio ||
+                            context.backingStorePixelRatio || 1;
+                        const ratio = dpr / bsr;
+
+                        canvas.width = viewport.width * ratio;
+                        canvas.height = viewport.height * ratio;
+                        canvas.style.width = viewport.width + "px";
+                        canvas.style.height = viewport.height + "px";
+
+                        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport,
+                            intent: 'display',
+                            enableWebGL: false,
+                            renderInteractiveForms: false,
+                            background: 'white'
+                        };
+
+                        return page.render(renderContext).promise.then(() => {
+                            pageWrapper.appendChild(canvas);
+                            pdfContainer.appendChild(pageWrapper);
+                        });
+                    })
+                );
             }
+
+            return Promise.all(renderPromises);
         }).catch(err => {
-            pdfContainer.innerHTML = '<p style="color:red;text-align:center">Gagal memuat PDF</p>';
-            console.error(err);
+            pdfContainer.innerHTML = '<div class="loading" style="color:red">Gagal memuat PDF: ' + err.message +
+                '</div>';
+            console.error('PDF Loading Error:', err);
         });
     </script>
 </body>
