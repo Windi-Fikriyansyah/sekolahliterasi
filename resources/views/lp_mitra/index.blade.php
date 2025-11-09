@@ -84,6 +84,11 @@
                             <input type="file" class="form-control" id="file_pdf" name="file_pdf"
                                 accept="application/pdf" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="whatsapp" class="form-label">Nomor WhatsApp</label>
+                            <input type="text" class="form-control" id="whatsapp" name="whatsapp"
+                                placeholder="contoh: 6281234567890" required>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

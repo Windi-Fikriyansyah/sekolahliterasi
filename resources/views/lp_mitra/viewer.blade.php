@@ -124,7 +124,7 @@
 
         // Ganti dengan URL PDF Anda
         const pdfUrl = "{{ $pdfUrl }}";
-        const waNumber = "628123456789"; // Ganti dengan nomor WA
+        const waNumber = "{{ $whatsapp }}"; // Ganti dengan nomor WA
         const msg = encodeURIComponent("Halo, saya tertarik dengan informasi ini.");
         document.getElementById("waBtn").href = `https://wa.me/${waNumber.replace(/[^0-9]/g,"")}?text=${msg}`;
 

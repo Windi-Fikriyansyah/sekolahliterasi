@@ -69,7 +69,8 @@ class MitraController extends Controller
     {
         $request->validate([
             'produk_id' => 'required|exists:products,id',
-            'file_pdf' => 'required|mimes:pdf'
+            'file_pdf' => 'required|mimes:pdf',
+            'whatsapp' => 'required|string|min:10|max:20'
         ]);
 
         try {
@@ -79,7 +80,10 @@ class MitraController extends Controller
 
             DB::table('products')
                 ->where('id', $request->produk_id)
-                ->update(['pdf_path' => $path]); // pastikan kolom pdf_path sudah ada
+                ->update([
+                    'pdf_path' => $path,
+                    'whatsapp' => $request->whatsapp,
+                ]); // pastikan kolom pdf_path sudah ada
 
             return response()->json(['success' => true, 'message' => 'File PDF berhasil diupload!']);
         } catch (\Exception $e) {
@@ -110,7 +114,7 @@ class MitraController extends Controller
         }
 
         $pdfUrl = asset('storage/' . $mitra->pdf_path);
-        $whatsapp = $mitra->whatsapp ?? '6281234567890'; // fallback jika belum ada di DB
+        $whatsapp = $mitra->whatsapp ?? '6281234567890';
 
         return view('lp_mitra.viewer', compact('mitra', 'pdfUrl', 'whatsapp'));
     }
