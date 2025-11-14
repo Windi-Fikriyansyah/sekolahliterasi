@@ -8,7 +8,7 @@
         <div class="absolute top-1/2 right-10 w-52 h-52 bg-white/40 rounded-full blur-3xl"></div>
         <div class="absolute bottom-10 left-1/3 w-32 h-32 bg-white/40 rounded-full blur-2xl"></div>
 
-        <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
+        <div class="container mx-auto px-6 lg:px-12 py-12 lg:py-20 relative z-10">
 
 
             <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
