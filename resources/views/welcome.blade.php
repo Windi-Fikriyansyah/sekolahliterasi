@@ -1,15 +1,15 @@
 @extends('layouts.app')
 @section('title', 'Course')
 @section('content')
-    <section class="relative w-full min-h-screen overflow-hidden"
-        style="
-        background:
-            radial-gradient(circle at top left, rgba(0,0,0,0.6), transparent 60%),
-            radial-gradient(circle at bottom right, rgba(0,0,0,0.6), transparent 60%),
-            #0d2f63; /* warna utama di tengah */
-    ">
+    <section class="relative w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 overflow-hidden">
+
+        <!-- Efek warna putih di pojok -->
+        <div class="absolute top-10 left-10 w-40 h-40 bg-white/40 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 right-10 w-52 h-52 bg-white/40 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 left-1/3 w-32 h-32 bg-white/40 rounded-full blur-2xl"></div>
 
         <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
+
 
             <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
 
