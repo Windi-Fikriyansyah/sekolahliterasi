@@ -116,287 +116,299 @@
 
 
     <!-- E-Course Terbaru Section -->
-    <section id="produk" class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_program }}</h2>
-                <a href="{{ route('program') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
-            </div>
+    @if ($programs->count())
+        <section id="produk" class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_program }}</h2>
+                    <a href="{{ route('program') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
+                </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($programs as $program)
-                    <div
-                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                        <div class="relative overflow-hidden">
-                            <img src="{{ asset('storage/' . $program->thumbnail) }}" alt="{{ $program->judul }}"
-                                class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy" decoding="async">
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
-                            </div>
-                            <div class="absolute bottom-4 left-4">
-                                @if ($program->tipe_produk === 'program')
-                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                        Program
-                                    </span>
-                                @endif
-
-                            </div>
-                        </div>
-
-                        <div class="p-6">
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
-                                {{ $program->judul }}
-                            </h3>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                                {!! Str::limit(strip_tags($program->deskripsi), 100) !!}
-
-                            </p>
-
-                            @php
-                                $slug =
-                                    \Illuminate\Support\Str::slug($program->judul) .
-                                    '--' .
-                                    \Illuminate\Support\Facades\Crypt::encryptString($program->id);
-                            @endphp
-
-                            <div class="flex justify-between items-center">
-                                <div class="text-lg font-bold text-primary">
-                                    Rp {{ number_format($program->harga, 0, ',', '.') }}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach ($programs as $program)
+                        <div
+                            class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                            <div class="relative overflow-hidden">
+                                <img src="{{ asset('storage/' . $program->thumbnail) }}" alt="{{ $program->judul }}"
+                                    class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                                    loading="lazy" decoding="async">
+                                <div class="absolute top-4 right-4">
+                                    <span
+                                        class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
                                 </div>
-                                <a href="{{ route('landing.page', ['slug' => $program->slug]) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
+                                <div class="absolute bottom-4 left-4">
+                                    @if ($program->tipe_produk === 'program')
+                                        <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                            Program
+                                        </span>
+                                    @endif
 
-
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-
-
-
-
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_kelas }}</h2>
-                <a href="{{ route('kelasvideo') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($kelasVideo as $kelas)
-                    <div
-                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                        <div class="relative overflow-hidden">
-                            <img src="{{ asset('storage/' . $kelas->thumbnail) }}" alt="{{ $kelas->judul }}"
-                                class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy" decoding="async">
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
-                            </div>
-                            <div class="absolute bottom-4 left-4">
-                                @if ($kelas->tipe_produk === 'kelas_video')
-                                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                        Kelas Video
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="p-6">
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
-                                {{ $kelas->judul }}
-                            </h3>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                                {!! Str::limit(strip_tags($kelas->deskripsi), 100) !!}
-
-                            </p>
-
-                            <div class="flex justify-between items-center">
-                                <div class="text-lg font-bold text-primary">
-                                    Rp {{ number_format($kelas->harga, 0, ',', '.') }}
                                 </div>
-                                <a href="{{ route('produk.show', Crypt::encrypt($kelas->id)) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
                             </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
 
-
-
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_ebook }}</h2>
-                <a href="{{ route('ebook') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($ebooks as $ebook)
-                    <div
-                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                        <div class="relative overflow-hidden">
-                            <img src="{{ asset('storage/' . $ebook->thumbnail) }}" alt="{{ $ebook->judul }}"
-                                class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy" decoding="async">
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
-                            </div>
-                            <div class="absolute bottom-4 left-4">
-                                @if ($ebook->tipe_produk === 'ebook')
-                                    <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                        E-Book
-                                    </span>
-                                @endif
-
-                            </div>
-                        </div>
-
-                        <div class="p-6">
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
-                                {{ $ebook->judul }}
-                            </h3>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                                {!! Str::limit(strip_tags($ebook->deskripsi), 100) !!}
-                            </p>
-
-                            <div class="flex justify-between items-center">
-                                <div class="text-lg font-bold text-primary">
-                                    Rp {{ number_format($ebook->harga, 0, ',', '.') }}
-                                </div>
-                                <a href="{{ route('produk.show', Crypt::encrypt($ebook->id)) }}"
-                                    class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
-                                    Lihat Detail
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-
-
-
-    <!-- E-Book Best Seller Section -->
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_buku }}</h2>
-                <a href="{{ route('buku') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($bukus as $buku)
-                    <div
-                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-                        <div class="relative overflow-hidden">
-                            <img src="{{ asset('storage/' . $buku->thumbnail) }}" alt="{{ $buku->judul }}"
-                                class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy" decoding="async">
-                            <div class="absolute top-4 right-4">
-                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
-                            </div>
-                            <div class="absolute bottom-4 left-4">
-                                @if ($buku->tipe_produk === 'buku')
-                                    <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
-                                        Buku
-                                    </span>
-                                @endif
-
-                            </div>
-                        </div>
-
-                        <div class="p-6">
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
-                                {{ $buku->judul }}
-                            </h3>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                                {!! Str::limit(strip_tags($buku->deskripsi), 100) !!}
-
-                            </p>
-
-                            <div class="flex justify-between items-center">
-                                <div class="text-lg font-bold text-primary">
-                                    Rp {{ number_format($buku->harga, 0, ',', '.') }}
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('buku.detail', Str::slug($buku->judul) . '-' . $buku->id) }}"
-                                        class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
-                                        Detail
-                                    </a>
-                                    <button onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
-                                        class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
-                                        title="Tambah ke Keranjang">
-                                        <i class="fas fa-cart-plus"></i>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_mitra }}</h2>
-            </div>
-
-            <!-- Grid 2 kolom -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                @foreach ($mitras as $mitra)
-                    <div
-                        class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
-
-                        <!-- Gambar Mitra (tampil full tanpa terpotong) -->
-                        <div class="w-full bg-gray-100 flex justify-center items-center">
-                            <img src="{{ asset('storage/' . $mitra->thumbnail) }}" alt="{{ $mitra->judul }}"
-                                class="max-w-full h-auto transition-transform duration-700 group-hover:scale-105"
-                                loading="lazy" decoding="async">
-                        </div>
-
-                        <!-- Konten -->
-                        <div class="p-6 flex flex-col justify-between">
-                            <div>
+                            <div class="p-6">
                                 <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
-                                    {{ $mitra->judul }}
+                                    {{ $program->judul }}
                                 </h3>
                                 <p class="text-gray-600 text-sm mb-4 line-clamp-2">
-                                    {!! Str::limit(strip_tags($mitra->deskripsi), 120) !!}
+                                    {!! Str::limit(strip_tags($program->deskripsi), 100) !!}
+
                                 </p>
-                            </div>
 
-                            <div class="flex justify-end">
-                                <a href="{{ route('kemitraan', ['slug' => $mitra->slug]) }}" target="_blank"
-                                    class="bg-secondary text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
-                                    Detail
-                                </a>
+                                @php
+                                    $slug =
+                                        \Illuminate\Support\Str::slug($program->judul) .
+                                        '--' .
+                                        \Illuminate\Support\Facades\Crypt::encryptString($program->id);
+                                @endphp
 
+                                <div class="flex justify-between items-center">
+                                    <div class="text-lg font-bold text-primary">
+                                        Rp {{ number_format($program->harga, 0, ',', '.') }}
+                                    </div>
+                                    <a href="{{ route('landing.page', ['slug' => $program->slug]) }}"
+                                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
+                                        Lihat Detail
+                                    </a>
+
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
+
+
+
+
+    @if ($kelasVideo->count())
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_kelas }}</h2>
+                    <a href="{{ route('kelasvideo') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach ($kelasVideo as $kelas)
+                        <div
+                            class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                            <div class="relative overflow-hidden">
+                                <img src="{{ asset('storage/' . $kelas->thumbnail) }}" alt="{{ $kelas->judul }}"
+                                    class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                                    loading="lazy" decoding="async">
+                                <div class="absolute top-4 right-4">
+                                    <span
+                                        class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+                                </div>
+                                <div class="absolute bottom-4 left-4">
+                                    @if ($kelas->tipe_produk === 'kelas_video')
+                                        <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                            Kelas Video
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="p-6">
+                                <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
+                                    {{ $kelas->judul }}
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    {!! Str::limit(strip_tags($kelas->deskripsi), 100) !!}
+
+                                </p>
+
+                                <div class="flex justify-between items-center">
+                                    <div class="text-lg font-bold text-primary">
+                                        Rp {{ number_format($kelas->harga, 0, ',', '.') }}
+                                    </div>
+                                    <a href="{{ route('produk.show', Crypt::encrypt($kelas->id)) }}"
+                                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
+                                        Lihat Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+
+    @if ($ebooks->count())
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_ebook }}</h2>
+                    <a href="{{ route('ebook') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach ($ebooks as $ebook)
+                        <div
+                            class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                            <div class="relative overflow-hidden">
+                                <img src="{{ asset('storage/' . $ebook->thumbnail) }}" alt="{{ $ebook->judul }}"
+                                    class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                                    loading="lazy" decoding="async">
+                                <div class="absolute top-4 right-4">
+                                    <span
+                                        class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+                                </div>
+                                <div class="absolute bottom-4 left-4">
+                                    @if ($ebook->tipe_produk === 'ebook')
+                                        <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                            E-Book
+                                        </span>
+                                    @endif
+
+                                </div>
+                            </div>
+
+                            <div class="p-6">
+                                <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
+                                    {{ $ebook->judul }}
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    {!! Str::limit(strip_tags($ebook->deskripsi), 100) !!}
+                                </p>
+
+                                <div class="flex justify-between items-center">
+                                    <div class="text-lg font-bold text-primary">
+                                        Rp {{ number_format($ebook->harga, 0, ',', '.') }}
+                                    </div>
+                                    <a href="{{ route('produk.show', Crypt::encrypt($ebook->id)) }}"
+                                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
+                                        Lihat Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+
+
+
+    @if ($bukus->count())
+        <!-- E-Book Best Seller Section -->
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_buku }}</h2>
+                    <a href="{{ route('buku') }}" class="text-primary font-medium hover:underline">Lihat Semua</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach ($bukus as $buku)
+                        <div
+                            class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                            <div class="relative overflow-hidden">
+                                <img src="{{ asset('storage/' . $buku->thumbnail) }}" alt="{{ $buku->judul }}"
+                                    class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+                                    loading="lazy" decoding="async">
+                                <div class="absolute top-4 right-4">
+                                    <span
+                                        class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>
+                                </div>
+                                <div class="absolute bottom-4 left-4">
+                                    @if ($buku->tipe_produk === 'buku')
+                                        <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded">
+                                            Buku
+                                        </span>
+                                    @endif
+
+                                </div>
+                            </div>
+
+                            <div class="p-6">
+                                <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
+                                    {{ $buku->judul }}
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    {!! Str::limit(strip_tags($buku->deskripsi), 100) !!}
+
+                                </p>
+
+                                <div class="flex justify-between items-center">
+                                    <div class="text-lg font-bold text-primary">
+                                        Rp {{ number_format($buku->harga, 0, ',', '.') }}
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('buku.detail', Str::slug($buku->judul) . '-' . $buku->id) }}"
+                                            class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
+                                            Detail
+                                        </a>
+                                        <button
+                                            onclick="addToCart({{ $buku->id }}, '{{ addslashes($buku->judul) }}')"
+                                            class="bg-primary text-white p-3 rounded-full hover:bg-secondary transition-all duration-300 shadow-md hover:scale-110"
+                                            title="Tambah ke Keranjang">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    @if ($mitras->count())
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-secondary">{{ $landingPage->judul_mitra }}</h2>
+                </div>
+
+                <!-- Grid 2 kolom -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    @foreach ($mitras as $mitra)
+                        <div
+                            class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+
+                            <!-- Gambar Mitra (tampil full tanpa terpotong) -->
+                            <div class="w-full bg-gray-100 flex justify-center items-center">
+                                <img src="{{ asset('storage/' . $mitra->thumbnail) }}" alt="{{ $mitra->judul }}"
+                                    class="max-w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                                    loading="lazy" decoding="async">
+                            </div>
+
+                            <!-- Konten -->
+                            <div class="p-6 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-secondary">
+                                        {{ $mitra->judul }}
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                                        {!! Str::limit(strip_tags($mitra->deskripsi), 120) !!}
+                                    </p>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <a href="{{ route('kemitraan', ['slug' => $mitra->slug]) }}" target="_blank"
+                                        class="bg-secondary text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
+                                        Detail
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
 
 
 

@@ -99,6 +99,45 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script>
+        // Toggle Status Produk
+        $(document).on('click', '.toggle-status-btn', function() {
+            const id = $(this).data('id');
+            const status = $(this).data('status');
+            const url = "{{ route('produk.toggle_status', ':id') }}".replace(':id', id);
+
+            Swal.fire({
+                title: 'Ubah Status?',
+                text: "Status akan diubah menjadi " + (status === 'aktif' ? 'Nonaktif' : 'Aktif'),
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, ubah!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message
+                            });
+                            $('#produk-table').DataTable().ajax.reload(null, false);
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
         $(document).on('click', '.copy-btn', function() {
             const id = $(this).data('id');
             const url = "{{ route('produk.copy', ':id') }}".replace(':id', id);

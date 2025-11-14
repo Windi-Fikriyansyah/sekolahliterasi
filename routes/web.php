@@ -108,6 +108,7 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::post('/store-file', [ProdukController::class, 'store_file'])->name('store_file');
         Route::post('/upload-pdf-chunk', [ProdukController::class, 'uploadPdfChunk'])->name('upload-pdf-chunk');
         Route::delete('/delete-pdf-chunk', [ProdukController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
+        Route::post('/toggle-status/{id}', [ProdukController::class, 'toggleStatus'])->name('toggle_status');
     });
 
     Route::prefix('produk_buku')->name('produk_buku.')->group(function () {

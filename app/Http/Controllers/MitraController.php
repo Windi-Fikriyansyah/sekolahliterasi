@@ -117,7 +117,12 @@ class MitraController extends Controller
             abort(404, 'File PDF belum diunggah untuk produk ini');
         }
 
-        $videoUrl = asset('storage/' . $mitra->video_path);
+        $videoUrl = null;
+
+        if (!empty($mitra->video_path) && Storage::disk('public')->exists($mitra->video_path)) {
+            $videoUrl = asset('storage/' . $mitra->video_path);
+        }
+
 
         $pdfUrl = asset('storage/' . $mitra->pdf_path);
         $whatsapp = $mitra->whatsapp ?? '6281234567890';

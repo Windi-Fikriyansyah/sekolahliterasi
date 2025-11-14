@@ -66,7 +66,17 @@ class ProdukController extends Controller
                     $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('produk.destroy', $row->id);
 
+                    $statusBtn = '
+    <button class="btn btn-sm ' . ($row->status === "aktif" ? "btn-secondary" : "btn-success") . ' toggle-status-btn"
+        data-id="' . $row->id . '"
+        data-status="' . $row->status . '"
+        title="Ubah Status">
+        ' . ($row->status === "aktif" ? '<i class="bi bi-x-circle"></i>' : '<i class="bi bi-check-circle"></i>') . '
+    </button>
+';
+
                     $buttons = '<div class="btn-group" role="group">';
+                    $buttons .= $statusBtn;
                     $buttons .= '<a href="' . route('produk.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-info copy-btn" title="Copy" data-id="' . $row->id . '"><i class="bi bi-files"></i></button>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
@@ -89,6 +99,33 @@ class ProdukController extends Controller
             Log::error('Error loading kursus data: ' . $e->getMessage());
             return response()->json([
                 'error' => true,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function toggleStatus($id)
+    {
+        try {
+            $produk = DB::table('products')->where('id', $id)->first();
+
+            if (!$produk) {
+                return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan'], 404);
+            }
+
+            $newStatus = $produk->status === 'aktif' ? 'nonaktif' : 'aktif';
+
+            DB::table('products')
+                ->where('id', $id)
+                ->update(['status' => $newStatus, 'updated_at' => now()]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diubah menjadi ' . ucfirst($newStatus)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }

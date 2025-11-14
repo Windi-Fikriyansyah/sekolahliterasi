@@ -101,39 +101,22 @@
                 padding: 10px 0 80px 0;
             }
         }
-
-        #videoBackground {
-            width: 100%;
-            background: linear-gradient(135deg, #1e40af, #22c55e);
-            padding: 30px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
     </style>
 </head>
 
 <body>
-    @if (!empty($videoUrl))
-        <div id="videoBackground">
-            <div id="videoWrapper"
-                style="
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        border-radius: 12px;
-        overflow: hidden;
-        background: #000;
-    ">
-                <video id="topVideo" controls controlsList="nodownload noplaybackrate" oncontextmenu="return false;"
-                    style="width: 100%; height: auto;">
-                    <source src="{{ $videoUrl }}" type="video/mp4">
-                    Browser anda tidak mendukung pemutar video.
-                </video>
-            </div>
+    @if (!empty($videoUrl) && $videoUrl !== 'null' && $videoUrl !== 'undefined')
+        <div id="videoSection" style="width:100vw; height:100vh; background:#000;">
+            <video id="topVideo" controls controlsList="nodownload noplaybackrate" oncontextmenu="return false;"
+                style="width:100%; height:100%; object-fit:contain; background:#000;">
+                <source src="{{ $videoUrl }}" type="video/mp4">
+            </video>
         </div>
+    @else
+        <!-- Tidak ada video → tampilkan kosong -->
     @endif
+
+
 
     <div class="pdf-container" id="pdfContainer">
         <div class="loading">Memuat konten...</div>
@@ -155,6 +138,13 @@
         const waNumber = "{{ $whatsapp }}";
         const msg = encodeURIComponent("Halo, saya tertarik dengan informasi ini.");
         document.getElementById("waBtn").href = `https://wa.me/${waNumber.replace(/[^0-9]/g,"")}?text=${msg}`;
+
+        const videoUrl = "{{ $videoUrl ?? '' }}";
+
+        if (!videoUrl || videoUrl.trim() === "" || videoUrl === "null" || videoUrl === "undefined") {
+            const videoSection = document.getElementById("videoSection");
+            if (videoSection) videoSection.remove(); // Hapus elemen sepenuhnya
+        }
 
         const pdfContainer = document.getElementById("pdfContainer");
 
