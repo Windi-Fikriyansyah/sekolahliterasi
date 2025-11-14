@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Course')
 @section('content')
-    <section class="relative w-full min-h-screen bg-gradient-to-br from-secondary via-blue-400 to-primary overflow-hidden">
+    <section class="relative w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 overflow-hidden">
+
         <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
