@@ -3,25 +3,40 @@
 @section('content')
     <section class="relative w-full min-h-screen bg-gradient-to-br from-secondary via-blue-400 to-primary overflow-hidden">
         <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
-            <div
-                class="inline-flex items-center mb-2 px-4 py-2 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
-                <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
-                <span class="text-white text-sm font-medium">Platform Literasi #1 di Indonesia</span>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-                <!-- Left Content -->
-                <div class="text-white space-y-8 animate-fade-in-up">
-                    <h1
-                        class="font-extrabold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-[1.15] tracking-tight drop-shadow-lg">
-                        {{ $content->hero_title ?? 'Judul Default' }} <br><span
-                            class="text-yellow-300">{{ $content->hero_subtitle ?? '' }}</span>
-                    </h1>
-                    <p
-                        class="text-sm sm:text-base md:text-lg text-white/90 max-w-md leading-relaxed tracking-wide font-light">
-                        {{ $content->hero_description ?? '' }}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+                <!-- Hero Text Content -->
+                <div class="relative animate-fade-in text-left space-y-8 order-2 lg:order-1">
+                    <!-- Badge/Tag -->
+                    <div
+                        class="inline-flex items-center px-4 py-2 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
+                        <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                        <span class="text-white text-sm font-medium">Platform Literasi #1 di Indonesia</span>
+                    </div>
+
+                    <!-- Main Title -->
+                    <div class="space-y-4">
+                        <h1
+                            class="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight tracking-tight">
+                            <span class="block animate-fade-in-up">
+                                {{ $landingPage->hero_title ?? 'Belajar Tanpa Batas' }}
+                            </span>
+                            <span class="block text-[#fde047] animate-fade-in-up delay-200 mt-2">
+                                {{ $landingPage->hero_subtitle ?? 'Raih Masa Depan' }}
+                            </span>
+                        </h1>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed animate-fade-in-up delay-300">
+                        {{ $landingPage->hero_description ?? 'Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025 dengan metode pembelajaran inovatif dan mentor berpengalaman.' }}
                     </p>
-                    <div>
+
+
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-500">
                         <a href="#"
                             class="inline-block bg-white text-primary px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:bg-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                             {{ $content->hero_btn_primary ?? '' }}
@@ -29,15 +44,70 @@
                     </div>
                 </div>
 
-                <!-- Right Content -->
-                <div class="relative animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="relative z-10 transform hover:scale-105 transition-transform duration-700">
-                        <img src="{{ asset('image/1.png') }}" alt="Dream House"
-                            class="w-full max-w-md mx-auto h-auto object-contain drop-shadow-2xl">
-                    </div>
-                    <div class="absolute -bottom-10 -right-10 w-56 h-56 bg-white/10 rounded-full blur-3xl hidden lg:block">
+                <div class="relative animate-fade-in-up delay-300 order-1 lg:order-2 mb-8 lg:mb-0">
+                    <div class="relative max-w-lg mx-auto w-full">
+                        <!-- Main Image Container -->
+                        <div
+                            class="relative rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm bg-white/5 border border-white/20">
+
+                            <!-- Image Slider -->
+                            <div class="image-slider relative">
+                                <div class="slide active relative">
+                                    <img src="{{ $landingPage->hero_image_1
+                                        ? asset('storage/' . $landingPage->hero_image_1)
+                                        : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Students learning"
+                                        class="w-full h-auto object-contain transition-all duration-700">
+
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+
+                                </div>
+
+                                <div class="slide relative">
+                                    <img src="{{ $landingPage->hero_image_2 ? asset('storage/' . $landingPage->hero_image_2) : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Online learning"
+                                        class="w-full h-full object-cover transition-all duration-700">
+
+
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+                                </div>
+
+                                <div class="slide relative">
+                                    <img src="{{ $landingPage->hero_image_3 ? asset('storage/' . $landingPage->hero_image_3) : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Online learning"
+                                        class="w-full h-full object-cover transition-all duration-700">
+
+
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Navigation Dots -->
+                            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                                <button
+                                    class="slider-dot active w-3 h-3 rounded-full bg-white transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(1)"></button>
+                                <button
+                                    class="slider-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(2)"></button>
+                                <button
+                                    class="slider-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(3)"></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+
             </div>
         </div>
 
@@ -609,6 +679,29 @@
 
 @push('style')
     <style>
+        /* Image Slider Styles */
+        .image-slider .slide {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: opacity 0.7s ease-in-out;
+            z-index: 0;
+        }
+
+        .image-slider .slide.active {
+            opacity: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .slider-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
         /* Animasi FAQ yang lebih smooth */
         .faq-answer {
             max-height: 0;
@@ -645,4 +738,46 @@
             animation: fade-in-up 0.6s ease-out;
         }
     </style>
+@endpush
+@push('js')
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll(".image-slider .slide");
+        const dots = document.querySelectorAll(".slider-dot");
+        let slideInterval;
+
+        function showSlide(index) {
+            slides.forEach((s, i) => {
+                s.classList.remove("active");
+                dots[i].classList.remove("active");
+                dots[i].classList.add("bg-white/50");
+            });
+            slides[index].classList.add("active");
+            dots[index].classList.add("active", "bg-white");
+            dots[index].classList.remove("bg-white/50");
+            slideIndex = index;
+        }
+
+        function nextSlide() {
+            slideIndex = (slideIndex + 1) % slides.length;
+            showSlide(slideIndex);
+        }
+
+        // Start automatic sliding
+        function startSlideShow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Stop and restart slideshow when dot clicked
+        function currentSlide(n) {
+            clearInterval(slideInterval);
+            showSlide(n - 1);
+            startSlideShow();
+        }
+
+        // Initialize
+        showSlide(slideIndex);
+        startSlideShow();
+    </script>
 @endpush

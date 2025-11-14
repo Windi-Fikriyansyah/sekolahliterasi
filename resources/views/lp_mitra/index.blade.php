@@ -67,28 +67,36 @@
 
 
     <!-- Modal Upload PDF -->
-    <div class="modal fade" id="uploadPdfModal" tabindex="-1" aria-labelledby="uploadPdfLabel" aria-hidden="true">
+    <!-- Modal Upload PDF / Video -->
+    <div class="modal fade" id="uploadPdfModal" tabindex="-1">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title" id="uploadPdfLabel">Upload PDF Kemitraan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <h5 class="modal-title">Upload PDF / Video</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+
                 <form id="uploadPdfForm" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" id="produk_id" name="produk_id">
+
                         <div class="mb-3">
-                            <label for="file_pdf" class="form-label">Pilih File PDF</label>
-                            <input type="file" class="form-control" id="file_pdf" name="file_pdf"
-                                accept="application/pdf" required>
+                            <label class="form-label">File PDF (optional)</label>
+                            <input type="file" class="form-control" name="file_pdf" accept="application/pdf">
                         </div>
+
                         <div class="mb-3">
-                            <label for="whatsapp" class="form-label">Nomor WhatsApp</label>
-                            <input type="text" class="form-control" id="whatsapp" name="whatsapp"
-                                placeholder="contoh: 6281234567890" required>
+                            <label class="form-label">File Video (optional)</label>
+                            <input type="file" class="form-control" name="file_video"
+                                accept="video/mp4,video/mkv,video/webm">
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nomor WhatsApp</label>
+                            <input type="text" class="form-control" id="whatsapp" name="whatsapp" required>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -98,6 +106,7 @@
             </div>
         </div>
     </div>
+
 
 @endsection
 

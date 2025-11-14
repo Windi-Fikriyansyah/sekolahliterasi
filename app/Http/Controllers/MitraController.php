@@ -69,28 +69,39 @@ class MitraController extends Controller
     {
         $request->validate([
             'produk_id' => 'required|exists:products,id',
-            'file_pdf' => 'required|mimes:pdf',
+            'file_pdf' => 'nullable|mimes:pdf',
+            'file_video' => 'nullable|mimes:mp4,mkv,webm',
             'whatsapp' => 'required|string|min:10|max:20'
         ]);
 
         try {
-            $file = $request->file('file_pdf');
-            $filename = 'mitra_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('kemitraan/pdf', $filename, 'public');
+            $dataUpdate = ['whatsapp' => $request->whatsapp];
+
+            // Upload PDF jika ada
+            if ($request->hasFile('file_pdf')) {
+                $pdf = $request->file('file_pdf');
+                $pdfName = 'mitra_pdf_' . time() . '.' . $pdf->getClientOriginalExtension();
+                $dataUpdate['pdf_path'] = $pdf->storeAs('kemitraan/pdf', $pdfName, 'public');
+            }
+
+            // Upload Video jika ada
+            if ($request->hasFile('file_video')) {
+                $video = $request->file('file_video');
+                $videoName = 'mitra_video_' . time() . '.' . $video->getClientOriginalExtension();
+                $dataUpdate['video_path'] = $video->storeAs('kemitraan/video', $videoName, 'public');
+            }
 
             DB::table('products')
                 ->where('id', $request->produk_id)
-                ->update([
-                    'pdf_path' => $path,
-                    'whatsapp' => $request->whatsapp,
-                ]); // pastikan kolom pdf_path sudah ada
+                ->update($dataUpdate);
 
-            return response()->json(['success' => true, 'message' => 'File PDF berhasil diupload!']);
+            return response()->json(['success' => true, 'message' => 'File berhasil diupload!']);
         } catch (\Exception $e) {
-            Log::error('Upload PDF gagal: ' . $e->getMessage());
+            Log::error('Upload gagal: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat upload.']);
         }
     }
+
 
 
 
@@ -106,17 +117,12 @@ class MitraController extends Controller
             abort(404, 'File PDF belum diunggah untuk produk ini');
         }
 
-        // Buat URL file PDF (akses publik)
-        $pdfUrl = asset('storage/' . $mitra->pdf_path);
-
-        if (empty($mitra->pdf_path) || !Storage::disk('public')->exists($mitra->pdf_path)) {
-            abort(404, 'File PDF belum tersedia untuk mitra ini.');
-        }
+        $videoUrl = asset('storage/' . $mitra->video_path);
 
         $pdfUrl = asset('storage/' . $mitra->pdf_path);
         $whatsapp = $mitra->whatsapp ?? '6281234567890';
 
-        return view('lp_mitra.viewer', compact('mitra', 'pdfUrl', 'whatsapp'));
+        return view('lp_mitra.viewer', compact('mitra', 'pdfUrl', 'whatsapp', 'videoUrl'));
     }
 
     public function halaman_mitra()

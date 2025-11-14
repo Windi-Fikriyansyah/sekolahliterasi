@@ -182,6 +182,45 @@
                                             </div>
                                         </div>
 
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Gambar 2</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" name="hero_image_2"
+                                                    class="form-control image-upload @error('hero_image_2') is-invalid @enderror"
+                                                    accept="image/*" data-preview="hero_image_2_preview" />
+                                                <div class="image-preview mt-2" id="hero_image_2_preview">
+                                                    @if (isset($landing) && $landing->hero_image_2)
+                                                        <img src="{{ asset('storage/' . $landing->hero_image_2) }}"
+                                                            class="img-thumbnail" style="max-height: 150px;">
+                                                        <small class="text-muted d-block">Current:
+                                                            {{ basename($landing->hero_image_2) }}</small>
+                                                    @endif
+                                                </div>
+                                                @error('hero_image_2')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Gambar 3</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" name="hero_image_3"
+                                                    class="form-control image-upload @error('hero_image_3') is-invalid @enderror"
+                                                    accept="image/*" data-preview="hero_image_3_preview" />
+                                                <div class="image-preview mt-2" id="hero_image_3_preview">
+                                                    @if (isset($landing) && $landing->hero_image_3)
+                                                        <img src="{{ asset('storage/' . $landing->hero_image_3) }}"
+                                                            class="img-thumbnail" style="max-height: 150px;">
+                                                        <small class="text-muted d-block">Current:
+                                                            {{ basename($landing->hero_image_3) }}</small>
+                                                    @endif
+                                                </div>
+                                                @error('hero_image_3')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
