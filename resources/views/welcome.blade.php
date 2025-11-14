@@ -1,11 +1,17 @@
 @extends('layouts.app')
 @section('title', 'Course')
 @section('content')
-    <section class="relative w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 overflow-hidden">
+    <section class="relative w-full min-h-screen overflow-hidden"
+        style="
+        background:
+            radial-gradient(circle at top left, rgba(0,0,0,0.6), transparent 60%),
+            radial-gradient(circle at bottom right, rgba(0,0,0,0.6), transparent 60%),
+            #0d2f63; /* warna utama di tengah */
+    ">
 
         <div class="container mx-auto px-6 lg:px-12 py-20 lg:py-28 relative z-10">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
 
                 <!-- Hero Text Content -->
                 <div class="relative animate-fade-in text-left space-y-8 order-2 lg:order-1">
