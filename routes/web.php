@@ -183,9 +183,12 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::post('/load', [ProgramsController::class, 'load'])->name('load');
         Route::get('/atur/{id}', [ProgramsController::class, 'atur'])->name('atur');
         Route::put('/update/{id}', [ProgramsController::class, 'update'])->name('update');
+        Route::get('/pdf/{id}', [ProgramsController::class, 'pdf'])->name('pdf');
 
         Route::post('/store', [ProgramsController::class, 'store'])
             ->name('store');
+        Route::post('/pdf/save', [ProgramsController::class, 'savePdf'])
+            ->name('save_pdf');
     });
 
     Route::prefix('lp_mitra')->name('lp_mitra.')->group(function () {

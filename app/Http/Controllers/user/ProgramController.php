@@ -106,13 +106,22 @@ class ProgramController extends Controller
             abort(404, 'Produk tidak ditemukan');
         }
 
-
         $landing = DB::table('pages')->where('id_product', $product->id)->first();
         if (!$landing) {
             abort(404, 'Landing page tidak ditemukan untuk produk ini');
         }
 
-        return view('landing_page.index', compact('product', 'landing'));
+        // Ambil seluruh PDF/VIDEO BERDASARKAN URUTAN
+        $programs = DB::table('lp_program_pdfs')
+            ->where('id_program', $product->id)
+            ->orderBy('urutan', 'ASC')
+            ->get();
+
+        return view('landing_page.index', [
+            'product' => $product,
+            'landing' => $landing,
+            'programs' => $programs
+        ]);
     }
 
     public function store(Request $request)

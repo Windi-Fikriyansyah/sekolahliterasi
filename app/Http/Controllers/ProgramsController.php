@@ -48,12 +48,29 @@ class ProgramsController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $encryptedId = Crypt::encrypt($row->id);
+
                     return '
-        <div class="btn-group" role="group">
-            <a href="' . route('lp_programs.atur', $encryptedId) . '" class="btn btn-sm btn-warning" title="Atur Halaman">
-                <i class="bi bi-pencil-square"></i> Atur
-            </a>
-        </div>';
+    <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-warning dropdown-toggle"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear"></i> Atur
+        </button>
+        <ul class="dropdown-menu">
+
+            <li>
+                <a class="dropdown-item" href="' . route('lp_programs.atur', $encryptedId) . '">
+                    <i class="bi bi-pencil-square me-2"></i> Editor
+                </a>
+            </li>
+
+            <li>
+                <a class="dropdown-item" href="' . route('lp_programs.pdf', $encryptedId) . '">
+                    <i class="bi bi-file-earmark-pdf me-2 text-danger"></i> PDF
+                </a>
+            </li>
+
+        </ul>
+    </div>';
                 })
                 ->rawColumns(['gambar', 'action'])
                 ->make(true);
@@ -63,6 +80,104 @@ class ProgramsController extends Controller
                 'error' => true,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function pdf($id)
+    {
+        $decryptId = Crypt::decrypt($id);
+
+        $data = DB::table('products')->where('id', $decryptId)->first();
+        if (!$data) abort(404);
+
+        // Ambil data sections
+        $sections = DB::table('lp_program_pdfs')
+            ->where('id_program', $decryptId)
+            ->orderBy('urutan', 'asc')
+            ->get();
+
+        return view('lp_programs.pdf', compact('data', 'sections'));
+    }
+
+
+    public function savePdf(Request $request)
+    {
+        try {
+            $idProgram = $request->id_program;
+
+            $oldUrutans = DB::table('lp_program_pdfs')
+                ->where('id_program', $idProgram)
+                ->pluck('urutan')
+                ->toArray();
+
+            $newUrutans = array_column($request->sections, 'urutan');
+
+            DB::table('lp_program_pdfs')
+                ->where('id_program', $idProgram)
+                ->whereNotIn('urutan', $newUrutans)
+                ->delete();
+
+            foreach ($request->sections as $section) {
+
+                $idSection = $section['id'];
+                $title     = $section['title'] ?? null;
+
+                $existing = null;
+                if ($idSection) {
+                    $existing = DB::table('lp_program_pdfs')->where('id', $idSection)->first();
+                }
+
+
+                $filePath = $existing?->file; // default: file lama
+
+                // Jika upload file baru → replace
+                if (isset($section['file'])) {
+
+                    // Hapus file lama (jika ada)
+                    if ($filePath && Storage::disk('public')->exists($filePath)) {
+                        Storage::disk('public')->delete($filePath);
+                    }
+
+                    $file = $section['file'];
+                    $filename = time() . "_" . Str::random(10) . "." . $file->getClientOriginalExtension();
+                    $filePath = $file->storeAs('uploads/program_sections', $filename, 'public');
+                }
+
+                // UPDATE jika sudah ada
+                if ($existing) {
+                    DB::table('lp_program_pdfs')
+                        ->where('id', $existing->id)
+                        ->update([
+                            'urutan'     => $section['urutan'],
+                            'nama_section' => $title,
+                            'file'       => $filePath,
+                            'type_file'  => $section['type'],
+                            'updated_at' => now()
+                        ]);
+                }
+                // INSERT jika belum ada
+                else {
+                    DB::table('lp_program_pdfs')->insert([
+                        'id_program' => $idProgram,
+                        'urutan'     => $section['urutan'],
+                        'nama_section' => $title,
+                        'file'       => $filePath,
+                        'type_file'  => $section['type'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            return response()->json([
+                "success" => true,
+                "message" => "Data berhasil disimpan"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage()
+            ]);
         }
     }
 
