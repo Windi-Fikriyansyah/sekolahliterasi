@@ -37,7 +37,8 @@ class ProdukController extends Controller
                     'jenis_program',
                     'status',
                     'created_at',
-                    'updated_at'
+                    'updated_at',
+                    'tampil_harga'
                 ])
                 ->whereIn('tipe_produk', ['ebook', 'kelas_video', 'program', 'mitra'])
                 ->orderBy('created_at', 'desc');
@@ -103,6 +104,23 @@ class ProdukController extends Controller
             ], 500);
         }
     }
+
+    public function toggleHarga(Request $request)
+    {
+        DB::table('products')
+            ->where('id', $request->id)
+            ->update([
+                'tampil_harga' => $request->tampil_harga
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $request->tampil_harga == 1
+                ? 'Harga sekarang ditampilkan.'
+                : 'Harga sekarang disembunyikan.'
+        ]);
+    }
+
 
     public function toggleStatus($id)
     {

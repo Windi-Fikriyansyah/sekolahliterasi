@@ -169,10 +169,16 @@
                                         \Illuminate\Support\Facades\Crypt::encryptString($program->id);
                                 @endphp
 
-                                <div class="flex justify-between items-center">
-                                    <div class="text-lg font-bold text-primary">
-                                        Rp {{ number_format($program->harga, 0, ',', '.') }}
-                                    </div>
+                                <div class="flex items-center justify-between mt-4">
+                                    @if ($program->tampil_harga == 1)
+                                        <div class="text-lg font-bold text-primary">
+                                            Rp {{ number_format($program->harga, 0, ',', '.') }}
+                                        </div>
+                                    @else
+                                        <div class="text-lg font-semibold text-gray-400 italic">
+
+                                        </div>
+                                    @endif
                                     <a href="{{ route('landing.page', ['slug' => $program->slug]) }}"
                                         class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                         Lihat Detail
@@ -230,9 +236,15 @@
                                 </p>
 
                                 <div class="flex justify-between items-center">
-                                    <div class="text-lg font-bold text-primary">
-                                        Rp {{ number_format($kelas->harga, 0, ',', '.') }}
-                                    </div>
+                                    @if ($kelas->tampil_harga == 1)
+                                        <div class="text-lg font-bold text-primary">
+                                            Rp {{ number_format($kelas->harga, 0, ',', '.') }}
+                                        </div>
+                                    @else
+                                        <div class="text-lg font-semibold text-gray-400 italic">
+
+                                        </div>
+                                    @endif
                                     <a href="{{ route('produk.show', Crypt::encrypt($kelas->id)) }}"
                                         class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                         Lihat Detail
@@ -286,9 +298,15 @@
                                 </p>
 
                                 <div class="flex justify-between items-center">
-                                    <div class="text-lg font-bold text-primary">
-                                        Rp {{ number_format($ebook->harga, 0, ',', '.') }}
-                                    </div>
+                                    @if ($ebook->tampil_harga == 1)
+                                        <div class="text-lg font-bold text-primary">
+                                            Rp {{ number_format($ebook->harga, 0, ',', '.') }}
+                                        </div>
+                                    @else
+                                        <div class="text-lg font-semibold text-gray-400 italic">
+
+                                        </div>
+                                    @endif
                                     <a href="{{ route('produk.show', Crypt::encrypt($ebook->id)) }}"
                                         class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90">
                                         Lihat Detail
@@ -346,9 +364,15 @@
                                 </p>
 
                                 <div class="flex justify-between items-center">
-                                    <div class="text-lg font-bold text-primary">
-                                        Rp {{ number_format($buku->harga, 0, ',', '.') }}
-                                    </div>
+                                    @if ($buku->tampil_harga == 1)
+                                        <div class="text-lg font-bold text-primary">
+                                            Rp {{ number_format($buku->harga, 0, ',', '.') }}
+                                        </div>
+                                    @else
+                                        <div class="text-lg font-semibold text-gray-400 italic">
+
+                                        </div>
+                                    @endif
                                     <div class="flex items-center gap-2">
                                         <a href="{{ route('buku.detail', Str::slug($buku->judul) . '-' . $buku->id) }}"
                                             class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">

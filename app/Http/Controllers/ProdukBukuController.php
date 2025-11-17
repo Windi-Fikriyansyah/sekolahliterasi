@@ -36,7 +36,8 @@ class ProdukBukuController extends Controller
                     'tipe_produk',
                     'status',
                     'created_at',
-                    'updated_at'
+                    'updated_at',
+                    'tampil_harga'
                 ])
                 ->where('tipe_produk', 'buku')
                 ->orderBy('created_at', 'desc');
@@ -47,7 +48,16 @@ class ProdukBukuController extends Controller
                     $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('produk_buku.destroy', $row->id);
 
+                    $statusBtn = '
+    <button class="btn btn-sm ' . ($row->status === "aktif" ? "btn-secondary" : "btn-success") . ' toggle-status-btn"
+        data-id="' . $row->id . '"
+        data-status="' . $row->status . '"
+        title="Ubah Status">
+        ' . ($row->status === "aktif" ? '<i class="bi bi-x-circle"></i>' : '<i class="bi bi-check-circle"></i>') . '
+    </button>
+';
                     $buttons = '<div class="btn-group" role="group">';
+                    $buttons .= $statusBtn;
                     $buttons .= '<a href="' . route('produk_buku.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
@@ -60,6 +70,51 @@ class ProdukBukuController extends Controller
             Log::error('Error loading kursus data: ' . $e->getMessage());
             return response()->json([
                 'error' => true,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function toggleHarga(Request $request)
+    {
+        DB::table('products')
+            ->where('id', $request->id)
+            ->update([
+                'tampil_harga' => $request->tampil_harga
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $request->tampil_harga == 1
+                ? 'Harga sekarang ditampilkan.'
+                : 'Harga sekarang disembunyikan.'
+        ]);
+    }
+
+
+    public function toggleStatus($id)
+    {
+        try {
+            $produk = DB::table('products')->where('id', $id)->first();
+
+            if (!$produk) {
+                return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan'], 404);
+            }
+
+            $newStatus = $produk->status === 'aktif' ? 'nonaktif' : 'aktif';
+
+            DB::table('products')
+                ->where('id', $id)
+                ->update(['status' => $newStatus, 'updated_at' => now()]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diubah menjadi ' . ucfirst($newStatus)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
@@ -171,6 +226,7 @@ class ProdukBukuController extends Controller
 
     public function edit($id)
     {
+
         $decryptedId = Crypt::decrypt($id);
 
         $produk = DB::table('products')
@@ -178,6 +234,7 @@ class ProdukBukuController extends Controller
             ->select('products.*', 'bukus_detail.*', 'products.id as id')
             ->where('products.id', $decryptedId)
             ->first();
+
 
         if (!$produk) {
             return redirect()->route('produk_buku.index')->with('error', 'Produk tidak ditemukan');

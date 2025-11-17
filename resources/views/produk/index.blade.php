@@ -47,6 +47,7 @@
                                 <th>Tipe Produk</th>
                                 <th>Link</th>
                                 <th>Status</th>
+                                <th>Tampilkan Harga</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
@@ -63,6 +64,49 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            background-color: #ccc;
+            border-radius: 34px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked+.slider {
+            background-color: #198754;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
         .status-badge {
             padding: 0.35em 0.65em;
             font-size: 0.75em;
@@ -137,6 +181,39 @@
                 }
             });
         });
+
+        $(document).on('change', '.toggle-harga', function() {
+            const id = $(this).data('id');
+            const checked = $(this).is(':checked');
+            const value = checked ? 1 : 2;
+
+            $.ajax({
+                url: "{{ route('produk.toggle_harga') }}",
+                type: 'POST',
+                data: {
+                    id: id,
+                    tampil_harga: value
+                },
+                success: function(res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: res.message,
+                        timer: 1200,
+                        showConfirmButton: false
+                    });
+                    $('#produk-table').DataTable().ajax.reload(null, false);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Tidak dapat mengubah status tampil harga.'
+                    });
+                }
+            });
+        });
+
 
         $(document).on('click', '.copy-btn', function() {
             const id = $(this).data('id');
@@ -255,6 +332,21 @@
                             }
                         }
                     },
+                    {
+                        data: 'tampil_harga',
+                        name: 'tampil_harga',
+                        render: function(data, type, row) {
+                            let checked = data == 1 ? 'checked' : '';
+                            return `
+        <label class="switch">
+            <input type="checkbox" class="toggle-harga" data-id="${row.id}" ${checked}>
+            <span class="slider round"></span>
+        </label>`;
+                        },
+                        orderable: false,
+                        searchable: false
+                    },
+
                     {
                         data: 'action',
                         name: 'action',
