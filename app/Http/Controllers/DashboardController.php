@@ -35,6 +35,7 @@ class DashboardController extends Controller
     }
     public function dashboardUser(Request $request)
     {
+        $content = DB::table('landing_page_sections')->first();
         $programs = DB::table('products')
             ->where('tipe_produk', 'program')
             ->where('status', 'aktif')
@@ -43,6 +44,10 @@ class DashboardController extends Controller
             ->get();
 
         $landingPage = DB::table('landing_page_sections')->first();
+        $featurespage = DB::table('landing_page_features')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
         $kelasVideo = DB::table('products')
             ->where('tipe_produk', 'kelas_video')
             ->where('status', 'aktif')
@@ -58,22 +63,10 @@ class DashboardController extends Controller
             ->get();
 
         $bukus = DB::table('products')
-            ->join('bukus_detail', 'bukus_detail.product_id', '=', 'products.id')
-            ->where('products.tipe_produk', 'buku')
-            ->where('products.status', 'aktif')
-            ->where('bukus_detail.stok', '>', 0) // stok dari tabel bukus_detail
-            ->orderBy('products.created_at', 'desc')
-            ->select('products.*', 'bukus_detail.stok') // ambil juga stok-nya
+            ->where('tipe_produk', 'buku')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
             ->limit(4)
-            ->get();
-        $content = DB::table('landing_page_sections')->first();
-        $testimonials = DB::table('landing_page_testimonials')
-            ->where('landing_page_id', $content->id ?? 1)
-            ->orderBy('order', 'asc')
-            ->get();
-        $faqs = DB::table('landing_page_faqs')
-            ->where('landing_page_id', $content->id ?? 1)
-            ->orderBy('order', 'asc')
             ->get();
         $mitras = DB::table('products')
             ->where('tipe_produk', 'mitra')
@@ -82,6 +75,15 @@ class DashboardController extends Controller
             ->limit(4)
             ->get();
 
-        return view('dashboardUser', compact('programs', 'mitras', 'landingPage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        $testimonials = DB::table('landing_page_testimonials')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+        $faqs = DB::table('landing_page_faqs')
+            ->where('landing_page_id', $content->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        return view('dashboardUser', compact('programs', 'mitras', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
     }
 }
