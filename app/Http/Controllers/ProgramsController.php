@@ -32,7 +32,7 @@ class ProgramsController extends Controller
     {
         try {
             $kursus = DB::table('products')
-                ->select(['id', 'judul', 'tipe_produk', 'thumbnail', 'status', 'created_at'])
+                ->select(['id', 'judul', 'tipe_produk', 'thumbnail', 'status', 'created_at', 'link_formulir'])
                 ->where('status', 'aktif')
                 ->where('tipe_produk', 'program')
                 ->orderBy('created_at', 'desc');
@@ -69,6 +69,14 @@ class ProgramsController extends Controller
                 </a>
             </li>
 
+            <li>
+            <button class="dropdown-item input-link"
+                data-id="' . $row->id . '"
+                data-link="' . ($row->link_formulir ? e($row->link_formulir) : '') . '">
+                <i class="bi bi-link-45deg me-2"></i> Link Formulir
+            </button>
+        </li>
+
         </ul>
     </div>';
                 })
@@ -82,6 +90,24 @@ class ProgramsController extends Controller
             ], 500);
         }
     }
+
+    public function saveLink(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'link_formulir' => 'required|string'
+        ]);
+
+        DB::table('products')
+            ->where('id', $request->id)
+            ->update(['link_formulir' => $request->link_formulir]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Link formulir berhasil disimpan!'
+        ]);
+    }
+
 
     public function pdf($id)
     {

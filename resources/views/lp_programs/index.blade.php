@@ -64,6 +64,35 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Modal Input Link -->
+    <div class="modal fade" id="linkModal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="linkModalLabel">Input / Update Link Formulir</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="programId">
+
+                    <div class="mb-3">
+                        <label class="form-label">Link Formulir</label>
+                        <input type="text" id="linkFormulir" class="form-control"
+                            placeholder="Masukkan link Google Form / lainnya">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button class="btn btn-primary" id="saveLinkBtn">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('style')
@@ -104,6 +133,46 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
+        $(document).on("click", ".input-link", function() {
+            const id = $(this).data("id");
+            const link = $(this).data("link");
+
+            $("#programId").val(id);
+            $("#linkFormulir").val(link);
+
+            $("#linkModal").modal("show");
+        });
+
+
+        // Simpan / Update link
+        $("#saveLinkBtn").on("click", function() {
+
+            let id = $("#programId").val();
+            let link = $("#linkFormulir").val();
+
+            if (link.trim() === "") {
+                Swal.fire("Gagal", "Link tidak boleh kosong", "warning");
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('lp_programs.saveLink') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    link_formulir: link
+                },
+                success: function(res) {
+                    Swal.fire("Sukses", res.message, "success");
+                    $("#linkModal").modal("hide");
+                    $("#materi-table").DataTable().ajax.reload();
+                },
+                error: function(err) {
+                    Swal.fire("Error", "Terjadi kesalahan", "error");
+                }
+            });
+
+        });
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {

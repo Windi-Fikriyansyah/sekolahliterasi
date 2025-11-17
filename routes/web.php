@@ -189,6 +189,8 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
             ->name('store');
         Route::post('/pdf/save', [ProgramsController::class, 'savePdf'])
             ->name('save_pdf');
+        Route::post('/save-link', [ProgramsController::class, 'saveLink'])
+            ->name('saveLink');
     });
 
     Route::prefix('lp_mitra')->name('lp_mitra.')->group(function () {
