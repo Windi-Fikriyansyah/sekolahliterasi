@@ -28,8 +28,7 @@
                                     <th class="py-3 px-4 text-left font-semibold">#</th>
                                     <th class="py-3 px-4 text-left font-semibold">Nama Program</th>
                                     <th class="py-3 px-4 text-left font-semibold">Jenis Program</th>
-                                    <th class="py-3 px-4 text-left font-semibold">Tanggal Pendaftaran</th>
-                                    <th class="py-3 px-4 text-left font-semibold">Status</th>
+                                    <th class="py-3 px-4 text-left font-semibold">Status Pembayaran</th>
                                     <th class="py-3 px-4 text-center font-semibold">Aksi</th>
                                 </tr>
                             </thead>
@@ -40,22 +39,20 @@
                                         <td class="py-3 px-4">{{ $no++ }}</td>
                                         <td class="py-3 px-4 font-semibold text-gray-900">{{ $program->judul }}</td>
                                         <td class="py-3 px-4 capitalize text-gray-700">{{ $program->jenis_program }}</td>
-                                        <td class="py-3 px-4 text-gray-700">
-                                            {{ \Carbon\Carbon::parse($program->created_at)->format('d M Y') }}
-                                        </td>
+
                                         <td class="py-3 px-4">
                                             @php
-                                                $status = strtolower($program->status_pendaftaran);
+                                                $status = $program->status;
                                                 $color = match ($status) {
-                                                    'pending' => 'bg-yellow-100 text-yellow-700',
-                                                    'paid' => 'bg-green-100 text-green-700',
-                                                    'expired' => 'bg-red-100 text-red-700',
+                                                    'PENDING' => 'bg-yellow-100 text-yellow-700',
+                                                    'PAID' => 'bg-green-100 text-green-700',
+                                                    'EXPIRED' => 'bg-red-100 text-red-700',
                                                     default => 'bg-gray-100 text-gray-600',
                                                 };
                                                 $label = match ($status) {
-                                                    'pending' => 'Belum Bayar',
-                                                    'paid' => 'Lunas',
-                                                    'expired' => 'Kadaluarsa',
+                                                    'PENDING' => 'PENDING',
+                                                    'PAID' => 'PAID',
+                                                    'EXPIRED' => 'EXPIRED',
                                                     default => ucfirst($status),
                                                 };
                                             @endphp
@@ -65,7 +62,7 @@
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <div class="flex justify-center gap-2">
-                                                @if ($program->status_pendaftaran === 'pending')
+                                                @if ($program->status === 'PENDING' && $program->payment_type === 'auto')
                                                     <a href="{{ route('payment.index', Crypt::encrypt($program->product_id)) }}"
                                                         class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg text-xs font-medium transition">
                                                         <i class="fa-solid fa-wallet mr-1"></i> Bayar

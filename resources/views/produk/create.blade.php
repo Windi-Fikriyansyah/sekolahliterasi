@@ -79,6 +79,40 @@
                                 </div>
                             </div>
 
+                            {{-- Pilih Formulir (khusus program) --}}
+                            <div class="row mb-3" id="formulir_group" style="display:none;">
+                                <label class="col-sm-2 col-form-label">Pilih Formulir</label>
+                                <div class="col-sm-10">
+                                    <select name="form_id" id="form_id" class="form-control">
+                                        <option value="">-- Pilih Formulir --</option>
+                                        @foreach ($forms as $form)
+                                            <option value="{{ $form->id }}"
+                                                {{ old('form_id', $produk->form_id ?? '') == $form->id ? 'selected' : '' }}>
+                                                {{ $form->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{-- Metode Pembayaran --}}
+                            <div class="row mb-3" id="payment_group" style="display:none;">
+                                <label class="col-sm-2 col-form-label">Metode Pembayaran</label>
+                                <div class="col-sm-10">
+                                    <select name="payment_type" id="payment_type" class="form-control">
+                                        <option value="">-- Pilih Metode --</option>
+                                        <option value="manual"
+                                            {{ old('payment_type', $produk->payment_type ?? '') == 'manual' ? 'selected' : '' }}>
+                                            Manual
+                                        </option>
+                                        <option value="auto"
+                                            {{ old('payment_type', $produk->payment_type ?? '') == 'auto' ? 'selected' : '' }}>
+                                            Otomatis
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
 
                             {{-- Deskripsi --}}
                             <div class="row mb-3">
@@ -389,22 +423,30 @@
 
 
         });
-
-        // Tampilkan input "Jenis Program" jika tipe produk = program
-        const tipeProduk = document.getElementById("tipe_produk");
+    </script>
+    <script>
+        const tipeProdukInput = document.getElementById("tipe_produk");
         const jenisProgramGroup = document.getElementById("jenis_program_group");
+        const formulirGroup = document.getElementById("formulir_group");
+        const paymentGroup = document.getElementById("payment_group");
 
-        function toggleJenisProgram() {
-            if (tipeProduk.value === "program") {
+        function toggleProgramFields() {
+            if (tipeProdukInput.value === "program") {
                 jenisProgramGroup.style.display = "flex";
+                formulirGroup.style.display = "flex";
+                paymentGroup.style.display = "flex";
             } else {
                 jenisProgramGroup.style.display = "none";
+                formulirGroup.style.display = "none";
+                paymentGroup.style.display = "none";
+
                 document.getElementById("jenis_program").value = "";
+                document.getElementById("form_id").value = "";
+                document.getElementById("payment_type").value = "";
             }
         }
 
-        // Jalankan saat halaman dimuat dan saat berubah
-        toggleJenisProgram();
-        tipeProduk.addEventListener("change", toggleJenisProgram);
+        toggleProgramFields();
+        tipeProdukInput.addEventListener("change", toggleProgramFields);
     </script>
 @endpush

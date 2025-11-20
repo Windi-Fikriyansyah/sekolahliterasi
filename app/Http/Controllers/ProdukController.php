@@ -392,8 +392,8 @@ class ProdukController extends Controller
 
     public function create()
     {
-
-        return view('produk.create');
+        $forms = DB::table('forms')->orderBy('title')->get();
+        return view('produk.create', compact('forms'));
     }
 
 
@@ -446,6 +446,8 @@ class ProdukController extends Controller
                 'tipe_produk' => $request->tipe_produk,
                 'thumbnail' => $thumbnailPath,
                 'jenis_program' => $request->jenis_program ?? null,
+                'form_id' => $request->form_id,
+                'payment_type' => $request->payment_type,
                 'status' => $request->status,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -463,11 +465,12 @@ class ProdukController extends Controller
     {
         $decryptedId = Crypt::decrypt($id);
         $produk = DB::table('products')->where('id', $decryptedId)->first();
+        $forms = DB::table('forms')->orderBy('title')->get();
         if (!$produk) {
             return redirect()->route('produk.index')->with('error', 'Produk tidak ditemukan');
         }
 
-        return view('produk.create', compact('produk'));
+        return view('produk.create', compact('produk', 'forms'));
     }
 
     public function update(Request $request, $id)
@@ -500,6 +503,8 @@ class ProdukController extends Controller
                 'harga' => $request->harga,
                 'tipe_produk' => $request->tipe_produk,
                 'jenis_program' => $request->jenis_program ?? null,
+                'form_id' => $request->form_id,
+                'payment_type' => $request->payment_type,
                 'status' => $request->status,
                 'updated_at' => now(),
             ];

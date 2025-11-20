@@ -33,11 +33,10 @@ class ProgramController extends Controller
                 'pendaftaran_program.*',
                 'products.id as product_id',
                 'products.judul',
+                'products.payment_type',
                 'products.jenis_program',
                 'products.status as status_program'
             )
-            ->where('products.jenis_program', 'sekolah')
-            ->where('products.status', 'aktif')
             ->where('pendaftaran_program.user_id', Auth::id())
             ->orderBy('pendaftaran_program.created_at', 'desc')
             ->get()
@@ -54,18 +53,26 @@ class ProgramController extends Controller
 
     public function daftar($slug)
     {
-        try {
+        $product = DB::table('products')->where('slug', $slug)->first();
 
-            [$judulSlug, $encryptedId] = explode('--', $slug);
-
-            // Dekripsi ID
-            $product_id = Crypt::decryptString($encryptedId);
-        } catch (\Exception $e) {
-            abort(404, 'Link tidak valid');
+        if (!$product) {
+            abort(404, 'Produk tidak ditemukan');
         }
-        $product = DB::table('products')->where('id', $product_id)->first();
 
-        return view('landing_page.daftar', compact('product'));
+        // Ambil formulir berdasarkan product->form_id
+        $form = DB::table('forms')->where('id', $product->form_id)->first();
+
+        if (!$form) {
+            abort(404, 'Formulir tidak ditemukan');
+        }
+
+        // Ambil field dari form_fields
+        $formFields = DB::table('form_fields')
+            ->where('form_id', $form->id)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        return view('landing_page.daftar', compact('product', 'form', 'formFields'));
     }
 
     public function getProvinsi()
@@ -111,6 +118,7 @@ class ProgramController extends Controller
             abort(404, 'Landing page tidak ditemukan untuk produk ini');
         }
 
+        $slugDaftar = $product->slug;
         // Ambil seluruh PDF/VIDEO BERDASARKAN URUTAN
         $programs = DB::table('lp_program_pdfs')
             ->where('id_program', $product->id)
@@ -120,51 +128,100 @@ class ProgramController extends Controller
         return view('landing_page.index', [
             'product' => $product,
             'landing' => $landing,
-            'programs' => $programs
+            'programs' => $programs,
+            'slugDaftar' => $slugDaftar
         ]);
     }
 
     public function store(Request $request)
     {
+        // Ambil produk
+        $product = DB::table('products')->where('id', $request->id_product)->first();
 
-        $validated = $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'asal_instansi' => 'required|string|max:255',
-            'profesi' => 'required|string|max:255',
-            'kota' => 'required|string|max:100',
-            'provinsi' => 'required|string|max:100',
-            'no_wa' => 'required|string|max:20',
-            'foto' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'alamat' => 'required|string|max:500',
-        ]);
+        if (!$product) {
+            return back()->with('error', 'Produk tidak ditemukan');
+        }
 
-        // Simpan file foto
-        $path = $request->file('foto')->store('uploads/foto_pendaftar', 'public');
+        // Ambil semua field dari form
+        $formFields = DB::table('form_fields')
+            ->where('form_id', $request->form_id)
+            ->get();
+
+        $savedValues = []; // tempat menyimpan hasil input
+
+        foreach ($formFields as $field) {
+
+            $fieldName = "fields_" . $field->id;
+
+            // Jika file
+            if ($field->type == 'file') {
+                if ($request->hasFile("fields.$field->id")) {
+                    $file = $request->file("fields.$field->id");
+                    $path = $file->store('uploads/form_files', 'public');
+                    $savedValues[$field->label] = $path;
+                } else {
+                    $savedValues[$field->label] = null;
+                }
+                continue;
+            }
+
+            // Checkbox (array)
+            if ($field->type == 'checkbox') {
+                $savedValues[$field->label] = $request->input("fields.$field->id", []);
+                continue;
+            }
+
+            // Field umum
+            $savedValues[$field->label] = $request->input("fields.$field->id");
+        }
 
         // Simpan ke database
         DB::table('pendaftaran_program')->insert([
-            'user_id' => Auth::id(),
+            'user_id'    => Auth::id(),
             'id_product' => $request->id_product,
-            'nama_lengkap' => $validated['nama_lengkap'],
-            'asal_instansi' => $validated['asal_instansi'],
-            'profesi' => $validated['profesi'],
-            'kota' => $validated['kota'],
-            'provinsi' => $validated['provinsi'],
-            'no_wa' => $validated['no_wa'],
-            'foto' => $path,
-            'alamat' => $validated['alamat'],
+            'form_id'    => $request->form_id,
+            'value'      => json_encode($savedValues),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $product = DB::table('products')->where('id', $request->id_product)->first();
+        if ($product->payment_type === 'manual') {
 
-        // Enkripsi id produk agar aman untuk dikirim ke route pembayaran
+            $user = Auth::user();
+
+            // Generate ID unik
+            $externalId = 'MAN-PROGRAM-' . $user->id . '-' . time();
+            $invoiceId  = 'INV-MAN-' . time();
+
+
+
+            // Insert transaksi manual
+            DB::table('transactions')->insert([
+                'external_id'      => $externalId,
+                'invoice_id'       => $invoiceId,
+                'user_id'          => $user->id,
+                'product_id'       => $product->id,
+                'amount'           => $product->harga ?? 0,
+                'status'           => 'PENDING',
+                'payment_method'   => 'manual',
+                'payment_channel'  => 'manual',
+                'paid_at'          => now(),
+                'expired_at'       => null,
+                'tripay_data'      => null,
+
+                'created_at'          => now(),
+                'updated_at'          => now(),
+            ]);
+
+            return redirect()->route('pendaftaran.sukses');
+        }
+
+
+        // Jika auto → redirect ke halaman pemilihan channel pembayaran
         $encryptedId = \Illuminate\Support\Facades\Crypt::encrypt($product->id);
-
-        // Redirect ke halaman pemilihan channel pembayaran
         return redirect()->route('payment.index', $encryptedId);
     }
+
 
     public function storesekolah(Request $request)
     {

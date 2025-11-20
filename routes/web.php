@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\BuatFormController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DashboardController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\MitraController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PesananMasukController;
+use App\Http\Controllers\PesananProgramController;
 use App\Http\Controllers\ProdukBukuController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
@@ -83,6 +85,13 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::get('/', [PesananMasukController::class, 'index'])->name('index');
         Route::post('/load', [PesananMasukController::class, 'load'])->name('load');
         Route::post('/kirim/{id}', [PesananMasukController::class, 'kirim'])->name('kirim');
+    });
+    Route::prefix('pesanan_program')->name('pesanan_program.')->group(function () {
+        Route::get('/', [PesananProgramController::class, 'index'])->name('index');
+        Route::post('/load', [PesananProgramController::class, 'load'])->name('load');
+        Route::post('/kirim/{id}', [PesananProgramController::class, 'kirim'])->name('kirim');
+        Route::post('/konfirmasi/{id}', [PesananProgramController::class, 'konfirmasi'])
+            ->name('konfirmasi');
     });
 
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -204,6 +213,17 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::post('/upload-pdf', [MitraController::class, 'uploadPdf'])->name('upload_pdf');
     });
 
+    Route::prefix('buat_form')->name('buat_form.')->group(function () {
+        Route::get('/', [BuatFormController::class, 'index'])->name('index');
+        Route::post('/load', [BuatFormController::class, 'load'])->name('load');
+        Route::get('/create', [BuatFormController::class, 'create'])->name('create');
+        Route::post('/store', [BuatFormController::class, 'store'])->name('store');
+        Route::put('/{id}', [BuatFormController::class, 'update'])->name('update');
+        Route::get('/{id}/edit', [BuatFormController::class, 'edit'])->name('edit');
+        Route::delete('/{id}', [BuatFormController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/fields', [BuatFormController::class, 'fields'])->name('fields');
+    });
+
     Route::prefix('withdraw')->name('withdraw.')->group(function () {
         Route::get('/', [WithdrawController::class, 'index'])->name('index');
         Route::post('/load', [WithdrawController::class, 'load'])->name('load');
@@ -215,6 +235,10 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
 
 
+Route::get('/pendaftaran/sukses', function () {
+    return view('landing_page.sukses');
+})->name('pendaftaran.sukses');
+
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/pembayaran-program', [ProgramController::class, 'pembayaran'])->name('pembayaran_program_sekolah.index');
@@ -222,6 +246,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/pendaftaran-program/{slug}', [ProgramController::class, 'daftarProgram'])->name('landing_page.pendaftaran_program');
     Route::post('/pendaftaran', [ProgramController::class, 'store'])->name('pendaftaran.store');
     Route::post('/pendaftaran-program', [ProgramController::class, 'storesekolah'])->name('pendaftaranSekolah.store');
+
+
     Route::get('/api/provinsi', [ProgramController::class, 'getProvinsi']);
     Route::get('/api/kota/{kode}', [ProgramController::class, 'getKota']);
 

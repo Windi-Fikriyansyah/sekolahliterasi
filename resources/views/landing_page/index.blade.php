@@ -123,9 +123,10 @@
     @endforeach
 
     <!-- Tombol WhatsApp bawah -->
-    <a class="whatsapp-bar" href="{{ $product->link_formulir ?? '' }}" target="_blank" rel="noopener">
+    <a class="whatsapp-bar" href="{{ route('landing_page.pendaftaran', $slugDaftar) }}">
         DAFTAR SEKARANG
     </a>
+
 
 
 
