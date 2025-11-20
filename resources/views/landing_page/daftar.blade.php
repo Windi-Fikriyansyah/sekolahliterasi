@@ -183,7 +183,25 @@
         body {
             min-height: max(884px, 100dvh);
         }
+
+        .ql-align-center {
+            text-align: center;
+        }
+
+        .ql-align-right {
+            text-align: right;
+        }
+
+        .ql-align-justify {
+            text-align: justify;
+        }
+
+        .ql-align-left {
+            text-align: left;
+        }
     </style>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
@@ -193,15 +211,23 @@
             <h1 class="text-2xl font-bold text-center mb-2">{{ $form->title }}</h1>
 
             @if ($form->description)
-                <div class="text-center text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    <span id="desc-short" class="block"></span>
-                    <span id="desc-full" class="hidden"></span>
+                <div class="text-sm text-gray-700 dark:text-gray-300 mb-4 prose max-w-none">
 
-                    <button id="toggle-desc" class="mt-2 text-primary font-semibold hover:underline text-sm">
+                    <!-- SHORT VERSION -->
+                    <div id="desc-short"></div>
+
+                    <!-- FULL VERSION (disembunyikan) -->
+                    <div id="desc-full" class="hidden"></div>
+
+                    <!-- TOGGLE BUTTON -->
+                    <button id="toggle-desc"
+                        class="mt-2 text-blue-600 dark:text-blue-400 text-sm font-medium underline">
                         Lihat selengkapnya
                     </button>
+
                 </div>
             @endif
+
 
 
             <form action="{{ route('pendaftaran.store') }}" method="POST" enctype="multipart/form-data"
@@ -361,22 +387,32 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const fullText = `{!! nl2br(e($form->description)) !!}`;
-            const maxLength = 120; // jumlah huruf sebelum dipotong
+            const fullText = `{!! str_replace("\n", '', $form->description) !!}`;
+            const maxLength = 150;
 
             const shortEl = document.getElementById("desc-short");
             const fullEl = document.getElementById("desc-full");
             const toggleBtn = document.getElementById("toggle-desc");
 
-            // Jika panjang deskripsi kurang dari maxLength, tampilkan full langsung
-            if (fullText.length <= maxLength) {
+            if (!shortEl || !fullEl || !toggleBtn) return;
+
+            // Hilangkan tag HTML untuk menghitung panjang murni
+            const plainText = fullText.replace(/<[^>]+>/g, '').trim();
+
+            // Jika deskripsi pendek, tampilkan langsung
+            if (plainText.length <= maxLength) {
                 shortEl.innerHTML = fullText;
                 toggleBtn.classList.add("hidden");
                 return;
             }
 
-            // Deskripsi pendek
-            shortEl.innerHTML = fullText.substring(0, maxLength) + "...";
+            // Buat ringkasan
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = fullText;
+
+            const shortText = tempDiv.textContent.substring(0, maxLength) + "...";
+
+            shortEl.innerHTML = shortText;
             fullEl.innerHTML = fullText;
 
             let expanded = false;
@@ -396,6 +432,7 @@
             });
         });
     </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {

@@ -13,7 +13,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form
+                        <form id="mainForm"
                             action="{{ isset($formulir) ? route('buat_form.update', $formulir->id) : route('buat_form.store') }}"
                             method="POST">
                             @csrf
@@ -30,13 +30,20 @@
                                 </div>
                             </div>
 
-                            <!-- Description -->
                             <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label">Deskripsi</label>
+                                <label class="col-sm-2 col-form-label" for="deskripsi">Deskripsi</label>
                                 <div class="col-sm-10">
-                                    <textarea id="description" name="description" class="form-control" rows="3">{{ old('description', $formulir->description ?? '') }}</textarea>
+                                    <div id="quillEditor" style="height: 250px;">
+                                        {!! old('description', $formulir->description ?? '') !!}
+                                    </div>
+                                    <textarea name="description" id="description" class="d-none"></textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
+
+
 
 
                             <!-- Button Tambah Field -->
@@ -166,14 +173,70 @@
     </div>
 
 @endsection
+@push('style')
+    <link href="{{ asset('template/dist/assets/libs/quill/quill.core.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('template/dist/assets/libs/quill/quill.bubble.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('template/dist/assets/libs/quill/quill.snow.css') }}" rel="stylesheet" type="text/css" />
+@endpush
 
 @push('js')
+    <script src="{{ asset('template/dist/assets/libs/quill/quill.min.js') }}"></script>
     <script>
-        let fieldIndex = 0;
+        let fieldIndex = {{ isset($formFields) ? count($formFields) : 0 }};
+        let quill;
 
         document.addEventListener("DOMContentLoaded", function() {
-            fieldIndex = {{ isset($formFields) ? count($formFields) : 0 }};
+
+            // ============================
+            //  INIT QUILL
+            // ============================
+            quill = new Quill("#quillEditor", {
+                theme: "snow",
+                modules: {
+                    toolbar: [
+                        [{
+                            'font': []
+                        }, {
+                            'size': []
+                        }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{
+                            'color': []
+                        }, {
+                            'background': []
+                        }],
+                        [{
+                            'script': 'super'
+                        }, {
+                            'script': 'sub'
+                        }],
+                        [{
+                            'header': [1, 2, 3, 4, 5, 6, false]
+                        }, 'blockquote', 'code-block'],
+                        [{
+                            'list': 'ordered'
+                        }, {
+                            'list': 'bullet'
+                        }, {
+                            'indent': '-1'
+                        }, {
+                            'indent': '+1'
+                        }],
+                        ['direction', {
+                            'align': []
+                        }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            document.querySelector("#mainForm").addEventListener("submit", function() {
+                document.querySelector("#description").value = quill.root.innerHTML;
+            });
+
         });
+
         // Show options input only for select/checkbox
         $("#fieldType").on("change", function() {
             const val = $(this).val();

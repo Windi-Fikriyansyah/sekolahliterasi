@@ -73,6 +73,7 @@ class BuatFormController extends Controller
 
     public function store(Request $request)
     {
+
         // Validasi minimal
         $request->validate([
             'title' => 'required|string|max:255',
@@ -134,6 +135,7 @@ class BuatFormController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable',
