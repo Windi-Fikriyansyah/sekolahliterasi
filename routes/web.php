@@ -27,6 +27,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\TryoutController;
+use App\Http\Controllers\user\BookmasterpieceController;
 use App\Http\Controllers\user\BukuController;
 use App\Http\Controllers\user\EbookController;
 use App\Http\Controllers\user\KelasVideoController;
@@ -44,6 +45,7 @@ Route::get('/Buku', [BukuController::class, 'index'])->name('buku');
 Route::get('/Kumpulan-Kemitraan', [MitraController::class, 'halaman_mitra'])->name('kumpulan.kemitraan');
 Route::get('/Kelas-Video', [KelasVideoController::class, 'index'])->name('kelasvideo');
 Route::get('/Tentang-Kami', [DashboardController::class, 'tentang'])->name('tentang-kami');
+Route::get('/Book-Masterpiece-AI', [BookmasterpieceController::class, 'index'])->name('book-masterpiece');
 
 
 

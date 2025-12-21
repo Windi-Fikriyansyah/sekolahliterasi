@@ -6,8 +6,9 @@
     <section class="relative bg-gradient-to-r from-secondary to-primary py-20">
         <div class="container mx-auto px-4">
             <div class="text-center text-white animate-fade-in-up">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6">Kumpulan Kemitraan</h1>
-                <p class="text-xl md:text-2xl mb-8 opacity-90">Temukan Kemitraan terbaru untuk meningkatkan skill dan karir
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">Book Masterpiece AI</h1>
+                <p class="text-xl md:text-2xl mb-8 opacity-90">Temukan Book Masterpiece AI terbaru untuk meningkatkan skill
+                    dan karir
                     Anda
                 </p>
             </div>
@@ -31,7 +32,7 @@
 
             <!-- Programs Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach ($mitras as $mitra)
+                @foreach ($book_masterpieces as $mitra)
                     <div
                         class="program-card group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
 
@@ -54,7 +55,7 @@
                             </div>
 
                             <div class="flex justify-end">
-                                <a href="{{ route('kemitraan', ['slug' => $mitra->slug]) }}" target="_blank"
+                                <a href="http://bookmasterpiece.sekolahliterasi.com" target="_blank"
                                     class="bg-secondary text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-secondary/90 transition-all duration-300 shadow-md">
                                     Detail
                                 </a>

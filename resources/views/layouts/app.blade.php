@@ -244,6 +244,9 @@
                         <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
                         <a href="{{ route('kumpulan.kemitraan') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kemitraan</a>
+                        <a href="{{ route('book-masterpiece') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Book
+                            Masterpiece AI</a>
 
                     </div>
                 </div>
@@ -401,6 +404,8 @@
                         <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
                         <a href="{{ route('kumpulan.kemitraan') }}"
                             class="text-gray-700 hover:text-secondary">Kemitraan</a>
+                        <a href="{{ route('book-masterpiece') }}" class="text-gray-700 hover:text-secondary">Book
+                            Masterpiece AI</a>
                     </div>
                 </div>
 
