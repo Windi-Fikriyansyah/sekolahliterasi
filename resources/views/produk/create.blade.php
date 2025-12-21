@@ -52,6 +52,11 @@
                                         <option value="mitra"
                                             {{ old('tipe_produk', $produk->tipe_produk ?? '') == 'mitra' ? 'selected' : '' }}>
                                             Kemitraan</option>
+                                        <option value="book_masterpiece"
+                                            {{ old('tipe_produk', $produk->tipe_produk ?? '') == 'book_masterpiece' ? 'selected' : '' }}>
+                                            Book Masterpiece
+                                        </option>
+
                                     </select>
                                     @error('tipe_produk')
                                         <div class="invalid-feedback">{{ $message }}</div>

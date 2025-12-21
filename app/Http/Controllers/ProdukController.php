@@ -40,7 +40,7 @@ class ProdukController extends Controller
                     'updated_at',
                     'tampil_harga'
                 ])
-                ->whereIn('tipe_produk', ['ebook', 'kelas_video', 'program', 'mitra'])
+                ->whereIn('tipe_produk', ['ebook', 'kelas_video', 'program', 'mitra', 'book_masterpiece'])
                 ->orderBy('created_at', 'desc');
 
             return DataTables::of($kursus)
@@ -404,7 +404,7 @@ class ProdukController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program,mitra',
+            'tipe_produk' => 'required|in:ebook,book_masterpiece,buku,kelas_video,program,mitra',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'harga' => $request->tipe_produk === 'mitra'
                 ? 'nullable|numeric|min:0'
@@ -479,7 +479,7 @@ class ProdukController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'tipe_produk' => 'required|in:ebook,buku,kelas_video,program,mitra',
+            'tipe_produk' => 'required|in:ebook,book_masterpiece,buku,kelas_video,program,mitra',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'harga' => $request->tipe_produk === 'mitra'
                 ? 'nullable|numeric|min:0'
@@ -564,6 +564,13 @@ class ProdukController extends Controller
             ->limit(4)
             ->get();
 
+        $book_masterpiece = DB::table('products')
+            ->where('tipe_produk', 'book_masterpiece')
+            ->where('status', 'aktif')
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
         $bukus = DB::table('products')
             ->where('tipe_produk', 'buku')
             ->where('status', 'aktif')
@@ -586,7 +593,7 @@ class ProdukController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
-        return view('welcome', compact('programs', 'mitras', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs'));
+        return view('welcome', compact('programs', 'mitras', 'landingPage', 'featurespage', 'kelasVideo', 'ebooks', 'bukus', 'content', 'testimonials', 'faqs', 'book_masterpiece'));
     }
     public function course()
     {
