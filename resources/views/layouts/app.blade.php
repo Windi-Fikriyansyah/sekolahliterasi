@@ -235,23 +235,47 @@
 
                     <div id="product-dropdown"
                         class="hidden absolute bg-white border border-gray-200 rounded-lg shadow-lg mt-2 w-48 z-50 transition-all duration-300 origin-top opacity-0 scale-95">
-                        <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
-                        <a href="{{ route('ebook') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">E-Book</a>
-                        <a href="{{ route('program') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Program</a>
-                        <a href="{{ route('book-masterpiece') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Book
-                            Masterpiece AI</a>
-                        <a href="{{ route('kelasvideo') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kelas Video</a>
 
+                        @if ($landingPage->show_menu_buku ?? 1)
+                            <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_buku ?? 'Buku' }}
+                            </a>
+                        @endif
 
-                        <a href="{{ route('kumpulan.kemitraan') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kemitraan</a>
+                        @if ($landingPage->show_menu_ebook ?? 1)
+                            <a href="{{ route('ebook') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_ebook ?? 'E-Book' }}
+                            </a>
+                        @endif
 
+                        @if ($landingPage->show_menu_program ?? 1)
+                            <a href="{{ route('program') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_program ?? 'Program' }}
+                            </a>
+                        @endif
 
+                        @if ($landingPage->show_menu_book_masterpiece ?? 1)
+                            <a href="{{ route('book-masterpiece') }}"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_book_masterpiece ?? 'Book Masterpiece AI' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_kelasvideo ?? 1)
+                            <a href="{{ route('kelasvideo') }}"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_kelasvideo ?? 'Kelas Video' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_kemitraan ?? 1)
+                            <a href="{{ route('kumpulan.kemitraan') }}"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                {{ $landingPage->menu_kemitraan ?? 'Kemitraan' }}
+                            </a>
+                        @endif
                     </div>
+
                 </div>
                 @guest
                     <a href="#tentang-kami" class="text-gray-700 hover:text-secondary font-medium relative group">
@@ -400,19 +424,45 @@
                     </button>
                     <div id="mobile-product-dropdown"
                         class="hidden flex flex-col ml-4 mt-2 space-y-2 transition-all duration-300">
-                        <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
-                        <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
-                        <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary">Program</a>
-                        <a href="{{ route('book-masterpiece') }}" class="text-gray-700 hover:text-secondary">Book
-                            Masterpiece AI</a>
-                        <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">Kelas
-                            Video</a>
 
+                        @if ($landingPage->show_menu_buku ?? 1)
+                            <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_buku ?? 'Buku' }}
+                            </a>
+                        @endif
 
-                        <a href="{{ route('kumpulan.kemitraan') }}"
-                            class="text-gray-700 hover:text-secondary">Kemitraan</a>
+                        @if ($landingPage->show_menu_ebook ?? 1)
+                            <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_ebook ?? 'E-Book' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_program ?? 1)
+                            <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_program ?? 'Program' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_book_masterpiece ?? 1)
+                            <a href="{{ route('book-masterpiece') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_book_masterpiece ?? 'Book Masterpiece AI' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_kelasvideo ?? 1)
+                            <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_kelasvideo ?? 'Kelas Video' }}
+                            </a>
+                        @endif
+
+                        @if ($landingPage->show_menu_kemitraan ?? 1)
+                            <a href="{{ route('kumpulan.kemitraan') }}" class="text-gray-700 hover:text-secondary">
+                                {{ $landingPage->menu_kemitraan ?? 'Kemitraan' }}
+                            </a>
+                        @endif
 
                     </div>
+
                 </div>
 
 
@@ -452,7 +502,7 @@
                 <!-- Company Info -->
                 <div class="animate-fade-in-up">
                     <img src="{{ asset('image/logo1.png') }}" alt="EduCourse Logo"
-                        class="h-14 w-auto object-contain mb-4 transform transition-transform duration-300 hover:scale-105">
+                        class="h-20 w-auto object-contain mb-4 transform transition-transform duration-300 hover:scale-105">
 
                     <p class="mb-4">{{ $landingFooter->footer_description ?? '' }}</p>
 

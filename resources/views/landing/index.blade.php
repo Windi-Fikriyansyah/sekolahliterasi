@@ -288,6 +288,112 @@
                                                 @enderror
                                             </div>
                                         </div>
+
+                                        <hr class="my-4">
+                                        <h6 class="mb-3 text-primary">Pengaturan Menu Dropdown Product</h6>
+
+                                        {{-- MENU BUKU --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu Buku</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_buku" class="form-control"
+                                                    value="{{ old('menu_buku', $landing->menu_buku ?? 'Buku') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" name="show_menu_buku"
+                                                        value="1"
+                                                        {{ old('show_menu_buku', $landing->show_menu_buku ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- MENU EBOOK --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu E-Book</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_ebook" class="form-control"
+                                                    value="{{ old('menu_ebook', $landing->menu_ebook ?? 'E-Book') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="show_menu_ebook" value="1"
+                                                        {{ old('show_menu_ebook', $landing->show_menu_ebook ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- MENU PROGRAM --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu Program</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_program" class="form-control"
+                                                    value="{{ old('menu_program', $landing->menu_program ?? 'Program') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="show_menu_program" value="1"
+                                                        {{ old('show_menu_program', $landing->show_menu_program ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- MENU BOOK MASTERPIECE --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu Book Masterpiece</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_book_masterpiece" class="form-control"
+                                                    value="{{ old('menu_book_masterpiece', $landing->menu_book_masterpiece ?? 'Book Masterpiece AI') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="show_menu_book_masterpiece" value="1"
+                                                        {{ old('show_menu_book_masterpiece', $landing->show_menu_book_masterpiece ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- MENU KELAS VIDEO --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu Kelas Video</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_kelasvideo" class="form-control"
+                                                    value="{{ old('menu_kelasvideo', $landing->menu_kelasvideo ?? 'Kelas Video') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="show_menu_kelasvideo" value="1"
+                                                        {{ old('show_menu_kelasvideo', $landing->show_menu_kelasvideo ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- MENU KEMITRAAN --}}
+                                        <div class="row mb-3 align-items-center">
+                                            <label class="col-sm-2 col-form-label">Menu Kemitraan</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" name="menu_kemitraan" class="form-control"
+                                                    value="{{ old('menu_kemitraan', $landing->menu_kemitraan ?? 'Kemitraan') }}" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="show_menu_kemitraan" value="1"
+                                                        {{ old('show_menu_kemitraan', $landing->show_menu_kemitraan ?? 1) ? 'checked' : '' }}>
+                                                    <label class="form-check-label">Tampilkan</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 

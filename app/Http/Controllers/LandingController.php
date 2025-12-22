@@ -56,6 +56,18 @@ class LandingController extends Controller
             // Handle file uploads
             $data = $request->except(['_token', '_method', 'features', 'testimonials', 'faqs', 'how_to_join_steps', 'how_to_join_image']);
 
+            $menuShowFields = [
+                'show_menu_buku',
+                'show_menu_ebook',
+                'show_menu_program',
+                'show_menu_book_masterpiece',
+                'show_menu_kelasvideo',
+                'show_menu_kemitraan',
+            ];
+
+            foreach ($menuShowFields as $field) {
+                $data[$field] = $request->boolean($field) ? 1 : 0;
+            }
             // Process image uploads
             $imageFields = [
                 'hero_image_1',
@@ -64,6 +76,7 @@ class LandingController extends Controller
                 'about_image',
                 'how_to_join_image'
             ];
+
 
             foreach ($imageFields as $field) {
                 if ($request->hasFile($field)) {
