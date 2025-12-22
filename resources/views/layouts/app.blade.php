@@ -235,18 +235,21 @@
 
                     <div id="product-dropdown"
                         class="hidden absolute bg-white border border-gray-200 rounded-lg shadow-lg mt-2 w-48 z-50 transition-all duration-300 origin-top opacity-0 scale-95">
-                        <a href="{{ route('program') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Program</a>
-                        <a href="{{ route('kelasvideo') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kelas Video</a>
+                        <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
                         <a href="{{ route('ebook') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">E-Book</a>
-                        <a href="{{ route('buku') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Buku</a>
-                        <a href="{{ route('kumpulan.kemitraan') }}"
-                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kemitraan</a>
+                        <a href="{{ route('program') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Program</a>
                         <a href="{{ route('book-masterpiece') }}"
                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Book
                             Masterpiece AI</a>
+                        <a href="{{ route('kelasvideo') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kelas Video</a>
+
+
+                        <a href="{{ route('kumpulan.kemitraan') }}"
+                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Kemitraan</a>
+
 
                     </div>
                 </div>
@@ -397,15 +400,18 @@
                     </button>
                     <div id="mobile-product-dropdown"
                         class="hidden flex flex-col ml-4 mt-2 space-y-2 transition-all duration-300">
-                        <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary">Program</a>
-                        <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">Kelas
-                            Video</a>
-                        <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
                         <a href="{{ route('buku') }}" class="text-gray-700 hover:text-secondary">Buku</a>
-                        <a href="{{ route('kumpulan.kemitraan') }}"
-                            class="text-gray-700 hover:text-secondary">Kemitraan</a>
+                        <a href="{{ route('ebook') }}" class="text-gray-700 hover:text-secondary">E-Book</a>
+                        <a href="{{ route('program') }}" class="text-gray-700 hover:text-secondary">Program</a>
                         <a href="{{ route('book-masterpiece') }}" class="text-gray-700 hover:text-secondary">Book
                             Masterpiece AI</a>
+                        <a href="{{ route('kelasvideo') }}" class="text-gray-700 hover:text-secondary">Kelas
+                            Video</a>
+
+
+                        <a href="{{ route('kumpulan.kemitraan') }}"
+                            class="text-gray-700 hover:text-secondary">Kemitraan</a>
+
                     </div>
                 </div>
 
