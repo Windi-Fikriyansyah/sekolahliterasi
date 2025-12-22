@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Course Platform</title>
+    <title>Penerbit Buku</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -772,11 +772,11 @@
                             </span>
 
                             ${tipe_pdf == 1 ? `
-                                                                            <a href="${url}" download
-                                                                               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                                                <i class="fa-solid fa-download mr-2"></i> Download PDF
-                                                                            </a>
-                                                                            ` : ``}
+                                                                                <a href="${url}" download
+                                                                                   class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                                                    <i class="fa-solid fa-download mr-2"></i> Download PDF
+                                                                                </a>
+                                                                                ` : ``}
                         </div>
                         <div id="pdf-container" class="p-4"></div>
                     </div>`;
