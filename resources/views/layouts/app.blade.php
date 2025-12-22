@@ -209,7 +209,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-2">
                 <a href="#" class="transform transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo" class="h-14 w-auto object-contain">
+                    <img src="{{ asset('image/logo1.png') }}" alt="EduCourse Logo" class="h-14 w-auto object-contain">
                 </a>
             </div>
 
@@ -451,7 +451,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <!-- Company Info -->
                 <div class="animate-fade-in-up">
-                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo"
+                    <img src="{{ asset('image/logo1.png') }}" alt="EduCourse Logo"
                         class="h-14 w-auto object-contain mb-4 transform transition-transform duration-300 hover:scale-105">
 
                     <p class="mb-4">{{ $landingFooter->footer_description ?? '' }}</p>
