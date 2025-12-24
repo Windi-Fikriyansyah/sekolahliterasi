@@ -3,7 +3,7 @@
 @section('content')
     <section class="relative w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 overflow-hidden">
 
-        <!-- Efek warna putih di pojok -->
+
         <div class="absolute top-10 left-10 w-40 h-40 bg-white/40 rounded-full blur-3xl"></div>
         <div class="absolute top-1/2 right-10 w-52 h-52 bg-white/40 rounded-full blur-3xl"></div>
         <div class="absolute bottom-10 left-1/3 w-32 h-32 bg-white/40 rounded-full blur-2xl"></div>

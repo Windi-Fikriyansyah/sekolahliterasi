@@ -34,6 +34,7 @@ class User extends Authenticatable
         'provinsi',
         'balance',
         'alamat',
+        'is_active',
         'profesi'
     ];
 

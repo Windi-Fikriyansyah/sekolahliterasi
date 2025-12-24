@@ -163,6 +163,64 @@
                     }
                 });
             });
+
+            $(document).on('change', '.toggle-status', function() {
+                const checkbox = $(this);
+                const userId = checkbox.data('id');
+                const isActive = checkbox.is(':checked') ? 1 : 0;
+
+                if (isActive === 0) {
+                    Swal.fire({
+                        title: 'Nonaktifkan pengguna?',
+                        text: 'Pengguna tidak akan bisa login!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonText: 'Batal',
+                        confirmButtonText: 'Ya, nonaktifkan'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateStatus();
+                        } else {
+                            checkbox.prop('checked', true);
+                        }
+                    });
+                } else {
+                    updateStatus();
+                }
+
+                function updateStatus() {
+                    $.ajax({
+                        url: "{{ route('pengguna.toggle') }}",
+                        type: "POST",
+                        data: {
+                            id: userId,
+                            is_active: isActive
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: isActive ? 'Pengguna diaktifkan' :
+                                        'Pengguna dinonaktifkan',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                checkbox.prop('checked', !isActive);
+                                Swal.fire('Gagal', res.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            checkbox.prop('checked', !isActive);
+                            Swal.fire('Error', 'Gagal mengubah status', 'error');
+                        }
+                    });
+                }
+            });
+
+
         });
     </script>
 @endpush

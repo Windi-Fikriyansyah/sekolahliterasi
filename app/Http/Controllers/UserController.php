@@ -36,6 +36,7 @@ class UserController extends Controller
                     'kabupaten',
                     'provinsi',
                     'instansi',
+                    'is_active',
                     'created_at'
                 ])
                 ->orderBy('created_at', 'desc');
@@ -43,17 +44,32 @@ class UserController extends Controller
             return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) use ($currentUserId) {
-                    $encryptedId = Crypt::encrypt($row->id);
-                    $deleteUrl = route('pengguna.destroy', $row->id);
 
-                    $buttons = '<div class="btn-group" role="group">';
+                    $checked = $row->is_active ? 'checked' : '';
 
+                    $toggle = '
+        <div class="form-check form-switch d-inline-block me-2">
+            <input class="form-check-input toggle-status"
+                   type="checkbox"
+                   data-id="' . $row->id . '"
+                   ' . $checked . '
+                   title="Aktif / Nonaktif">
+        </div>
+    ';
+
+                    $deleteBtn = '';
                     if ($row->id != $currentUserId) {
-                        $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
+                        $deleteBtn = '
+            <button class="btn btn-sm btn-danger delete-btn"
+                title="Hapus"
+                data-id="' . $row->id . '">
+                <i class="bi bi-trash"></i>
+            </button>';
                     }
-                    $buttons .= '</div>';
 
-                    return $buttons;
+                    return '<div class="d-flex align-items-center gap-1">'
+                        . $toggle . $deleteBtn .
+                        '</div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -64,6 +80,19 @@ class UserController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+
+    public function toggleStatus(Request $request)
+    {
+        $user = User::findOrFail($request->id);
+        $user->is_active = $request->is_active;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $request->is_active ? 'User aktif' : 'User nonaktif'
+        ]);
     }
 
 
