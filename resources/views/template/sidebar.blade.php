@@ -114,6 +114,23 @@
             <div data-i18n="Account Settings">Buat Formulir</div>
         </a>
     </li>
+
+    <li class="menu-item has-sub">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-book-open"></i>
+            <div data-i18n="Book Masterpiece">Book Masterpiece</div>
+        </a>
+
+        <ul class="menu-sub">
+            <li class="menu-item">
+                <a href="{{ route('bonus.index') }}" class="menu-link">
+                    <div data-i18n="Landing Utama">Bonus</div>
+                </a>
+            </li>
+
+
+        </ul>
+    </li>
     <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Transaksi</span>
     </li>

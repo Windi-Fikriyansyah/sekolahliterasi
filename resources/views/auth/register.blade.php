@@ -26,7 +26,7 @@
         <div class="bg-white shadow-lg rounded-xl w-full max-w-2xl p-8 space-y-6">
             <!-- Header -->
             <div class="text-center">
-                <img src="{{ asset('image/logo.png') }}" alt="EduCourse" class="mx-auto h-16 mb-4">
+                <img src="{{ asset('image/logo1.png') }}" alt="EduCourse" class="mx-auto h-16 mb-4">
                 <h2 class="text-2xl font-bold text-secondary">Buat Akun Baru</h2>
                 <p class="text-gray-500 text-sm">Lengkapi data berikut untuk mendaftar</p>
             </div>

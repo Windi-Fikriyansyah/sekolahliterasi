@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BuatFormController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CertificateController;
@@ -76,6 +77,17 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/toggle-status', [UserController::class, 'toggleStatus'])
             ->name('toggle');
+    });
+
+    Route::prefix('bonus')->name('bonus.')->group(function () {
+        Route::get('/', [BonusController::class, 'index'])->name('index');
+        Route::post('/load', [BonusController::class, 'load'])->name('load');
+        Route::get('/create', [BonusController::class, 'create'])->name('create');
+        Route::post('/', [BonusController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [BonusController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [BonusController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BonusController::class, 'destroy'])->name('destroy');
+        Route::get('/view/{slug}', [BonusController::class, 'view'])->name('view');
     });
 
     Route::prefix('landing')->name('landing.')->group(function () {
