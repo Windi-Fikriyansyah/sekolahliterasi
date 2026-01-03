@@ -121,14 +121,6 @@ class BonusController extends Controller
     {
         $bonus = DB::table('bonuses')->where('slug', $slug)->firstOrFail();
 
-        $path = public_path('storage/' . $bonus->file_path);
-
-        if (!file_exists($path)) {
-            abort(404, 'File tidak ditemukan');
-        }
-
-        return response()->file($path, [
-            'Content-Type' => 'application/pdf'
-        ]);
+        return redirect()->to(asset('storage/' . $bonus->file_path));
     }
 }
