@@ -48,6 +48,7 @@
                                 <th>Judul</th>
                                 <th>Icon</th>
                                 <th>Deskripsi</th>
+                                <th width="10%">File</th>
                                 <th width="15%">Aksi</th>
                             </tr>
                         </thead>
@@ -57,11 +58,43 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Modal Lihat PDF -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Preview Bonus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="pdfFrame" src="" width="100%" height="600" style="border: none;">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).on('click', '.view-pdf', function() {
+            let url = $(this).data('url');
+
+            $('#pdfFrame').attr('src', url);
+            $('#pdfModal').modal('show');
+        });
+
+        // Bersihkan iframe saat modal ditutup
+        $('#pdfModal').on('hidden.bs.modal', function() {
+            $('#pdfFrame').attr('src', '');
+        });
+    </script>
 
     <script>
         $.ajaxSetup({
@@ -92,6 +125,11 @@
                     },
                     {
                         data: 'desc'
+                    },
+                    {
+                        data: 'file',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'action',

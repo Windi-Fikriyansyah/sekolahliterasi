@@ -24,13 +24,26 @@ class BonusController extends Controller
         return datatables()->of($data)
             ->addIndexColumn()
             ->addColumn('icon', fn($row) => $row->icon ? "<i class='{$row->icon}'></i>" : '-')
+            ->addColumn('file', function ($row) {
+                if (!$row->file_path) {
+                    return '-';
+                }
+
+                return '
+        <button class="btn btn-sm btn-info view-pdf"
+            data-url="' . route('bonus.view', $row->slug) . '">
+            <i class="bi bi-file-earmark-pdf"></i> Lihat
+        </button>
+    ';
+            })
+
             ->addColumn('action', function ($row) {
                 return '
                     <a href="' . route('bonus.edit', $row->id) . '" class="btn btn-sm btn-warning">Edit</a>
                     <button class="btn btn-sm btn-danger delete-btn" data-id="' . $row->id . '">Hapus</button>
                 ';
             })
-            ->rawColumns(['icon', 'action'])
+            ->rawColumns(['icon', 'action', 'file'])
             ->make(true);
     }
 
@@ -103,13 +116,19 @@ class BonusController extends Controller
     }
 
     // 👁️ VIEW PDF
+    // 👁️ VIEW PDF (tanpa storage/app)
     public function view($slug)
     {
-        $bonus = DB::table('bonuses')->where('slug', $slug)->first();
+        $bonus = DB::table('bonuses')->where('slug', $slug)->firstOrFail();
 
-        return Response::file(
-            storage_path('app/' . $bonus->file_path),
-            ['Content-Type' => 'application/pdf']
-        );
+        $path = public_path('storage/' . $bonus->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf'
+        ]);
     }
 }
