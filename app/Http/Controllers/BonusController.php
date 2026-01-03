@@ -61,7 +61,8 @@ class BonusController extends Controller
             'file'  => 'required|mimes:pdf'
         ]);
 
-        $path = $request->file('file')->store('bonus');
+        $path = $request->file('file')->store('bonus', 'public');
+
 
         DB::table('bonuses')->insert([
             'title'      => $request->title,
@@ -95,8 +96,8 @@ class BonusController extends Controller
         ];
 
         if ($request->hasFile('file')) {
-            Storage::delete($bonus->file_path);
-            $data['file_path'] = $request->file('file')->store('bonus');
+            Storage::disk('public')->delete($bonus->file_path);
+            $data['file_path'] = $request->file('file')->store('bonus', 'public');
         }
 
         DB::table('bonuses')->where('id', $id)->update($data);
