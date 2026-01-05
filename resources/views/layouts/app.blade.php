@@ -509,7 +509,7 @@
                 </div>
 
                 <!-- Quick Links -->
-                {{-- <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
                     <h4 class="font-bold text-lg mb-4">Platform</h4>
                     <ul class="space-y-2">
                         <li><a href="/"
@@ -524,10 +524,10 @@
 
 
                     </ul>
-                </div> --}}
+                </div>
 
                 <!-- Support -->
-                {{-- <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Dukungan</h4>
                     <ul class="space-y-2">
                         <li><a href="#faq"
@@ -539,10 +539,10 @@
                         </li>
 
                     </ul>
-                </div> --}}
+                </div>
 
                 {{-- <!-- Support --> nanti dihapus --}}
-                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                {{-- <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Dukungan</h4>
                     <ul class="space-y-2">
                         <li>
@@ -564,15 +564,15 @@
                             </a>
                         </li>
                     </ul>
-                </div>
+                </div> --}}
 
                 <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Social Media</h4>
                     <ul class="space-y-2">
-                        {{-- <li><a href="#"
+                        <li><a href="#"
                                 class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Hubungi
                                 Kami</a>
-                        </li> --}}
+                        </li>
                         <div class="flex space-x-4">
 
                             <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
