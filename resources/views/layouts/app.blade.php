@@ -496,7 +496,7 @@
 
     @yield('content')
 
-    {{-- <footer class="bg-secondary text-white pt-12 pb-6">
+    <footer class="bg-secondary text-white pt-12 pb-6">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <!-- Company Info -->
@@ -509,7 +509,7 @@
                 </div>
 
                 <!-- Quick Links -->
-                <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
+                {{-- <div class="animate-fade-in-up" style="animation-delay: 0.1s;">
                     <h4 class="font-bold text-lg mb-4">Platform</h4>
                     <ul class="space-y-2">
                         <li><a href="/"
@@ -524,10 +524,10 @@
 
 
                     </ul>
-                </div>
+                </div> --}}
 
                 <!-- Support -->
-                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                {{-- <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Dukungan</h4>
                     <ul class="space-y-2">
                         <li><a href="#faq"
@@ -539,15 +539,40 @@
                         </li>
 
                     </ul>
+                </div> --}}
+
+                {{-- <!-- Support --> nanti dihapus --}}
+                <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <h4 class="font-bold text-lg mb-4">Dukungan</h4>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{{ route('privacy') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">
+                                Kebijakan Privasi
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('terms') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">
+                                Ketentuan Layanan
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('support') }}"
+                                class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">
+                                Kontak Support
+                            </a>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
                     <h4 class="font-bold text-lg mb-4">Social Media</h4>
                     <ul class="space-y-2">
-                        <li><a href="#"
+                        {{-- <li><a href="#"
                                 class="hover:text-primary transition-all duration-300 transform hover:translate-x-1 block">Hubungi
                                 Kami</a>
-                        </li>
+                        </li> --}}
                         <div class="flex space-x-4">
 
                             <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
@@ -577,7 +602,7 @@
                 <p>{{ $landingFooter->footer_copyright ?? '' }}</p>
             </div>
         </div>
-    </footer> --}}
+    </footer>
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>

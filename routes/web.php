@@ -20,6 +20,7 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\MateriProgramController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PesananMasukController;
 use App\Http\Controllers\PesananProgramController;
@@ -48,6 +49,10 @@ Route::get('/Kelas-Video', [KelasVideoController::class, 'index'])->name('kelasv
 Route::get('/Tentang-Kami', [DashboardController::class, 'tentang'])->name('tentang-kami');
 Route::get('/Book-Masterpiece-AI', [BookmasterpieceController::class, 'index'])->name('book-masterpiece');
 
+
+Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/ketentuan-layanan', [PageController::class, 'terms'])->name('terms');
+Route::get('/kontak-support', [PageController::class, 'support'])->name('support');
 
 
 
