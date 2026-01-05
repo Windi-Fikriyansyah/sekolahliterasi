@@ -23,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $landingPage = DB::table('landing_page_sections')->first();
-            $view->with('landingFooter', $landingPage);
+            $view->with([
+                'landingPage'   => $landingPage,
+                'landingFooter' => $landingPage,
+            ]);
         });
     }
 }
