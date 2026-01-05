@@ -496,7 +496,7 @@
 
     @yield('content')
 
-    <footer class="bg-secondary text-white pt-12 pb-6">
+    {{-- <footer class="bg-secondary text-white pt-12 pb-6">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <!-- Company Info -->
@@ -577,7 +577,7 @@
                 <p>{{ $landingFooter->footer_copyright ?? '' }}</p>
             </div>
         </div>
-    </footer>
+    </footer> --}}
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
