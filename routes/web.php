@@ -292,9 +292,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/cart/{id}/toggle', [CartController::class, 'toggleCheck'])->name('cart.toggleCheck');
         Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
         Route::get('/cart-total', [CartController::class, 'total'])->name('cart.total');
-
-        Route::get('/{slug}', [ProdukBukuController::class, 'detail'])
-            ->name('detail');
     });
 
     Route::prefix('pesanan_saya')->name('pesanan_saya.')->group(function () {
@@ -369,6 +366,8 @@ Route::prefix('produk')->name('produk.')->group(function () {
     Route::get('/{id}', [ProdukController::class, 'show'])->name('show');
 });
 
+Route::get('buku/{slug}', [ProdukBukuController::class, 'detail'])
+    ->name('buku.detail');
 
 
 require __DIR__ . '/auth.php';

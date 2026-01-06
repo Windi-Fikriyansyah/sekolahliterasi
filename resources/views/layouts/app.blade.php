@@ -607,6 +607,11 @@
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-3"></div>
     <script>
+        window.isAuthenticated = @json(auth()->check());
+        window.loginUrl = "{{ route('login') }}";
+    </script>
+
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cartBtn = document.getElementById("cart-btn");
             const cartDropdown = document.getElementById("cartDropdown");
@@ -618,10 +623,18 @@
 
             // 🔹 Load data cart dari database
             async function loadCart() {
+                if (!window.isAuthenticated) return;
+
                 try {
                     const res = await fetch("/buku/cart");
-                    if (!res.ok) throw new Error("Gagal memuat cart");
+
+                    if (!res.ok) {
+                        console.warn("Cart endpoint gagal:", res.status);
+                        return;
+                    }
+
                     const items = await res.json();
+                    if (!Array.isArray(items)) return;
 
                     cartCount.textContent = items.length;
                     cartCountHeader.textContent = items.length;
@@ -722,6 +735,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     cartDropdown.classList.toggle("hidden");
+
                     if (!cartDropdown.classList.contains("hidden")) {
                         loadCart();
                     }
@@ -735,6 +749,15 @@
             }
 
             window.addToCart = function(product_id, title) {
+                if (!window.isAuthenticated) {
+                    showToast("⚠️ Silakan login terlebih dahulu", "warning");
+
+                    setTimeout(() => {
+                        window.location.href = window.loginUrl;
+                    }, 800);
+
+                    return;
+                }
                 fetch("/buku/cart/add", {
                         method: "POST",
                         headers: {
@@ -799,7 +822,9 @@
 
 
             // Pertama kali load
-            loadCart();
+            if (window.isAuthenticated) {
+                loadCart();
+            }
         });
     </script>
 
