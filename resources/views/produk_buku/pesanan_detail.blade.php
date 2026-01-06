@@ -23,10 +23,12 @@
                 class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
 
                 <!-- Gambar Buku -->
-                <div class="w-2/3 md:w-3/4 mx-auto rounded-lg overflow-hidden shadow-md">
+                <div class="w-full md:w-3/4 mx-auto rounded-lg overflow-hidden shadow-md">
                     <img src="{{ asset('storage/' . $bukus->thumbnail) }}" alt="Sampul Buku {{ $bukus->judul }}"
-                        class="w-full h-auto object-contain rounded-md transition-transform duration-500 hover:scale-105">
+                        class="w-full h-auto object-cover rounded-md
+               transition-transform duration-500 md:hover:scale-105">
                 </div>
+
 
                 <!-- Info Buku -->
                 <div class="flex flex-col gap-4 text-[15px] leading-relaxed">
