@@ -307,7 +307,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-2">
                 <a href="#" class="transform transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo" class="h-14 w-auto object-contain">
+                    <img src="{{ asset('image/logo.png') }}" alt="Book Logo" class="h-14 w-auto object-contain">
                 </a>
             </div>
 
@@ -772,11 +772,11 @@
                             </span>
 
                             ${tipe_pdf == 1 ? `
-                                                                                <a href="${url}" download
-                                                                                   class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                                                                    <i class="fa-solid fa-download mr-2"></i> Download PDF
-                                                                                </a>
-                                                                                ` : ``}
+                                                                                        <a href="${url}" download
+                                                                                           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                                                                            <i class="fa-solid fa-download mr-2"></i> Download PDF
+                                                                                        </a>
+                                                                                        ` : ``}
                         </div>
                         <div id="pdf-container" class="p-4"></div>
                     </div>`;

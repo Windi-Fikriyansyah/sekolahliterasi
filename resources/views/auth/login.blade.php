@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk | EduCourse</title>
+    <title>Masuk | Book</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,7 +25,7 @@
     <div class="min-h-screen flex items-center justify-center">
         <div class="bg-white shadow-lg rounded-xl w-full max-w-md p-8 space-y-6">
             <div class="text-center">
-                <img src="{{ asset('image/logo1.png') }}" alt="EduCourse" class="mx-auto h-16 mb-4">
+                <img src="{{ asset('image/logo1.png') }}" alt="Book" class="mx-auto h-16 mb-4">
                 <h2 class="text-2xl font-bold text-secondary">Selamat Datang Kembali</h2>
                 <p class="text-gray-500 text-sm">Masuk ke akun Anda untuk melanjutkan</p>
             </div>

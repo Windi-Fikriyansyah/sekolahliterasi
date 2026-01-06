@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar | EduCourse</title>
+    <title>Daftar | Book</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,7 +26,7 @@
         <div class="bg-white shadow-lg rounded-xl w-full max-w-2xl p-8 space-y-6">
             <!-- Header -->
             <div class="text-center">
-                <img src="{{ asset('image/logo1.png') }}" alt="EduCourse" class="mx-auto h-16 mb-4">
+                <img src="{{ asset('image/logo1.png') }}" alt="Book" class="mx-auto h-16 mb-4">
                 <h2 class="text-2xl font-bold text-secondary">Buat Akun Baru</h2>
                 <p class="text-gray-500 text-sm">Lengkapi data berikut untuk mendaftar</p>
             </div>

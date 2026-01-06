@@ -249,7 +249,7 @@
             <!-- Logo -->
             <div class="flex items-center space-x-2">
                 <a href="#" class="transform transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('image/logo.png') }}" alt="EduCourse Logo" class="h-14 w-auto object-contain">
+                    <img src="{{ asset('image/logo.png') }}" alt="Book Logo" class="h-14 w-auto object-contain">
                 </a>
             </div>
 
