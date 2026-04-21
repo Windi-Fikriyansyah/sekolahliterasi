@@ -57,6 +57,13 @@ class UserController extends Controller
         </div>
     ';
 
+                    $passwordBtn = '
+            <button class="btn btn-sm btn-info password-btn"
+                title="Ubah Password"
+                data-id="' . $row->id . '">
+                <i class="bi bi-key"></i>
+            </button>';
+
                     $deleteBtn = '';
                     if ($row->id != $currentUserId) {
                         $deleteBtn = '
@@ -68,7 +75,7 @@ class UserController extends Controller
                     }
 
                     return '<div class="d-flex align-items-center gap-1">'
-                        . $toggle . $deleteBtn .
+                        . $toggle . $passwordBtn . $deleteBtn .
                         '</div>';
                 })
                 ->rawColumns(['action'])
@@ -83,16 +90,104 @@ class UserController extends Controller
     }
 
 
+    public function getSubscription($id)
+    {
+        try {
+            $subscription = DB::table('user_subscriptions')
+                ->where('user_id', $id)
+                ->first();
+
+            $packages = DB::table('products')
+                ->where('status', 'aktif')
+                ->where('tipe_produk', 'program')
+                ->select('id', 'judul')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $subscription,
+                'packages' => $packages
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function toggleStatus(Request $request)
     {
-        $user = User::findOrFail($request->id);
-        $user->is_active = $request->is_active;
-        $user->save();
+        try {
+            DB::beginTransaction();
+            $user = User::findOrFail($request->user_id);
+            $user->is_active = $request->is_active;
+            $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => $request->is_active ? 'User aktif' : 'User nonaktif'
+            $subscription = DB::table('user_subscriptions')
+                ->where('user_id', $request->user_id)
+                ->first();
+
+            if ($subscription) {
+                DB::table('user_subscriptions')
+                    ->where('user_id', $request->user_id)
+                    ->update([
+                        'package_id' => $request->package_id,
+                        'started_at' => $request->started_at,
+                        'expired_at' => $request->expired_at,
+                        'status' => $request->status,
+                        'updated_at' => now()
+                    ]);
+            } else {
+                DB::table('user_subscriptions')->insert([
+                    'user_id' => $request->user_id,
+                    'package_id' => $request->package_id,
+                    'started_at' => $request->started_at,
+                    'expired_at' => $request->expired_at,
+                    'status' => $request->status,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required',
+            'password' => 'required|min:8|confirmed',
         ]);
+
+        try {
+            $user = User::findOrFail($request->user_id);
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Password berhasil diubah'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 

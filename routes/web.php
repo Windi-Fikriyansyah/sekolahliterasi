@@ -82,6 +82,10 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/toggle-status', [UserController::class, 'toggleStatus'])
             ->name('toggle');
+        Route::get('/get-subscription/{id}', [UserController::class, 'getSubscription'])
+            ->name('get_subscription');
+        Route::post('/update-password', [UserController::class, 'updatePassword'])
+            ->name('update_password');
     });
 
     Route::prefix('bonus')->name('bonus.')->group(function () {
