@@ -27,7 +27,7 @@ class UserController extends Controller
             $currentUserId = auth()->id();
 
             // Mengambil data pengguna dengan role guru atau siswa
-            $users = User::where('role', 'user')
+            $users = User::whereIn('role', ['user', 'siswa'])
                 ->select([
                     'id',
                     'name',
