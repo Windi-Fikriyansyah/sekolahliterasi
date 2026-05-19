@@ -35,6 +35,7 @@ use App\Http\Controllers\user\EbookController;
 use App\Http\Controllers\user\KelasVideoController;
 use App\Http\Controllers\user\ProgramController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GuruMasterpieceUserController;
 use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +86,18 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
         Route::get('/get-subscription/{id}', [UserController::class, 'getSubscription'])
             ->name('get_subscription');
         Route::post('/update-password', [UserController::class, 'updatePassword'])
+            ->name('update_password');
+    });
+
+    Route::prefix('guru_masterpiece')->name('guru_masterpiece.')->group(function () {
+        Route::get('/', [GuruMasterpieceUserController::class, 'index'])->name('index');
+        Route::post('/load', [GuruMasterpieceUserController::class, 'load'])->name('load');
+        Route::delete('/{id}', [GuruMasterpieceUserController::class, 'destroy'])->name('destroy');
+        Route::post('/toggle-status', [GuruMasterpieceUserController::class, 'toggleStatus'])
+            ->name('toggle');
+        Route::get('/get-subscription/{id}', [GuruMasterpieceUserController::class, 'getSubscription'])
+            ->name('get_subscription');
+        Route::post('/update-password', [GuruMasterpieceUserController::class, 'updatePassword'])
             ->name('update_password');
     });
 

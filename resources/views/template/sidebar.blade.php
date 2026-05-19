@@ -29,6 +29,12 @@
                 </a>
             </li>
             <li class="menu-item">
+                <a href="{{ route('guru_masterpiece.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-user-voice"></i>
+                    <div data-i18n="Notifications">Data User Guru Masterpiece</div>
+                </a>
+            </li>
+            <li class="menu-item">
                 <a href="{{ route('kategori.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-category"></i>
                     <div data-i18n="Notifications">Data Kategori</div>
